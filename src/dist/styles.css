@@ -1553,3 +1553,63 @@ footer {
     display: none !important;
   }
 }
+
+/* Orbiting Circles Animation (MagicUI style) */
+
+.orbiting-circles-container {
+  position: relative;
+  width: 400px;
+  /* Adjust as needed */
+  height: 400px;
+  margin: 0 auto;
+}
+
+.orbiting-circles-path {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.orbiting-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--icon-size, 40px);
+  height: var(--icon-size, 40px);
+  margin: calc(var(--icon-size, 40px) / -2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--primary-color, #4f46e5);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.12);
+  animation: orbit calc(var(--duration, 20) * 1s) linear infinite;
+  transform: rotate(calc(var(--angle, 0) * 1deg)) translateY(calc(var(--radius, 160) * 1px)) rotate(calc(var(--angle, 0) * -1deg));
+  z-index: 2;
+}
+
+@keyframes orbit {
+  0% {
+    transform: rotate(calc(var(--angle, 0) * 1deg)) translateY(calc(var(--radius, 160) * 1px)) rotate(calc(var(--angle, 0) * -1deg));
+  }
+
+  100% {
+    transform: rotate(calc(var(--angle, 0) * 1deg + 360deg)) translateY(calc(var(--radius, 160) * 1px)) rotate(calc((var(--angle, 0) * -1deg) - 360deg));
+  }
+}
+
+/* Example usage: place this markup in your HTML where you want the effect:
+<div class="orbiting-circles-container">
+  <svg class="orbiting-circles-path" viewBox="0 0 400 400">
+    <circle cx="200" cy="200" r="160" fill="none" stroke="#0001" stroke-width="2" />
+  </svg>
+  <div class="orbiting-circle" style="--angle:0; --radius:160; --duration:20; --icon-size:40px;">1</div>
+  <div class="orbiting-circle" style="--angle:90; --radius:160; --duration:20; --icon-size:40px;">2</div>
+  <div class="orbiting-circle" style="--angle:180; --radius:160; --duration:20; --icon-size:40px;">3</div>
+  <div class="orbiting-circle" style="--angle:270; --radius:160; --duration:20; --icon-size:40px;">4</div>
+</div>
+*/

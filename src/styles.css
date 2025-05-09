@@ -22,6 +22,18 @@
   --animation-duration: 30s;
 }
 
+/* Tema scuro */
+:root.dark-theme {
+  --primary-color: #818cf8;
+  --primary-light: #a5b4fc;
+  --primary-dark: #6366f1;
+  --secondary-color: #34d399;
+  --background: #0f172a;
+  --text-color: #e2e8f0;
+  --card-bg: rgba(30, 41, 59, 0.85);
+  --modal-bg: rgba(30, 41, 59, 0.95);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -341,6 +353,12 @@ h1 {
   /* Forza la visibilità */
 }
 
+/* Fix: selettore errato per svg nei bottoni social */
+.social-button svg {
+  width: 24px;
+  height: 24px;
+}
+
 /* Per rendere visibili i bottoni sui dispositivi mobili */
 @media (max-width: 768px) {
   .social-buttons {
@@ -390,11 +408,6 @@ h1 {
 .social-button .text {
   position: relative;
   z-index: 1;
-}
-
-.social-button svg {
-  width: 24px;
-  height: 24px;
 }
 
 .social-button.linkedin:hover {
