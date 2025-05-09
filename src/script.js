@@ -185,6 +185,16 @@ function createPhotoSlideshow() {
   setInterval(showNextSlide, 3500);
 }
 
+// Hamburger menu per mobile
+const hamburger = document.getElementById('hamburger-menu');
+const navUl = document.querySelector('nav ul');
+if (hamburger && navUl) {
+  hamburger.addEventListener('click', () => {
+    navUl.classList.toggle('open');
+    hamburger.classList.toggle('open');
+  });
+}
+
 // Initialize animations when the page loads
 window.addEventListener('DOMContentLoaded', () => {
   // Initialize theme based on preference
