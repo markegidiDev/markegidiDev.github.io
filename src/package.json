@@ -1,0 +1,32 @@
+{
+  "name": "marco-egidi-portfolio",
+  "version": "1.0.0",
+  "description": "Sito web personale di Marco Egidi",
+  "main": "index.html",
+  "scripts": {
+    "dev": "tailwindcss -i ./styles.css -o ./dist/styles.css --watch --postcss",
+    "build": "tailwindcss -i ./styles.css -o ./dist/styles.css --minify --postcss"
+  },
+  "keywords": [
+    "portfolio",
+    "personal-website",
+    "developer"
+  ],
+  "author": "Marco Egidi",
+  "license": "MIT",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.3",
+    "postcss-import": "^16.1.0",
+    "postcss-nested": "^7.0.2",
+    "tailwindcss": "^3.3.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markegidiDev/markegidiDev.github.io.git"
+  },
+  "bugs": {
+    "url": "https://github.com/markegidiDev/markegidiDev.github.io/issues"
+  },
+  "homepage": "https://github.com/markegidiDev/markegidiDev.github.io#readme"
+}
