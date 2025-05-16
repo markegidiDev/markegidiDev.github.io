@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test Page</title>
+  <style>
+    /* Base Colors */
+    :root {
+      --primary: 12 12 13;
+      --primary-foreground: 255 255 255;
+      --secondary: 107 107 107;
+      --background: 247 247 247;
+      --foreground: 12 12 13;
+      --muted: 229 229 229;
+      --muted-foreground: 107 107 107;
+      --border: 229 229 229;
+      
+      /* Direct color fallbacks for non-RGB usage */
+      --primary-hex: #0C0C0D;
+      --primary-foreground-hex: #FFFFFF;
+      --secondary-hex: #6B6B6B;
+      --background-hex: #F7F7F7;
+      --foreground-hex: #0C0C0D;
+      --muted-hex: #E5E5E5;
+      --muted-foreground-hex: #6B6B6B;
+      --border-hex: #E5E5E5;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: var(--background-hex);
+      color: var(--foreground-hex);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: white;
+      border: 1px solid var(--border-hex);
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    .card-header {
+      background-color: rgba(12, 12, 13, 0.05);
+      margin: -20px -20px 20px -20px;
+      padding: 20px;
+      border-bottom: 1px solid var(--border-hex);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--primary-hex);
+      margin: 0 0 0.5rem 0;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.5rem;
+      background-color: rgba(12, 12, 13, 0.1);
+      border: 1px solid rgba(12, 12, 13, 0.2);
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+      color: var(--primary-hex);
+      margin-top: 8px;
+    }
+
+    .meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: var(--secondary-hex);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 2rem 0 1rem;
+      color: var(--primary-hex);
+    }
+  </style>
+</head>
+<body>
+  <h1 class="section-title">Test Component</h1>
+  
+  <div class="card">
+    <div class="card-header">
+      <h3 class="card-title">Tirocinante Sistemista e Tecnico Informatico</h3>
+      <div class="meta">
+        <span>Stardate Sas</span>
+      </div>
+      <div class="badge">A tempo pieno</div>
+    </div>
+    
+    <div class="meta">
+      <span>gen 2019 - feb 2019 · 2 mesi</span>
+    </div>
+    
+    <div class="meta">
+      <span>Montebelluna, Veneto, Italia</span>
+    </div>
+    
+    <div style="padding-top: 1rem; border-top: 1px solid var(--border-hex);">
+      <p style="margin-top: 1rem; color: var(--foreground-hex); line-height: 1.5;">
+        Manutenzione e riparazione di computer (diagnosi hardware/software, risoluzione guasti). 
+        Installazione e configurazione di sistemi operativi e software. 
+        Assistenza tecnica ai clienti per problemi informatici. 
+        Collaborazione con il team per la gestione dei progetti IT.
+      </p>
+    </div>
+  </div>
+</body>
+</html>
