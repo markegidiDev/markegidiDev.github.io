@@ -2,6 +2,7 @@
 
 import { AreaChart, Area, XAxis, CartesianGrid, ResponsiveContainer, Tooltip, Legend, YAxis } from 'recharts';
 import { useState, useMemo, useEffect } from 'react';
+import TrafficLight, { type Direction } from '@/components/dashboard/TrafficLight'; // Ripristinato import
 
 import {
   Select,
@@ -30,6 +31,7 @@ const DashboardPage = () => {
   const [stravaData, setStravaData] = useState<DataPoint[]>([]);
   const [timeRange, setTimeRange] = useState("90d");
   const [activityType, setActivityType] = useState<ActivityType>("all");
+  const [selectedDirection, setSelectedDirection] = useState<Direction>("default"); // Ripristinato stato
 
   useEffect(() => {
     console.log("DashboardPage: Fetching Strava data");
@@ -184,6 +186,15 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
+
+        {/* Sezione Semaforo Aggiunta Qui */}
+        <div className="xl:col-span-12 mt-8"> {/* Aggiunto un po' di margine sopra */}
+          <TrafficLight
+            selectedDirection={selectedDirection}
+            onDirectionChange={setSelectedDirection}
+          />
+        </div>
+        
       </div>
     </div>
   );
