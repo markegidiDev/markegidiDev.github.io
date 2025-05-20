@@ -9,9 +9,9 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET;
-const REFRESH_TOKEN = process.env.REFRESH_TOKEN;
+const CLIENT_ID = process.env.STRAVA_CLIENT_ID;       
+const CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET; 
+const REFRESH_TOKEN = process.env.STRAVA_REFRESH_TOKEN; 
 
 // Function to get a new access token
 async function getAccessToken() {
