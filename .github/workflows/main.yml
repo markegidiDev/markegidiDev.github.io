@@ -2,16 +2,25 @@ name: Fetch Strava Data and Deploy
 
 on:
   schedule:
-    # Esegue ogni 15 minuti
+    # ogni 15 minuti
     - cron: '*/15 * * * *'
-  workflow_dispatch: # Permette l'avvio manuale
+  workflow_dispatch:
 
 jobs:
   fetch_data_and_deploy:
     runs-on: ubuntu-latest
+
+    # da qui in poi tutte le run avvengono in ./vite-project
+    defaults:
+      run:
+        working-directory: ./vite-project
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -47,4 +56,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          publish_dir: vite-project/dist
