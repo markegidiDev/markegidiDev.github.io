@@ -2,7 +2,6 @@
 
 import { AreaChart, Area, XAxis, CartesianGrid, ResponsiveContainer, Tooltip, Legend, YAxis } from 'recharts';
 import { useState, useMemo, useEffect } from 'react';
-import TrafficLight, { type Direction } from '@/components/dashboard/TrafficLight';
 
 import {
   Select,
@@ -31,7 +30,6 @@ const DashboardPage = () => {
   const [stravaData, setStravaData] = useState<DataPoint[]>([]);
   const [timeRange, setTimeRange] = useState("90d");
   const [activityType, setActivityType] = useState<ActivityType>("all");
-  const [selectedDirection, setSelectedDirection] = useState<Direction>("default");
 
   useEffect(() => {
     console.log("DashboardPage: Fetching Strava data");
