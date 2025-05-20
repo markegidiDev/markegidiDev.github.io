@@ -1,24 +1,51 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <title>Marco Egidi - Portfolio</title>
-    <script type="module" crossorigin src="/assets/index-CgyHWaEO.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-B-H5cq_o.css">
-  </head>
-  <body>
-    <div id="root"></div>
-    <!-- SPA fallback for GitHub Pages -->
-    <script>
-      // Redirect all 404s to index.html for SPA routing
-      if (window.location.pathname !== '/' && !window.location.pathname.includes('.')) {
-        window.location.replace(`/#${window.location.pathname}`);
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Redirecting...</title>
+  <script type="text/javascript">
+    // Single Page Apps for GitHub Pages
+    // https://github.com/rafgraph/spa-github-pages
+    // Copyright (c) 2016 Rafael Pedicini, licensed under the MIT License
+    // ----------------------------------------------------------------------
+    // This script checks if a redirect is required and performs it if needed.
+    (function(l) {
+      if (l.search) {
+        var q = {};
+        l.search.slice(1).split('&').forEach(function(v) {
+          var a = v.split('=');
+          q[a[0]] = a.slice(1).join('=').replace(/~and~/g, '&');
+        });
+        if (q.p !== undefined) {
+          window.history.replaceState(null, null,
+            l.pathname.slice(0, -9) + (q.p || '') +
+            (q.q ? ('?' + q.q) : '') +
+            l.hash
+          );
+        }
       }
-    </script>
-  </body>
+    }(window.location))
+  </script>
+</head>
+<body>
+  <!-- You can add a loading message or spinner here if you want -->
+  <p>If you are not redirected automatically, <a href="/">click here</a>.</p>
+  <script type="text/javascript">
+    // After the history.replaceState call, redirect to the base index.html
+    // This ensures that the React app loads correctly.
+    // The path segment to remove (-9) is the length of "404.html"
+    // For a custom domain or user/org page, l.pathname.slice(0, -9) should be correct.
+    // For a project page, it might be /repo-name/
+    // This logic assumes your site is served from /markegidiDev.github.io/ on GitHub Pages
+    // or from the root / on a custom domain.
+    const pathSegments = window.location.pathname.split('/');
+    let basePath = '/'; // Default for custom domain or user/org page root
+    // Check if running on GitHub Pages project site (e.g., user.github.io/repo-name/)
+    // The first segment will be empty (before the first /), the second will be the repo name.
+    if (pathSegments.length > 2 && pathSegments[1] === 'markegidiDev.github.io') {
+      basePath = '/' + pathSegments[1] + '/';
+    }
+    window.location.replace(basePath);
+  </script>
+</body>
 </html>
