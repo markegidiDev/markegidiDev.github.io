@@ -1,0 +1,101 @@
+/* Direct fallback styles for critical components */
+
+/* Force display of root */
+#root {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 100vh !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  background-color: #F7F7F7 !important;
+}
+
+/* App container */
+.app-container, #root > div {
+  width: 100% !important;
+  max-width: 100% !important;
+  min-height: 100vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background-color: #F7F7F7 !important;
+  color: #0C0C0D !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+}
+
+/* Main content area */
+.content, main .content {
+  flex: 1 !important;
+  width: 100% !important;
+  max-width: 1400px !important;
+  margin: 0 auto !important;
+  padding: 1rem !important;
+  display: block !important;
+}
+
+/* Ensure base elements are visible */
+body, html {
+  background-color: #F7F7F7 !important;
+  color: #0C0C0D !important;
+  font-family: 'Inter', system-ui, sans-serif !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #0C0C0D;
+}
+
+p {
+  color: #0C0C0D;
+}
+
+/* Ensure cards have proper styling */
+.card {
+  background-color: white !important;
+  border: 1px solid #E5E5E5 !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+.card-header {
+  background-color: rgba(12, 12, 13, 0.05) !important;
+}
+
+@media (min-width: 640px) {
+  .content {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content {
+    padding: 2rem;
+  }
+}
+
+/* Section styling */
+.section {
+  margin: 2rem 0;
+  padding: 1.5rem 0;
+  scroll-margin-top: 5rem;
+}
+
+/* Smooth transitions for all interactive elements */
+a, 
+button, 
+input, 
+select, 
+textarea {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Animation for page transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.page-transition {
+  animation: fadeIn 0.3s ease-out;
+}
