@@ -10,11 +10,6 @@ jobs:
   fetch_data_and_deploy:
     runs-on: ubuntu-latest
 
-    # da qui in poi tutte le run avvengono in ./vite-project
-    defaults:
-      run:
-        working-directory: ./vite-project
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,7 +23,7 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Fetch Strava activities
         run: node fetch-strava-activities.js
@@ -43,7 +38,7 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add public/strava-data.json
           if ! git diff --cached --quiet; then
-            git commit -m "Automated: Update Strava data"
+            git commit -m "chore(strava): update data"
             git push
           else
             echo "No changes to Strava data."
@@ -56,4 +51,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: vite-project/dist
+          publish_dir: ./dist
