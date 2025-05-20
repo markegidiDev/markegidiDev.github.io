@@ -35,7 +35,8 @@ const DashboardPage = () => {
 
   useEffect(() => {
     console.log("DashboardPage: Fetching Strava data");
-    fetch('/strava-data.json')
+    // Cache-busting query param to force fresh data
+    fetch(`/strava-data.json?t=${Date.now()}`)
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -171,27 +172,18 @@ const DashboardPage = () => {
                     />
                     {visibleAreas.map(key => (
                       <Area 
-                        key={key} 
-                        dataKey={key} 
-                        type="monotone" 
-                        fill={`url(#fill${key})`} 
-                        stroke={chartConfig[key].color} 
+                        key={key}
+                        type="monotone"
+                        dataKey={key}
                         strokeWidth={2}
-                        stackId="a" 
-                        name={key}
+                        stroke={chartConfig[key].color}
+                        fillOpacity={1}
+                        fill={`url(#fill${key})`}
                       />
                     ))}
                   </AreaChart>
                 </ResponsiveContainer>
             </div>
-          </div>
-          
-          {/* Semaforo ora posizionato sotto al grafico */}
-          <div className="mt-8 max-w-[600px] mx-auto">
-            <TrafficLight 
-              selectedDirection={selectedDirection} 
-              onDirectionChange={setSelectedDirection} 
-            />
           </div>
         </div>
       </div>
