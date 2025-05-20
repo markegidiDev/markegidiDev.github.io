@@ -1,0 +1,50 @@
+name: Fetch Strava Data and Deploy
+
+on:
+  schedule:
+    # Esegue ogni 10 ore (alle 00:00, 10:00, 20:00 UTC)
+    - cron: '0 */10 * * *'
+  workflow_dispatch: # Permette l'avvio manuale dalla tab Actions di GitHub
+
+jobs:
+  fetch_data_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # O la versione di Node.js che preferisci/usi
+
+      - name: Install dependencies
+        run: npm ci 
+
+      - name: Fetch Strava activities
+        run: node fetch-strava-activities.js
+        env:
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+
+      - name: Commit and push if data changed
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add public/strava-data.json 
+          if ! git diff --staged --quiet; then
+            git commit -m "Automated: Update Strava data"
+            git push
+          else
+            echo "No changes to Strava data."
+          fi
+
+      - name: Build project
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
