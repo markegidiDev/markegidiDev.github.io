@@ -2,20 +2,18 @@ name: Fetch Strava Data and Deploy
 
 on:
   schedule:
-    # ogni 15 minuti
     - cron: '*/15 * * * *'
-  workflow_dispatch:
+  workflow_dispatch: # Permette l'avvio manuale dalla tab Actions di GitHub
 
 jobs:
   fetch_data_and_deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          persist-credentials: true
+          fetch-depth: 0           # Per history completa (git push)
+          persist-credentials: true # Per permettere il push
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -23,22 +21,22 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm ci
-
+        run: npm install          # Usa install invece di ci
+        
       - name: Fetch Strava activities
         run: node fetch-strava-activities.js
         env:
-          STRAVA_CLIENT_ID:     ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
           STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
           STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
 
-      - name: Commit & push if data changed
+      - name: Commit and push if data changed
         run: |
-          git config user.name  "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add public/strava-data.json
-          if ! git diff --cached --quiet; then
-            git commit -m "chore(strava): update data"
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add public/strava-data.json 
+          if ! git diff --staged --quiet; then
+            git commit -m "Automated: Update Strava data"
             git push
           else
             echo "No changes to Strava data."
