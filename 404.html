@@ -8,12 +8,17 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <title>Marco Egidi - Portfolio</title>
-    <!-- Removed inline styles and scripts for loading/visibility -->
-    <script type="module" crossorigin src="/assets/index-DorBhNP6.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-CJF3n2v8.css">
+    <script type="module" crossorigin src="/assets/index-CgyHWaEO.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-B-H5cq_o.css">
   </head>
   <body>
     <div id="root"></div>
-    <!-- Removed emergency visibility and diagnostics scripts -->
+    <!-- SPA fallback for GitHub Pages -->
+    <script>
+      // Redirect all 404s to index.html for SPA routing
+      if (window.location.pathname !== '/' && !window.location.pathname.includes('.')) {
+        window.location.replace(`/#${window.location.pathname}`);
+      }
+    </script>
   </body>
 </html>
