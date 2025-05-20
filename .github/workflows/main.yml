@@ -3,7 +3,13 @@ name: Fetch Strava Data and Deploy
 on:
   schedule:
     - cron: '*/15 * * * *'
-  workflow_dispatch: # Permette l'avvio manuale dalla tab Actions di GitHub
+  workflow_dispatch:
+
+# Aggiungi questi permessi espliciti
+permissions:
+  contents: write  # Permette di scrivere nel repository (commit/push)
+  pages: write     # Permette di gestire GitHub Pages
+  id-token: write  # Necessario per il deployment
 
 jobs:
   fetch_data_and_deploy:
@@ -12,8 +18,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0           # Per history completa (git push)
-          persist-credentials: true # Per permettere il push
+          fetch-depth: 0
+          persist-credentials: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -21,7 +27,7 @@ jobs:
           node-version: '18'
 
       - name: Install dependencies
-        run: npm install          # Usa install invece di ci
+        run: npm install
         
       - name: Fetch Strava activities
         run: node fetch-strava-activities.js
