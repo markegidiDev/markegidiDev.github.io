@@ -186,8 +186,8 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* Sezione Semaforo Aggiunta Qui */}
-        <div className="xl:col-span-12 mt-8"> {/* Aggiunto un po' di margine sopra */}
+        
+        <div className="mt-8 max-w-[600px] mx-auto"> 
           <TrafficLight
             selectedDirection={selectedDirection}
             onDirectionChange={setSelectedDirection}
