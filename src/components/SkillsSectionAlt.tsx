@@ -22,21 +22,21 @@ const skillsData: Skill[] = [
 
 const SkillsSection = () => {
   return (
-    <section className="py-8">
-      <div className="mb-8">
-        <StaggeredBoxReveal
-          width="100%"
-          duration={0.5}
-          index={0}
-          boxColor="#0C0C0D"
-        >
-          <div className="flex flex-col transition-all duration-300 hover:shadow-md-3 hover:scale-105" style={{
-            backgroundColor: "white",
-            borderRadius: "0.5rem",
-            overflow: "hidden",
-            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-            border: "1px solid #E5E5E5"
-          }}>
+    <section className="py-8">      <div className="mb-8">
+        <div className="transition-all duration-300 hover:shadow-md hover:scale-105">
+          <StaggeredBoxReveal
+            width="100%"
+            duration={0.5}
+            index={0}
+            boxColor="#0C0C0D"
+          >
+            <div className="flex flex-col" style={{
+              backgroundColor: "white",
+              borderRadius: "0.5rem",
+              overflow: "hidden",
+              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+              border: "1px solid #E5E5E5"
+            }}>
             <div style={{
               padding: "1.5rem",
               backgroundColor: "rgba(12, 12, 13, 0.05)"
@@ -48,10 +48,10 @@ const SkillsSection = () => {
               <div className="text-sm text-muted-foreground mt-2">
                 Di seguito sono riportate le mie competenze in diverse aree tecniche.
                 Sono sempre in fase di apprendimento e miglioramento continuo.
-              </div>
+              </div>            </div>
             </div>
-          </div>
-        </StaggeredBoxReveal>
+          </StaggeredBoxReveal>
+        </div>
       </div>
 
       <div className="space-y-12">
@@ -66,26 +66,32 @@ const SkillsSection = () => {
             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: '1.5rem' 
           }}>
-            {skillsData
-              .filter(skill => skill.category === "programming")
-              .map((skill, index) => (
-                <StaggeredBoxReveal
-                  key={skill.name}
-                  width="100%"
-                  duration={0.5}
-                  index={index + 1}
-                  boxColor="#0C0C0D"
-                >
-                  <div className="flex flex-col h-full transition-all duration-300 hover:shadow-md-3 hover:scale-105">
-                    <SkillRadialChart
-                      skillName={skill.name}
-                      percentage={skill.level}
-                      color={skill.color}
-                      description={`Livello di competenza: ${skill.level}%`}
-                      size={180}
-                    />
-                  </div>
-                </StaggeredBoxReveal>
+            {skillsData              .filter(skill => skill.category === "programming")
+              .map((skill, index) => (                <div className="transition-all duration-300 hover:shadow-md hover:scale-105">
+                  <StaggeredBoxReveal
+                    key={skill.name}
+                    width="100%"
+                    duration={0.5}
+                    index={index + 1}
+                    boxColor="#0C0C0D"
+                  >
+                    <div className="flex flex-col h-full" style={{
+                      backgroundColor: "white",
+                      borderRadius: "0.5rem",
+                      overflow: "hidden",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                      border: "1px solid #E5E5E5"
+                    }}>
+                      <SkillRadialChart
+                        skillName={skill.name}
+                        percentage={skill.level}
+                        color={skill.color}
+                        description={`Livello di competenza: ${skill.level}%`}
+                        size={180}
+                      />
+                    </div>
+                  </StaggeredBoxReveal>
+                </div>
               ))}
           </div>
         </div>
@@ -101,26 +107,32 @@ const SkillsSection = () => {
             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: '1.5rem' 
           }}>
-            {skillsData
-              .filter(skill => skill.category === "design")
-              .map((skill, index) => (
-                <StaggeredBoxReveal
-                  key={skill.name}
-                  width="100%"
-                  duration={0.5}
-                  index={index + 5} // Offset for staggered animation
-                  boxColor="#0C0C0D"
-                >
-                  <div className="flex flex-col h-full transition-all duration-300 hover:shadow-md-3 hover:scale-105">
-                    <SkillRadialChart
-                      skillName={skill.name}
-                      percentage={skill.level}
-                      color={skill.color}
-                      description={`Livello di competenza: ${skill.level}%`}
-                      size={180}
-                    />
-                  </div>
-                </StaggeredBoxReveal>
+            {skillsData              .filter(skill => skill.category === "design")
+              .map((skill, index) => (                <div className="transition-all duration-300 hover:shadow-md hover:scale-105">
+                  <StaggeredBoxReveal
+                    key={skill.name}
+                    width="100%"
+                    duration={0.5}
+                    index={index + 5} // Offset for staggered animation
+                    boxColor="#0C0C0D"
+                  >
+                    <div className="flex flex-col h-full" style={{
+                      backgroundColor: "white",
+                      borderRadius: "0.5rem",
+                      overflow: "hidden",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                      border: "1px solid #E5E5E5"
+                    }}>
+                      <SkillRadialChart
+                        skillName={skill.name}
+                        percentage={skill.level}
+                        color={skill.color}
+                        description={`Livello di competenza: ${skill.level}%`}
+                        size={180}
+                      />
+                    </div>
+                  </StaggeredBoxReveal>
+                </div>
               ))}
           </div>
         </div>
@@ -136,26 +148,32 @@ const SkillsSection = () => {
             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
             gap: '1.5rem' 
           }}>
-            {skillsData
-              .filter(skill => skill.category === "tools")
-              .map((skill, index) => (
-                <StaggeredBoxReveal
-                  key={skill.name}
-                  width="100%"
-                  duration={0.5}
-                  index={index + 7} // Offset for staggered animation
-                  boxColor="#0C0C0D"
-                >
-                  <div className="flex flex-col h-full transition-all duration-300 hover:shadow-md-3 hover:scale-105">
-                    <SkillRadialChart
-                      skillName={skill.name}
-                      percentage={skill.level}
-                      color={skill.color}
-                      description={`Livello di competenza: ${skill.level}%`}
-                      size={180}
-                    />
-                  </div>
-                </StaggeredBoxReveal>
+            {skillsData              .filter(skill => skill.category === "tools")
+              .map((skill, index) => (                <div className="transition-all duration-300 hover:shadow-md hover:scale-105">
+                  <StaggeredBoxReveal
+                    key={skill.name}
+                    width="100%"
+                    duration={0.5}
+                    index={index + 7} // Offset for staggered animation
+                    boxColor="#0C0C0D"
+                  >
+                    <div className="flex flex-col h-full" style={{
+                      backgroundColor: "white",
+                      borderRadius: "0.5rem",
+                      overflow: "hidden",
+                      boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
+                      border: "1px solid #E5E5E5"
+                    }}>
+                      <SkillRadialChart
+                        skillName={skill.name}
+                        percentage={skill.level}
+                        color={skill.color}
+                        description={`Livello di competenza: ${skill.level}%`}
+                        size={180}
+                      />
+                    </div>
+                  </StaggeredBoxReveal>
+                </div>
               ))}
           </div>
         </div>

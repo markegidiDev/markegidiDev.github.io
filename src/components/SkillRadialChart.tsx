@@ -8,13 +8,6 @@ import {
   RadialBarChart,
 } from "recharts"
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card"
 import type { ChartConfig } from "@/components/ui/chart"
 import { ChartContainer } from "@/components/ui/chart"
 
@@ -39,15 +32,14 @@ export function SkillRadialChart({ skillName, percentage, color, description, si
       label: skillName,
       color: color,
     },
-  } satisfies ChartConfig;
-
-  return (
-    <Card className="flex flex-col items-center justify-start text-center h-full w-full rounded-xl border-0 overflow-hidden hover:shadow-lg transition-all duration-300">
-      <CardHeader className="items-center pb-2 w-full bg-primary/5 border-b border-border/10">
-        <CardTitle className="text-lg capitalize text-primary">{skillName}</CardTitle>
-        {description && <CardDescription className="text-center">{description}</CardDescription>}
-      </CardHeader>
-      <CardContent className="flex-1 pb-0 flex items-center justify-center pt-4">
+  } satisfies ChartConfig;  return (
+    <div className="flex flex-col items-center justify-start text-center h-full w-full">
+      <div className="items-center pb-2 w-full border-b border-border/10 p-6" style={{
+        backgroundColor: "rgba(12, 12, 13, 0.05)"
+      }}>
+        <div className="text-lg font-medium text-foreground capitalize">{skillName}</div>
+        {description && <div className="text-center text-sm text-muted-foreground mt-2">{description}</div>}
+      </div><div className="flex-1 pb-0 flex items-center justify-center pt-4" style={{ padding: "1.5rem" }}>
         <ChartContainer
           config={chartConfig}
           className={`mx-auto aspect-square`}
@@ -108,7 +100,7 @@ export function SkillRadialChart({ skillName, percentage, color, description, si
             </PolarRadiusAxis>
           </RadialBarChart>
         </ChartContainer>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

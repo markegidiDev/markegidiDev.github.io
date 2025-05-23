@@ -37,7 +37,6 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isMenuOpen]);
-
   const handleHashLinkClick = (path: string) => {
     if (window.location.pathname === "/" && path.startsWith("/#")) {
       const id = path.substring(2);
@@ -50,16 +49,26 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
     setIsMenuOpen(false);
   };
 
-  const isActive = (path: string) => {
-    if (path === "/") {
-      return location.pathname === "/";
+  // Custom function to determine if a link should be active
+  const isLinkActive = (linkPath: string) => {
+    const currentPath = location.pathname;
+    
+    // For hash links, never show as active since they're not real routes
+    if (linkPath.startsWith("/#")) {
+      return false;
     }
-    if (path.startsWith("/#")) {
-      return location.pathname === "/" && location.hash === path.substring(1);
+    
+    // For exact routes, use exact matching
+    if (linkPath === "/" && currentPath === "/") {
+      return true;
     }
-    return location.pathname.startsWith(path);
+    
+    if (linkPath !== "/" && currentPath === linkPath) {
+      return true;
+    }
+    
+    return false;
   };
-
   return (
     <nav className={`sticky top-0 z-50 backdrop-blur-md bg-white border-b border-[#E5E5E5] ${className}`} style={{backgroundColor: "white"}}>
       <div className="container mx-auto px-4">
@@ -71,19 +80,17 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
             </div>
             <span className="hidden sm:inline text-[#0C0C0D]">Marco Egidi</span>
           </Link>
-          
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1 lg:gap-2">
-            {navLinks.map((link) => (
+            {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-1 lg:gap-2">            {navLinks.map((link) => (
               <NavLink
                 key={link.label}
                 to={link.to}
                 onClick={() => link.to.includes("#") ? handleHashLinkClick(link.to) : undefined}
-                className={({ isActive: routerActive }) => {
-                  const isLinkActive = routerActive || isActive(link.to);
-                  return `px-3 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
-                    isLinkActive 
-                      ? 'bg-[#0C0C0D] text-white' 
+                className={() => {
+                  const isActive = isLinkActive(link.to);
+                  return `inline-flex items-center px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 min-w-0 justify-center ${
+                    isActive
+                      ? 'text-[#0C0C0D] font-semibold'
                       : 'text-[#6B6B6B] hover:text-[#0C0C0D] hover:bg-[#0C0C0D]/5'
                   }`
                 }}
@@ -136,17 +143,16 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
         {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden mobile-menu-container">
-            <div className="px-2 pt-2 pb-3 space-y-1 border-t border-[#E5E5E5] bg-white">
-              {navLinks.map((link) => (
+            <div className="px-2 pt-2 pb-3 space-y-1 border-t border-[#E5E5E5] bg-white">              {navLinks.map((link) => (
                 <NavLink
                   key={link.label}
                   to={link.to}
                   onClick={() => link.to.includes("#") ? handleHashLinkClick(link.to) : handleHashLinkClick("")}
-                  className={({ isActive: routerActive }) => {
-                    const isLinkActive = routerActive || isActive(link.to);
-                    return `block px-3 py-2 rounded-md text-base font-medium transition-all duration-300 ${
-                      isLinkActive 
-                        ? 'bg-[#0C0C0D] text-white' 
+                  className={() => {
+                    const isActive = isLinkActive(link.to);
+                    return `inline-flex items-center px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all duration-300 min-w-0 justify-center ${
+                      isActive
+                        ? 'text-[#0C0C0D] font-semibold'
                         : 'text-[#6B6B6B] hover:text-[#0C0C0D] hover:bg-[#0C0C0D]/5'
                     }`
                   }}

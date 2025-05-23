@@ -51,9 +51,7 @@ export const StaggeredBoxReveal = ({
         }
       });
     }
-  }, [isInView, mainControls, slideControls, duration, delay, index]);
-
-  return (
+  }, [isInView, mainControls, slideControls, duration, delay, index]);  return (
     <div ref={ref} style={{ position: "relative", width, overflow: "hidden" }}>
       <motion.div
         initial={{ opacity: 0, y: 75 }}
@@ -61,15 +59,13 @@ export const StaggeredBoxReveal = ({
         style={{ opacity: 0 }}
       >
         {children}
-      </motion.div>
-
-      <motion.div
+      </motion.div>      <motion.div
         initial={{ left: 0 }}
         animate={slideControls}
         style={{
           position: "absolute",
-          top: 4,
-          bottom: 4,
+          top: 0,
+          bottom: 0,
           left: 0,
           right: 0,
           zIndex: 20,
