@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import NavbarAlt from '@/components/NavbarAlt';
+import Navbar from '@/components/Navbar';
 import HomePage from '@/pages/HomePage';
 import DashboardPage from '@/pages/DashboardPage';
 import ContactPage from '@/pages/ContactPage';
@@ -13,7 +13,7 @@ function App() {
       <Router>
         {/* Removed inline styles from this div */}
         <div>
-          <NavbarAlt />
+          <Navbar />
           <main style={{
             flexGrow: 1,
             width: "100%"
