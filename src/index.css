@@ -234,4 +234,177 @@ h1 {
   margin: 0 4px;
 }
 
+/* Miglioramenti per il responsive design e mobile */
+
+/* Mobile-first typography - caratteri più grandi e spaziatura migliore su mobile */
+@media (max-width: 768px) {
+  html {
+    font-size: 16px; /* Assicura dimensioni leggibili su mobile */
+  }
+  
+  body {
+    line-height: 1.6; /* Migliore spaziatura tra le righe */
+    -webkit-text-size-adjust: 100%; /* Previene zoom automatico su iOS */
+  }
+  
+  /* Migliora la spaziatura dei contenuti su mobile */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Navbar mobile improvements */
+  .mobile-menu-container {
+    animation: slideDown 0.2s ease-out;
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Migliora la leggibilità dei testi sui dispositivi mobili */
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+  }
+  
+  p {
+    margin-bottom: 1rem;
+    line-height: 1.6;
+  }
+  
+  /* Migliora i bottoni per il touch su mobile */
+  button, [role="button"] {
+    min-height: 44px; /* Apple's recommended touch target size */
+    min-width: 44px;
+  }
+  
+  /* Migliora i form elements per mobile */
+  input, select, textarea {
+    font-size: 16px; /* Previene zoom su iOS */
+    line-height: 1.5;
+  }
+  
+  /* Chart responsiveness */
+  .recharts-wrapper {
+    font-size: 12px;
+  }
+  
+  /* Traffic light mobile adjustments */
+  .traffic-light-light {
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: 1rem;
+  }
+  
+  .traffic-light-housing {
+    padding: 0.5rem;
+  }
+  
+  /* Migliorie specifiche per la tipografia responsive */
+  /* Migliora la hero section su mobile */
+  .hero-section {
+    padding: 2rem 1rem !important;
+  }
+  
+  /* Assicura che i titoli delle sezioni non siano troppo grandi su mobile */
+  .section-title {
+    font-size: clamp(1.5rem, 4vw, 1.875rem) !important;
+    line-height: 1.3 !important;
+  }
+  
+  /* Migliora la spaziatura dei contenuti */
+  .content-section {
+    margin-bottom: 2.5rem !important;
+  }
+  
+  /* Migliora il layout delle select su mobile */
+  .dashboard-controls {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 0.75rem !important;
+  }
+  
+  .dashboard-controls .select-trigger {
+    width: 100% !important;
+  }
+  
+  /* Migliora la navbar mobile */
+  .mobile-menu-container {
+    position: relative;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    margin-top: 0.5rem;
+  }
+  
+  /* Migliora i bottoni touch su mobile */
+  .mobile-nav-link {
+    padding: 0.875rem 1rem !important;
+    font-size: 1rem !important;
+    border-radius: 0.5rem;
+    margin: 0.25rem 0;
+  }
+}
+
+/* Tablet improvements */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Desktop improvements */
+@media (min-width: 1025px) {
+  /* Assicura che i link della navbar abbiano spazio adeguato */
+  .navbar-link {
+    min-width: 80px;
+    text-align: center;
+  }
+}
+
+/* Migliora la leggibilità del testo */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Focus indicators migliorati per accessibilità */
+*:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Smooth scrolling per una migliore UX */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Migliora le performance delle animazioni */
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    transition-duration: 0.2s;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* Rispetta le preferenze utente per le animazioni */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 

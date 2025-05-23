@@ -13,7 +13,7 @@ const HomePage = () => {  return (
         backgroundColor: "#F7F7F7",
         maxWidth: "1400px",
         margin: "0 auto",
-        padding: "3rem 1rem",
+        padding: "2rem 1rem",
         display: "block",
         visibility: "visible",
         opacity: 1
@@ -23,8 +23,8 @@ const HomePage = () => {  return (
         style={{
           backgroundColor: "white",
           maxWidth: "56rem",
-          margin: "0 auto 4rem auto",
-          padding: "4rem 1.5rem",
+          margin: "0 auto 3rem auto",
+          padding: "3rem 1.5rem",
           textAlign: "center",
           borderRadius: "0.5rem",
           boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
@@ -34,13 +34,14 @@ const HomePage = () => {  return (
         }}>
         <h1
           style={{
-            fontSize: "2.25rem",
+            fontSize: "clamp(1.875rem, 4vw, 2.25rem)",
             fontWeight: "700",
             marginBottom: "1.5rem",
             color: "#0C0C0D",
             display: "block",
             visibility: "visible",
-            opacity: 1
+            opacity: 1,
+            lineHeight: "1.3"
           }}>
           Marco Egidi
         </h1>
@@ -52,14 +53,15 @@ const HomePage = () => {  return (
           borderRadius: "9999px"
         }}></div>        <div
           style={{
-            fontSize: "1.5rem",
+            fontSize: "clamp(1.125rem, 3vw, 1.5rem)",
             color: "#6B6B6B",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            gap: "0.5rem"
+            gap: "0.5rem",
+            lineHeight: "1.5"
           }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", textAlign: "center" }}>
             <TextAnimate 
               animation="blurInUp" 
               by="word" 
@@ -69,7 +71,7 @@ const HomePage = () => {  return (
               Sviluppatore web e studente di
             </TextAnimate>
           </div>
-          <div className="text-4xl font-bold tracking-tighter md:text-5xl lg:text-7xl">
+          <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-7xl font-bold tracking-tighter">
             <TextAnimateEnhanced 
               animation="blurInUp" 
               delay={0.6}
@@ -78,52 +80,53 @@ const HomePage = () => {  return (
             </TextAnimateEnhanced>
           </div>
         </div>
-      </div>
-
-      {/* Content sections */}
+      </div>      {/* Content sections */}
       <div style={{
         display: "flex",
         flexDirection: "column",
-        gap: "4rem"
+        gap: "3rem"
       }}>        {/* About Me Section */}
-        <section id="about-me" style={{scrollMarginTop: "5rem", marginBottom: "4rem"}}>
+        <section id="about-me" style={{scrollMarginTop: "5rem", marginBottom: "3rem"}}>
           <div style={{
             display: "flex",
-            alignItems: "center",
+            flexDirection: "column",
+            alignItems: "flex-start",
             gap: "0.75rem",
             marginBottom: "2rem"
           }}>
             <h2 style={{
-              fontSize: "1.875rem",
+              fontSize: "clamp(1.5rem, 4vw, 1.875rem)",
               fontWeight: 700,
-              color: "#0C0C0D"
+              color: "#0C0C0D",
+              lineHeight: "1.3"
             }}>Chi sono</h2>
           </div>
           <AboutMeSectionAlt />
         </section>     
       
            {/* Experience Section */}
-        <section id="experience" style={{scrollMarginTop: "5rem", marginBottom: "4rem"}}>
+        <section id="experience" style={{scrollMarginTop: "5rem", marginBottom: "3rem"}}>
           <div style={{
             display: "flex",
-            alignItems: "center",
+            flexDirection: "column",
+            alignItems: "flex-start",
             gap: "0.75rem",
             marginBottom: "2rem"
           }}>
             <h2 style={{
-              fontSize: "1.875rem",
+              fontSize: "clamp(1.5rem, 4vw, 1.875rem)",
               fontWeight: 700,
-              color: "#0C0C0D"
+              color: "#0C0C0D",
+              lineHeight: "1.3"
             }}>Esperienza</h2>
             <div style={{
-              marginLeft: "auto",
               fontSize: "0.875rem",
               color: "#6B6B6B"
             }}>Esperienze lavorative rilevanti</div>
           </div>
           <ExperienceSectionAlt />
         </section>{/* Skills Section */}
-        <section id="skills" style={{scrollMarginTop: "5rem", marginBottom: "4rem"}}>
+        <section id="skills" style={{scrollMarginTop: "5rem", marginBottom: "3rem"}}>
           <div style={{
             display: "flex",
             alignItems: "center",
@@ -131,14 +134,15 @@ const HomePage = () => {  return (
             marginBottom: "2rem"
           }}>
             <h2 style={{
-              fontSize: "1.875rem",
+              fontSize: "clamp(1.5rem, 4vw, 1.875rem)",
               fontWeight: 700,
-              color: "#0C0C0D"
+              color: "#0C0C0D",
+              lineHeight: "1.3"
             }}>Competenze</h2>
           </div>
           <SkillsSectionAlt />
         </section>       {/* Certifications Section */}
-        <section id="certifications" style={{scrollMarginTop: "5rem", marginBottom: "4rem"}}>
+        <section id="certifications" style={{scrollMarginTop: "5rem", marginBottom: "3rem"}}>
           <div style={{
             display: "flex",
             alignItems: "center",
@@ -146,9 +150,10 @@ const HomePage = () => {  return (
             marginBottom: "2rem"
           }}>
             <h2 style={{
-              fontSize: "1.875rem",
+              fontSize: "clamp(1.5rem, 4vw, 1.875rem)",
               fontWeight: 700,
-              color: "#0C0C0D"
+              color: "#0C0C0D",
+              lineHeight: "1.3"
             }}>Certificazioni</h2>
           </div>
           <CertificationsSectionAlt />

@@ -96,16 +96,15 @@ const DashboardPage = () => {
     console.log("DashboardPage: Debug useEffect - Visible Areas:", visibleAreas);
   }, [filteredData, chartConfig, visibleAreas]);
 
-  console.log("DashboardPage: Before return statement");
-  return (
-    <div className="container max-w-[1400px] mx-auto px-2 py-6 sm:px-4 sm:py-8 md:py-12 bg-background text-foreground animate-in fade-in slide-in-from-bottom duration-500">
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-4 md:gap-8">
+  console.log("DashboardPage: Before return statement");  return (
+    <div className="container max-w-[1400px] mx-auto px-4 py-6 sm:px-6 sm:py-8 md:py-12 bg-background text-foreground animate-in fade-in slide-in-from-bottom duration-500">
+      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8">
         <div className="xl:col-span-12">
           <div className="mb-6">
-            <h2 className="text-2xl font-medium mb-1">Dashboard Attività Sportive</h2>
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
-              <p className="text-muted-foreground">Filtra le attività per intervallo di tempo e tipo</p>
-              <div className="flex flex-wrap gap-3 items-center justify-end">
+            <h2 className="text-2xl md:text-3xl font-medium mb-2">Dashboard Attività Sportive</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+              <p className="text-muted-foreground text-sm md:text-base">Filtra le attività per intervallo di tempo e tipo</p>
+              <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center sm:justify-end">
                 <Select value={activityType} onValueChange={(value) => setActivityType(value as ActivityType)}>
                   <SelectTrigger className="w-[160px] rounded-lg" aria-label="Seleziona tipo di attività">
                     <SelectValue placeholder="Tutte le attività" />
