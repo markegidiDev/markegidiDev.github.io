@@ -532,5 +532,11 @@
     "corsa": 2,
     "nuoto": 0,
     "ciclismo": 0
+  },
+  {
+    "date": "2025-06-19",
+    "corsa": 0,
+    "nuoto": 1.8,
+    "ciclismo": 0
   }
 ]
