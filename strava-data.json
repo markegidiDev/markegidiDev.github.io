@@ -3,37 +3,43 @@
     "date": "2025-01-07",
     "corsa": 0,
     "nuoto": 1.57,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-01-09",
     "corsa": 0,
     "nuoto": 2.05,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-01-13",
     "corsa": 0,
     "nuoto": 1.93,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-01-16",
     "corsa": 0,
     "nuoto": 1.32,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-01-20",
     "corsa": 0,
     "nuoto": 1.9,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-01-22",
     "corsa": 0,
     "nuoto": 0.78,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-01-23",
@@ -93,49 +99,57 @@
     "date": "2025-03-09",
     "corsa": 0,
     "nuoto": 0,
-    "ciclismo": 34.61
+  "ciclismo": 34.61,
+  "camminata": 0
   },
   {
     "date": "2025-03-18",
     "corsa": 0,
     "nuoto": 2.33,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-03-21",
     "corsa": 0,
     "nuoto": 0.97,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-03-24",
     "corsa": 0,
     "nuoto": 2.3,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-03-25",
     "corsa": 0,
     "nuoto": 0.93,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-03-26",
     "corsa": 0,
     "nuoto": 0,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-03-27",
     "corsa": 0,
     "nuoto": 1.52,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-03-28",
     "corsa": 0,
     "nuoto": 2,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-03-30",
@@ -297,31 +311,36 @@
     "date": "2025-05-01",
     "corsa": 0,
     "nuoto": 0,
-    "ciclismo": 34.91
+  "ciclismo": 34.91,
+  "camminata": 0
   },
   {
     "date": "2025-05-02",
     "corsa": 0,
     "nuoto": 1.7,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-05-05",
     "corsa": 0,
     "nuoto": 1.8,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-05-06",
     "corsa": 10.38,
     "nuoto": 2.02,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-05-07",
     "corsa": 0.98,
     "nuoto": 0,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-05-08",
@@ -741,37 +760,43 @@
     "date": "2025-08-08",
     "corsa": 0,
     "nuoto": 0,
-    "ciclismo": 35.77
+  "ciclismo": 35.77,
+  "camminata": 0
   },
   {
     "date": "2025-08-11",
     "corsa": 0,
     "nuoto": 2.25,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-08-13",
     "corsa": 10.08,
     "nuoto": 0,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-08-16",
     "corsa": 9.55,
     "nuoto": 0,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-08-17",
     "corsa": 0.6,
     "nuoto": 0,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-08-18",
     "corsa": 0,
     "nuoto": 0,
-    "ciclismo": 0
+  "ciclismo": 0,
+  "camminata": 0
   },
   {
     "date": "2025-08-20",
