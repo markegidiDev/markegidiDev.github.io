@@ -1,5 +1,6 @@
-import { Calendar, MapPin } from "lucide-react";
-import { StaggeredBoxReveal } from "@/components/magicui/staggered-box-reveal";
+import { Calendar, MapPin, Building2, ChevronDown } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Disclosure } from "@headlessui/react";
 
 interface Experience {
   id: number;
@@ -51,38 +52,87 @@ const experiences: Experience[] = [
   }
 ];
 
-// Versione alternativa con struttura più pulita e layout responsive
+// Modern Experience Section with responsive card grid
 const ExperienceSectionAlt = () => {
   return (
-    <div style={{ 
-      display: 'grid', 
-      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-      gap: '1.5rem' 
-    }}>
-      {experiences.map((exp, index) => (        <div className="transition-all duration-300 hover:shadow-md hover:scale-105">
-          <StaggeredBoxReveal
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 md:gap-8 auto-rows-fr">
+      {experiences.map((exp) => {
+        const details = exp.description
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+
+        return (
+          <div
             key={exp.id}
-            width="100%"
-            duration={0.5}
-            index={index}
-            boxColor="#0C0C0D"
-          >            <div className="flex flex-col h-full bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">            <div className="p-6 border-b border-gray-200 bg-gray-50">
-              <div className="text-lg font-medium text-foreground">{exp.title}</div>
-            </div>            <div className="wb-card-content flex-1 flex flex-col space-y-3 p-6">
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <MapPin className="h-4 w-4" />
-                <span>{exp.location}</span>
+            className="relative h-full overflow-hidden rounded-2xl border border-border bg-card/80 backdrop-blur-sm shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-0.5"
+          >
+            <div className="absolute inset-0 pointer-events-none bg-gradient-to-br from-primary/5 via-transparent to-transparent" />
+
+            <div className="relative p-6 sm:p-7 flex flex-col h-full">
+              {/* Header */}
+              <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold text-card-foreground leading-tight">
+                    {exp.title}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-2 text-muted-foreground">
+                    <span className="inline-flex items-center gap-2">
+                      <Building2 className="h-4 w-4" />
+                      <span className="font-medium">{exp.company}</span>
+                    </span>
+                    <Badge variant="secondary" className="text-[10px] !px-6 !py-2">
+                      {exp.type}
+                    </Badge>
+                  </div>
+                </div>
+
+                {/* Meta info */}
+                <div className="flex flex-col sm:items-end gap-2 text-xs sm:text-sm text-muted-foreground">
+                  <div className="inline-flex items-center gap-2">
+                    <Calendar className="h-4 w-4" />
+                    <span>{exp.duration}</span>
+                  </div>
+                  <div className="inline-flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    <span>{exp.location}</span>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-1 text-muted-foreground">
-                <Calendar className="h-4 w-4" />
-                <span>{exp.duration}</span>
-              </div>
-              <div className="text-muted-foreground">{exp.company} · {exp.type}</div>
-              <p style={{ marginTop: "0.5rem", lineHeight: "1.6" }} className="flex-1">{exp.description}</p>            </div>
+
+              {/* Short summary */}
+              <p className="mt-4 text-card-foreground/90 leading-relaxed">
+                {details[0]}
+              </p>
+
+              {/* Expandable details */}
+              {details.length > 1 && (
+                <div className="mt-auto pt-4">
+                  <Disclosure>
+                    {({ open }) => (
+                      <div>
+                        <Disclosure.Button className="inline-flex items-center gap-2 rounded-lg border border-border bg-muted/40 px-3 py-1.5 text-sm text-foreground hover:bg-muted/60 transition-colors">
+                          <ChevronDown
+                            className={`h-4 w-4 transition-transform ${open ? "rotate-180" : "rotate-0"}`}
+                          />
+                          Dettagli
+                        </Disclosure.Button>
+                        <Disclosure.Panel>
+                          <ul className="mt-3 grid list-disc pl-5 text-sm text-muted-foreground/90 gap-1.5">
+                            {details.slice(1).map((d, i) => (
+                              <li key={i}>{d}</li>
+                            ))}
+                          </ul>
+                        </Disclosure.Panel>
+                      </div>
+                    )}
+                  </Disclosure>
+                </div>
+              )}
             </div>
-          </StaggeredBoxReveal>
-        </div>
-      ))}
+          </div>
+        );
+      })}
     </div>
   );
 };

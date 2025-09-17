@@ -24,67 +24,53 @@ module.exports = {
         'grid-white': "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(255 255 255 / 0.04)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e\")",
         'grid-black': "url(\"data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='32' height='32' fill='none' stroke='rgb(0 0 0 / 0.04)'%3e%3cpath d='M0 .5H31.5V32'/%3e%3c/svg%3e\")",
       },      colors: {
-        // Website Builder Colors
+        // Theme system colors with hsl() values
+        border: "hsl(var(--border))",
+        input: "hsl(var(--border))",
+        ring: "hsl(var(--primary))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        // Chart colors
+        chart: {
+          "1": "hsl(var(--chart-1))",
+          "2": "hsl(var(--chart-2))",
+          "3": "hsl(var(--chart-3))",
+          "4": "hsl(var(--chart-4))",
+          "5": "hsl(var(--chart-5))",
+        },
+        // Legacy colors for backward compatibility
         'website-primary': '#0C0C0D',
         'website-secondary': '#6B6B6B',
         'website-background': '#F7F7F7',
         'website-muted': '#E5E5E5',
-        
-        // Custom colors (manteniamo quelli precedenti)
-        'custom-dark-blue': '#03045E',
-        'custom-medium-blue': '#0077B6',
-        'custom-light-blue': '#00B4D8',
-        'custom-very-light-blue': '#90E0EF',
-        'custom-almost-white-blue': '#CAF0F8',
-        
-        // Theme color variables
-        border: "rgb(var(--border))",
-        input: "rgb(var(--border))",
-        ring: "rgb(var(--primary))",
-        
-        // Component colors
-        primary: {
-          DEFAULT: "rgb(var(--primary))",
-          foreground: "rgb(var(--primary-foreground))",
-        },
-        secondary: {
-          DEFAULT: "rgb(var(--secondary))",
-          foreground: "rgb(var(--secondary-foreground, var(--foreground)))",
-        },
-        muted: {
-          DEFAULT: "rgb(var(--muted))",
-          foreground: "rgb(var(--muted-foreground))",
-        },
-        background: {
-          DEFAULT: "rgb(var(--background))",
-        },
-        foreground: {
-          DEFAULT: "rgb(var(--foreground))",
-        },
-        secondary: {
-          DEFAULT: "rgb(var(--secondary-rgb))",
-          foreground: "rgb(var(--secondary-foreground-rgb))",
-        },
-        accent: {
-          DEFAULT: "rgb(var(--accent-rgb))",
-          foreground: "rgb(var(--accent-foreground-rgb))",
-        },
-        muted: {
-          DEFAULT: "rgb(var(--muted-rgb))",
-          foreground: "rgb(var(--muted-foreground-rgb))",
-        },
-        card: {
-          DEFAULT: "rgb(var(--card-background-rgb))",
-          foreground: "rgb(var(--card-foreground-rgb))",
-        },
-        destructive: {
-          DEFAULT: "rgb(220, 38, 38)", // Using a standard red color
-          foreground: "rgb(255, 255, 255)",
-        },
-        popover: {
-          DEFAULT: "rgb(var(--card-background-rgb))",
-          foreground: "rgb(var(--card-foreground-rgb))",
-        },
       },
       borderRadius: {
         md: "var(--md-radius-medium)",

@@ -9,6 +9,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <title>Marco Egidi - Portfolio</title>
     <!-- Removed inline styles and scripts for loading/visibility -->
+    <script>
+      // Avoid FOUC: apply saved theme ASAP - FORCE DARK DEFAULT
+      (function() {
+        try {
+          var saved = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          // FORCE dark when no saved theme (non-negotiable requirement)
+          var effective = !saved ? 'dark' : (saved === 'system' ? (prefersDark ? 'dark' : 'light') : saved);
+          var root = document.documentElement;
+          if (effective === 'dark') root.classList.add('dark');
+          if (effective === 'nord') root.classList.add('theme-nord');
+          root.setAttribute('data-theme', effective === 'nord' ? 'nord' : effective);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

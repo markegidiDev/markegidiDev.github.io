@@ -1,5 +1,4 @@
 import React from 'react';
-import { StaggeredBoxReveal } from "@/components/magicui/staggered-box-reveal";
 
 interface Certification {
   id: number;
@@ -47,31 +46,25 @@ const certifications: Certification[] = [
 
 const CertificationsSectionAlt: React.FC = () => {
   return (
-    <div style={{ 
-      display: 'grid', 
-      gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-      gap: '1.5rem' 
-    }}>      {certifications.map((cert, index) => (
-        <div className="transition-all duration-300 hover:shadow-md hover:scale-105" key={cert.id}>
-          <StaggeredBoxReveal
-            width="100%"
-            duration={0.5}
-            index={index}
-            boxColor="#0C0C0D"
-          >            <div className="flex flex-col h-full bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden">            <div className="p-6 border-b border-gray-200 bg-gray-50">
-              <div className="text-lg font-medium text-foreground">{cert.name}</div>
-            </div>            <div className="wb-card-content flex-1 flex flex-col space-y-3 p-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {certifications.map((cert) => (
+        <div key={cert.id} className="transition-colors duration-200 hover:shadow-md group">
+          <div className="flex flex-col h-full bg-card rounded-lg border border-border shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-border bg-accent/5">
+              <div className="text-lg font-medium text-card-foreground">{cert.name}</div>
+            </div>
+            <div className="flex-1 flex flex-col space-y-3 p-6">
               <div className="text-sm text-muted-foreground">{cert.organization}</div>
               <div className="text-xs text-muted-foreground">
                 Emesso: {cert.date}{cert.expirationDate && <span> · Scade: {cert.expirationDate}</span>}
               </div>
               <div className="flex flex-wrap gap-1">
                 {cert.skills.map((skill, idx) => (
-                  <span key={idx} className="text-xs bg-muted px-2 py-1 rounded">{skill}</span>
+                  <span key={idx} className="text-xs bg-accent px-2 py-1 rounded text-accent-foreground">{skill}</span>
                 ))}
-              </div>            </div>
+              </div>
             </div>
-          </StaggeredBoxReveal>
+          </div>
         </div>
       ))}
     </div>

@@ -1,4 +1,4 @@
-/* Direct fallback styles for critical components */
+/* Clean theme-aware styles for critical components */
 
 /* Force display of root */
 #root {
@@ -7,59 +7,60 @@
   min-height: 100vh !important;
   visibility: visible !important;
   opacity: 1 !important;
-  background-color: #F7F7F7 !important;
+  background-color: hsl(var(--background)) !important;
 }
 
-/* App container */
+/* App container - CENTER CONTENT */
 .app-container, #root > div {
   width: 100% !important;
-  max-width: 100% !important;
+  max-width: none !important;
   min-height: 100vh !important;
   display: flex !important;
   flex-direction: column !important;
-  background-color: #F7F7F7 !important;
-  color: #0C0C0D !important;
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
   font-family: 'Inter', system-ui, sans-serif !important;
+  margin: 0 auto !important;
 }
 
-/* Main content area */
-.content, main .content {
+/* Main content area - CENTERED */
+.content, main {
   flex: 1 !important;
   width: 100% !important;
-  max-width: 1400px !important;
-  margin: 0 auto !important;
-  padding: 1rem !important;
-  display: block !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
 }
 
 /* Ensure base elements are visible */
 body, html {
-  background-color: #F7F7F7 !important;
-  color: #0C0C0D !important;
+  background-color: hsl(var(--background)) !important;
+  color: hsl(var(--foreground)) !important;
   font-family: 'Inter', system-ui, sans-serif !important;
   margin: 0 !important;
   padding: 0 !important;
   min-height: 100vh !important;
+  width: 100% !important;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  color: #0C0C0D;
+  color: hsl(var(--foreground));
 }
 
 p {
-  color: #0C0C0D;
+  color: hsl(var(--foreground));
 }
 
-/* Ensure cards have proper styling */
+/* Ensure cards have proper theme-aware styling */
 .card {
-  background-color: white !important;
-  border: 1px solid #E5E5E5 !important;
+  background-color: hsl(var(--card)) !important;
+  border: 1px solid hsl(var(--border)) !important;
   border-radius: 0.5rem !important;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
 }
 
 .card-header {
-  background-color: rgba(12, 12, 13, 0.05) !important;
+  background-color: hsl(var(--accent) / 0.1) !important;
 }
 
 @media (min-width: 640px) {

@@ -1,30 +1,29 @@
-// Helper function to handle SPA routing on GitHub Pages
-(function() {
-  const l = window.location;
-  if (l.search) {
-    const q: { [key: string]: string } = {}; // Type annotation for q
-    l.search.slice(1).split('&').forEach(function(v) {
-      const a = v.split('=');
-      q[a[0]] = a.slice(1).join('=').replace(/~and~/g, '&');
-    });
-    if (q.p !== undefined) {
-      window.history.replaceState(null, '', // Changed second argument to empty string
-        l.pathname.slice(0, -1) + (q.p || '') +
-        (q.q ? ('?' + q.q) : '') +
-        l.hash
-      );
-    }
-  }
-})();
-
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
+import App from './App'
 
-import './index.css' // Material You theme
+import './index.css'
+import './App.css'
 
-import './App.css' // App-specific styles, keep for now
-
+/**
+ * Pre-paint theme guard:
+ * Applies the saved theme class on <html> BEFORE React renders to avoid FOUC.
+ */
+(function () {
+  try {
+    const saved = localStorage.getItem('theme') as 'dark'|'light'|'nord'|'system'|null
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const root = document.documentElement
+    const removeAll = () => root.classList.remove('dark','nord')
+    if (saved === 'dark') { removeAll(); root.classList.add('dark') }
+    else if (saved === 'nord') { removeAll(); root.classList.add('nord') }
+    else if (saved === 'light') { removeAll() }
+    else { // system
+      removeAll()
+      if (prefersDark) root.classList.add('dark')
+    }
+  } catch {}
+})()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>

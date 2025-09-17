@@ -3,7 +3,7 @@ import Navbar from '@/components/Navbar';
 import HomePage from '@/pages/HomePage';
 import DashboardPage from '@/pages/DashboardPage';
 import ContactPage from '@/pages/ContactPage';
-import { ThemeProvider } from '@/context/ThemeContext';
+import { ThemeProvider } from '@/features/theme/theme-provider';
 
 function App() {
   // Removed useEffect for loading state and visibility forcing
@@ -12,54 +12,25 @@ function App() {
     <ThemeProvider>
       <Router>
         {/* Removed inline styles from this div */}
-        <div>
+        <div className="min-h-screen bg-background text-foreground flex flex-col">
           <Navbar />
-          <main style={{
-            flexGrow: 1,
-            width: "100%"
-          }}>
-            <div style={{ display: "block" }}>
-              <Routes>
-                <Route path="/" element={<HomePage />} />
-                <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/contact" element={<ContactPage />} />
-              </Routes>
-            </div>
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/contact" element={<ContactPage />} />
+            </Routes>
           </main>
-          <footer style={{
-            borderTop: "1px solid #E5E5E5",
-            padding: "1.5rem 0",
-            backgroundColor: "#FFFFFF",
-            color: "#6B6B6B"
-          }}>
-            <div style={{
-              maxWidth: "1400px",
-              margin: "0 auto",
-              padding: "0 1rem"
-            }}>
-              <div style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center", 
-                gap: "1rem",
-              }}>
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <span style={{
-                    backgroundColor: "#0C0C0D", 
-                    color: "white", 
-                    borderRadius: "9999px", 
-                    width: "2.5rem", 
-                    height: "2.5rem", 
-                    display: "flex", 
-                    alignItems: "center", 
-                    justifyContent: "center", 
-                    marginRight: "0.75rem"
-                  }}>
+          <footer className="border-t border-border py-6 bg-card text-card-foreground">
+            <div className="max-w-7xl mx-auto px-4">
+              <div className="flex flex-col items-center gap-4">
+                <div className="flex items-center">
+                  <span className="bg-primary text-primary-foreground rounded-full w-10 h-10 flex items-center justify-center mr-3">
                     ME
                   </span>
-                  <span style={{fontWeight: 500, color: "#0C0C0D"}}>Marco Egidi</span>
+                  <span className="font-medium text-foreground">Marco Egidi</span>
                 </div>
-                <p style={{fontSize: "0.875rem", color: "#6B6B6B"}}>© 2025 All rights reserved</p>
+                <p className="text-sm text-muted-foreground">© 2025 All rights reserved</p>
               </div>
             </div>
           </footer>
