@@ -9,7 +9,6 @@ import { Listbox } from '@headlessui/react';
 import { ChevronUpDownIcon, CheckIcon } from '@heroicons/react/20/solid';
 import { WeeklyAggregatesChart } from '@/components/charts/WeeklyAggregatesChart';
 import { AthleteStatsKPI, type AthleteStats } from '@/components/dashboard/AthleteStatsKPI';
-import { BestEffortsList } from '@/components/dashboard/BestEffortsList';
 import { ZonesDonut } from '@/components/charts/ZonesDonut';
 import { GdCard } from '@/components/ui/GdCard';
 
@@ -186,9 +185,6 @@ const DashboardPage = () => {
               <div className="px-3 py-1 rounded-full bg-gd-main neumorphism-border-1">Totale: {(kpi.distance + kpi.walk).toFixed(1)} km</div>
             </div>
           </div>
-          <div className="mt-3 h-2 rounded-full bg-gd-divider">
-            <div className="h-2 rounded-full bg-gd-magenta-2" style={{ width: `${Math.min(100, ((last7.run + last7.ride + last7.swim) / 50) * 100).toFixed(0)}%` }} />
-          </div>
         </GdCard>
 
         {/* Main two-column content */}
@@ -262,9 +258,9 @@ const DashboardPage = () => {
           {/* Right: Performance by type with segmented tabs */}
           <div className="lg:col-span-6 xl:col-span-5 space-y-6">
             <GdCard contentClassName="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-base md:text-lg font-medium">Performance per tipo</div>
-                <Tab.Group>
+              <Tab.Group>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="text-base md:text-lg font-medium">Performance per tipo</div>
                   <Tab.List className="flex gap-2">
                     {['Giornaliero', 'Settimanale'].map(label => (
                       <Tab key={label} className={({ selected }) => `px-3 py-1.5 text-sm font-medium rounded-full focus:outline-none transition-colors ${selected ? 'bg-gd-magenta-2 text-white shadow-magenta-btn' : 'bg-gd-main text-muted-foreground hover:bg-gd-divider'}`}>
@@ -272,11 +268,7 @@ const DashboardPage = () => {
                       </Tab>
                     ))}
                   </Tab.List>
-                </Tab.Group>
-              </div>
-              {/* We’ll render both charts, toggled by tabs state via HeadlessUI requires Panels within same Group. Split into inner Group for charts. */}
-              <Tab.Group>
-                <Tab.List className="hidden" />
+                </div>
                 <Tab.Panels>
                   <Tab.Panel>
                     <ActivityAreaChart
@@ -302,19 +294,19 @@ const DashboardPage = () => {
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <div className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
                   <div className="text-xs text-muted-foreground">Corsa (7g)</div>
-                  <div className="text-lg font-semibold">{last7.run.toFixed(1)} km</div>
+                  <div className="text-lg font-semibold">{Number.isFinite(last7.run) ? last7.run.toFixed(1) : '0.0'} km</div>
                 </div>
                 <div className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
                   <div className="text-xs text-muted-foreground">Ciclismo (7g)</div>
-                  <div className="text-lg font-semibold">{last7.ride.toFixed(1)} km</div>
+                  <div className="text-lg font-semibold">{Number.isFinite(last7.ride) ? last7.ride.toFixed(1) : '0.0'} km</div>
                 </div>
                 <div className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
                   <div className="text-xs text-muted-foreground">Nuoto (7g)</div>
-                  <div className="text-lg font-semibold">{last7.swim.toFixed(1)} km</div>
+                  <div className="text-lg font-semibold">{Number.isFinite(last7.swim) ? last7.swim.toFixed(1) : '0.0'} km</div>
                 </div>
                 <div className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
                   <div className="text-xs text-muted-foreground">Camminata (7g)</div>
-                  <div className="text-lg font-semibold">{last7.walk.toFixed(1)} km</div>
+                  <div className="text-lg font-semibold">{Number.isFinite(last7.walk) ? last7.walk.toFixed(1) : '0.0'} km</div>
                 </div>
               </div>
             </GdCard>
@@ -324,16 +316,32 @@ const DashboardPage = () => {
         {/* Bottom: Records + Zones */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
           <div>
-            {bestEfforts?.length ? (
-              <GdCard contentClassName="p-4">
-                <div className="text-sm font-medium mb-2">Records (Best Efforts)</div>
-                <BestEffortsList efforts={bestEfforts} />
-              </GdCard>
-            ) : (
-              <GdCard contentClassName="p-4">
-                <div className="text-muted-foreground">Nessun best effort recente</div>
-              </GdCard>
-            )}
+            {(() => {
+              const want = ['400m','1k','5k','10k','21k'];
+              const pick = (label: string) => (bestEfforts || []).filter(e => e.label === label).sort((a,b) => a.time_s - b.time_s)[0];
+              const items = want.map(l => ({ label: l, entry: pick(l) })).filter(x => x.entry);
+              if (!items.length) return null;
+              return (
+                <GdCard contentClassName="p-4">
+                  <div className="text-sm font-medium mb-2">Best Times</div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {items.map(({ label, entry }, idx) => (
+                      <div key={idx} className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
+                        <div className="text-xs text-muted-foreground">{label}</div>
+                        <div className="text-lg font-semibold">
+                          {(() => {
+                            const m = Math.floor(entry!.time_s / 60);
+                            const s = Math.round(entry!.time_s % 60).toString().padStart(2,'0');
+                            return `${m}:${s}`;
+                          })()}
+                        </div>
+                        <div className="text-xs text-muted-foreground">{new Date(entry!.date).toLocaleDateString('it-IT')}</div>
+                      </div>
+                    ))}
+                  </div>
+                </GdCard>
+              );
+            })()}
           </div>
           <div>
             {zonesSummary?.length ? (
@@ -349,11 +357,7 @@ const DashboardPage = () => {
                   return <ZonesDonut data={data} />;
                 })()}
               </GdCard>
-            ) : (
-              <GdCard contentClassName="p-4">
-                <div className="text-muted-foreground">Nessun dato zone disponibile</div>
-              </GdCard>
-            )}
+            ) : null}
           </div>
         </div>
 
