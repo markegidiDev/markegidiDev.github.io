@@ -158,45 +158,63 @@ const DashboardPage = () => {
     };
   }, [filteredData]);
 
+  // Totali ultimi 7 giorni per "mini tiles" della card performance
+  const last7 = useMemo(() => {
+    const today = new Date();
+    const start = new Date();
+    start.setDate(today.getDate() - 7);
+    const windowData = stravaData.filter(d => new Date(d.date) >= start);
+    const sum = (key: keyof DataPoint) => windowData.reduce((s, x) => s + (Number(x[key]) || 0), 0);
+    return {
+      run: sum('corsa'),
+      swim: sum('nuoto'),
+      ride: sum('ciclismo'),
+      walk: sum('camminata'),
+      sessions: windowData.length,
+    };
+  }, [stravaData]);
+
   return (
     <div className="container max-w-[1400px] mx-auto px-4 py-6 sm:px-6 sm:py-8 md:py-12 bg-background text-foreground">
-      <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 md:gap-8">
-        <div className="xl:col-span-12">
-          <div className="mb-6">
-            <h2 className="text-2xl md:text-3xl font-medium mb-2">Dashboard Attività Sportive</h2>
-            {athleteStats ? <AthleteStatsKPI stats={athleteStats} /> : null}
-            <GdCard className="mb-6 overflow-visible" contentClassName="p-4">
+      <div className="space-y-6 md:space-y-8">
+        {/* Top header KPI bar */}
+        <GdCard contentClassName="p-4 md:p-5">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <h2 className="text-2xl md:text-3xl font-medium">Dashboard Attività Sportive</h2>
+            <div className="flex gap-3 text-sm">
+              <div className="px-3 py-1 rounded-full bg-gd-main neumorphism-border-1">Sessioni: {kpi.sessions}</div>
+              <div className="px-3 py-1 rounded-full bg-gd-main neumorphism-border-1">Totale: {(kpi.distance + kpi.walk).toFixed(1)} km</div>
+            </div>
+          </div>
+          <div className="mt-3 h-2 rounded-full bg-gd-divider">
+            <div className="h-2 rounded-full bg-gd-magenta-2" style={{ width: `${Math.min(100, ((last7.run + last7.ride + last7.swim) / 50) * 100).toFixed(0)}%` }} />
+          </div>
+        </GdCard>
+
+        {/* Main two-column content */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
+          {/* Left: Summary + Filters + Athlete Stats */}
+          <div className="lg:col-span-6 xl:col-span-7 space-y-6">
+            <GdCard className="overflow-visible" contentClassName="p-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <p className="text-muted-foreground text-sm md:text-base">
-                  Filtra le attività per intervallo di tempo e tipo
+                  Filtra per intervallo di tempo e tipo
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center sm:justify-end">
                   <div className="relative w-[200px]">
                     <Listbox value={activityType} onChange={setActivityType}>
                       <Listbox.Button className="relative w-full cursor-default rounded-lg bg-gd-main border border-transparent neumorphism-border-1 py-2 pl-3 pr-10 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff2d55]/60">
-                        <span className="block truncate">
-                          {typeOptions.find((opt) => opt.id === activityType)?.name}
-                        </span>
+                        <span className="block truncate">{typeOptions.find((opt) => opt.id === activityType)?.name}</span>
                         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                           <ChevronUpDownIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                         </span>
                       </Listbox.Button>
                       <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-gd-main border border-transparent neumorphism-border-2 py-1 text-base shadow-lg focus:outline-none sm:text-sm">
                         {typeOptions.map((opt) => (
-                          <Listbox.Option
-                            key={opt.id}
-                            className={({ active }) =>
-                              `relative cursor-default select-none py-1.5 pl-8 pr-4 ${
-                                active ? 'bg-gd-divider text-foreground' : 'text-foreground'
-                              }`
-                            }
-                            value={opt.id}
-                          >
+                          <Listbox.Option key={opt.id} className={({ active }) => `relative cursor-default select-none py-1.5 pl-8 pr-4 ${active ? 'bg-gd-divider text-foreground' : 'text-foreground'}`} value={opt.id}>
                             {({ selected }) => (
                               <>
-                                <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
-                                  {opt.name}
-                                </span>
+                                <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{opt.name}</span>
                                 {selected ? (
                                   <span className="absolute inset-y-0 left-0 flex items-center pl-2">
                                     <CheckIcon className="h-4 w-4" aria-hidden="true" />
@@ -212,29 +230,17 @@ const DashboardPage = () => {
                   <div className="relative w-[200px]">
                     <Listbox value={timeRange} onChange={setTimeRange}>
                       <Listbox.Button className="relative w-full cursor-default rounded-lg bg-gd-main border border-transparent neumorphism-border-1 py-2 pl-3 pr-10 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff2d55]/60">
-                        <span className="block truncate">
-                          {timeOptions.find((opt) => opt.id === timeRange)?.name}
-                        </span>
+                        <span className="block truncate">{timeOptions.find((opt) => opt.id === timeRange)?.name}</span>
                         <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                           <ChevronUpDownIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                         </span>
                       </Listbox.Button>
                       <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-gd-main border border-transparent neumorphism-border-2 py-1 text-base shadow-lg focus:outline-none sm:text-sm">
                         {timeOptions.map((opt) => (
-                          <Listbox.Option
-                            key={opt.id}
-                            className={({ active }) =>
-                              `relative cursor-default select-none py-1.5 pl-8 pr-4 ${
-                                active ? 'bg-gd-divider text-foreground' : 'text-foreground'
-                              }`
-                            }
-                            value={opt.id}
-                          >
+                          <Listbox.Option key={opt.id} className={({ active }) => `relative cursor-default select-none py-1.5 pl-8 pr-4 ${active ? 'bg-gd-divider text-foreground' : 'text-foreground'}`} value={opt.id}>
                             {({ selected }) => (
                               <>
-                                <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>
-                                  {opt.name}
-                                </span>
+                                <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{opt.name}</span>
                                 {selected ? (
                                   <span className="absolute inset-y-0 left-0 flex items-center pl-2">
                                     <CheckIcon className="h-4 w-4" aria-hidden="true" />
@@ -250,48 +256,29 @@ const DashboardPage = () => {
                 </div>
               </div>
             </GdCard>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-              <GdCard contentClassName="p-4 neumorphism-border-1">
-                <div className="text-sm text-muted-foreground">Distanza totale</div>
-                <div className="text-2xl font-semibold">{(kpi.distance + kpi.walk).toFixed(1)} km</div>
-              </GdCard>
-              <GdCard contentClassName="p-4 neumorphism-border-1">
-                <div className="text-sm text-muted-foreground">Corsa</div>
-                <div className="text-2xl font-semibold">{kpi.run.toFixed(1)} km</div>
-              </GdCard>
-              <GdCard contentClassName="p-4 neumorphism-border-1">
-                <div className="text-sm text-muted-foreground">Nuoto</div>
-                <div className="text-2xl font-semibold">{kpi.swim.toFixed(1)} km</div>
-              </GdCard>
-              <GdCard contentClassName="p-4 neumorphism-border-1">
-                <div className="text-sm text-muted-foreground">Ciclismo</div>
-                <div className="text-2xl font-semibold">{kpi.ride.toFixed(1)} km</div>
-              </GdCard>
-              <GdCard contentClassName="p-4 neumorphism-border-1">
-                <div className="text-sm text-muted-foreground">Camminata</div>
-                <div className="text-2xl font-semibold">{kpi.walk.toFixed(1)} km</div>
-              </GdCard>
-            </div>
-            <Tab.Group>
-              <Tab.List className="flex gap-2 mb-4">
-                {['Overview', 'Weekly', 'Monthly', 'Records'].map(label => (
-                  <Tab
-                    key={label}
-                    className={({ selected }) =>
-                      `px-3 py-1.5 text-sm font-medium rounded-full focus:outline-none transition-colors ${
-                        selected
-                          ? 'bg-gd-magenta-2 text-white shadow-magenta-btn'
-                          : 'bg-gd-main text-muted-foreground hover:bg-gd-divider'
-                      }`
-                    }
-                  >
-                    {label}
-                  </Tab>
-                ))}
-              </Tab.List>
-              <Tab.Panels>
-                <Tab.Panel>
-                  <GdCard contentClassName="p-4">
+            {athleteStats ? <GdCard contentClassName="p-4"><AthleteStatsKPI stats={athleteStats} /></GdCard> : null}
+          </div>
+
+          {/* Right: Performance by type with segmented tabs */}
+          <div className="lg:col-span-6 xl:col-span-5 space-y-6">
+            <GdCard contentClassName="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-base md:text-lg font-medium">Performance per tipo</div>
+                <Tab.Group>
+                  <Tab.List className="flex gap-2">
+                    {['Giornaliero', 'Settimanale'].map(label => (
+                      <Tab key={label} className={({ selected }) => `px-3 py-1.5 text-sm font-medium rounded-full focus:outline-none transition-colors ${selected ? 'bg-gd-magenta-2 text-white shadow-magenta-btn' : 'bg-gd-main text-muted-foreground hover:bg-gd-divider'}`}>
+                        {label}
+                      </Tab>
+                    ))}
+                  </Tab.List>
+                </Tab.Group>
+              </div>
+              {/* We’ll render both charts, toggled by tabs state via HeadlessUI requires Panels within same Group. Split into inner Group for charts. */}
+              <Tab.Group>
+                <Tab.List className="hidden" />
+                <Tab.Panels>
+                  <Tab.Panel>
                     <ActivityAreaChart
                       data={downsampled}
                       series={chartConfig}
@@ -300,63 +287,80 @@ const DashboardPage = () => {
                       animate={true}
                       animationDuration={500}
                     />
-                  </GdCard>
-                </Tab.Panel>
-                <Tab.Panel>
-                  {weeklyFiltered.length ? (
-                    <GdCard contentClassName="p-4">
-                        <WeeklyAggregatesChart
-                          data={weeklyFiltered}
-                          keys={["corsa","nuoto","ciclismo","camminata"]}
-                          series={chartConfig}
-                        />
-                    </GdCard>
-                  ) : (
-                    <div className="text-muted-foreground">Nessun dato settimanale disponibile</div>
-                  )}
-                </Tab.Panel>
-                <Tab.Panel>
-                  <div className="text-muted-foreground">Coming soon: Monthly trends</div>
-                </Tab.Panel>
-                <Tab.Panel>
-                  <div className="grid gap-4">
-                    {bestEfforts?.length ? (
-                      <GdCard contentClassName="p-4">
-                        <BestEffortsList efforts={bestEfforts} />
-                      </GdCard>
+                  </Tab.Panel>
+                  <Tab.Panel>
+                    {weeklyFiltered.length ? (
+                      <WeeklyAggregatesChart data={weeklyFiltered} keys={["corsa","nuoto","ciclismo","camminata"]} series={chartConfig} />
                     ) : (
-                      <div className="text-muted-foreground">Nessun best effort recente</div>
+                      <div className="text-muted-foreground">Nessun dato settimanale disponibile</div>
                     )}
-                    {zonesSummary?.length ? (
-                      <GdCard contentClassName="p-4">
-                        <div className="text-sm font-medium mb-2">Distribuzione zone (ultime attività)</div>
-                        {/* Aggregate HR zones across summaries into Z1..Z5 */}
-                        {(() => {
-                          const total = (zonesSummary || []).reduce((acc, z) => {
-                            const hr = z.hr || [];
-                            hr.forEach((sec, i) => {
-                              acc[i] = (acc[i] || 0) + (sec || 0);
-                            });
-                            return acc;
-                          }, [] as number[]);
-                          const data = (total.length ? total : [0,0,0,0,0]).slice(0,5).map((s, i) => ({ zone: `Z${i+1}`, seconds: s }));
-                          return <ZonesDonut data={data} />;
-                        })()}
-                      </GdCard>
-                    ) : null}
-                  </div>
-                </Tab.Panel>
-              </Tab.Panels>
-            </Tab.Group>
+                  </Tab.Panel>
+                </Tab.Panels>
+              </Tab.Group>
+
+              {/* Mini tiles - last 7 days */}
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
+                  <div className="text-xs text-muted-foreground">Corsa (7g)</div>
+                  <div className="text-lg font-semibold">{last7.run.toFixed(1)} km</div>
+                </div>
+                <div className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
+                  <div className="text-xs text-muted-foreground">Ciclismo (7g)</div>
+                  <div className="text-lg font-semibold">{last7.ride.toFixed(1)} km</div>
+                </div>
+                <div className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
+                  <div className="text-xs text-muted-foreground">Nuoto (7g)</div>
+                  <div className="text-lg font-semibold">{last7.swim.toFixed(1)} km</div>
+                </div>
+                <div className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
+                  <div className="text-xs text-muted-foreground">Camminata (7g)</div>
+                  <div className="text-lg font-semibold">{last7.walk.toFixed(1)} km</div>
+                </div>
+              </div>
+            </GdCard>
           </div>
-          {/* TrafficLight widget (dimostrativo) */}
-          <GdCard className="mt-8 max-w-[600px] mx-auto" contentClassName="p-4">
-            <TrafficLight
-              selectedDirection={selectedDirection}
-              onDirectionChange={setSelectedDirection}
-            />
-          </GdCard>
         </div>
+
+        {/* Bottom: Records + Zones */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+          <div>
+            {bestEfforts?.length ? (
+              <GdCard contentClassName="p-4">
+                <div className="text-sm font-medium mb-2">Records (Best Efforts)</div>
+                <BestEffortsList efforts={bestEfforts} />
+              </GdCard>
+            ) : (
+              <GdCard contentClassName="p-4">
+                <div className="text-muted-foreground">Nessun best effort recente</div>
+              </GdCard>
+            )}
+          </div>
+          <div>
+            {zonesSummary?.length ? (
+              <GdCard contentClassName="p-4">
+                <div className="text-sm font-medium mb-2">Distribuzione zone (ultime attività)</div>
+                {(() => {
+                  const total = (zonesSummary || []).reduce((acc, z) => {
+                    const hr = z.hr || [];
+                    hr.forEach((sec, i) => { acc[i] = (acc[i] || 0) + (sec || 0); });
+                    return acc;
+                  }, [] as number[]);
+                  const data = (total.length ? total : [0,0,0,0,0]).slice(0,5).map((s, i) => ({ zone: `Z${i+1}`, seconds: s }));
+                  return <ZonesDonut data={data} />;
+                })()}
+              </GdCard>
+            ) : (
+              <GdCard contentClassName="p-4">
+                <div className="text-muted-foreground">Nessun dato zone disponibile</div>
+              </GdCard>
+            )}
+          </div>
+        </div>
+
+        {/* Optional: TrafficLight demo */}
+        <GdCard className="max-w-[600px] mx-auto" contentClassName="p-4">
+          <TrafficLight selectedDirection={selectedDirection} onDirectionChange={setSelectedDirection} />
+        </GdCard>
       </div>
     </div>
   );
