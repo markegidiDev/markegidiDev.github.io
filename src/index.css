@@ -42,6 +42,17 @@
     --chart-3: 40 90% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 0 70% 60%;
+
+    /* Neumorphism + glassmorphism extras */
+    --gd-bg: linear-gradient(134deg,#1f2023,#27282c);
+    --gd-divider: radial-gradient(50% 50% at 50% 50%,#616161 0%,rgba(160,160,160,0) 100%);
+    --gd-magenta: linear-gradient(356deg,#ff00ff 15%,#930093 84%);
+    --gd-magenta-2: radial-gradient(76.03% 76.03% at 24% 18%,#ff00ff 0%,#670077 100%);
+    --gd-border: linear-gradient(174deg,#343538,rgba(31,32,35,.92));
+    --dark-surface: #191a1c;
+    --accent-green: #14f195;
+    --shadow-main: 13px 14px 12px -6px rgba(16,20,24,.4),-5px -5px 20px 0 rgba(39,40,42,.35);
+    --shadow-btn-magenta: 0 2px 10px 5px rgba(255,0,255,.15),5px 5px 10px 0 #181e24,-5px -5px 10px 0 rgba(59,62,66,.35);
   }
 
   .dark {
@@ -175,6 +186,19 @@
   .bg-chart-3 { background-color: hsl(var(--chart-3)); }
   .bg-chart-4 { background-color: hsl(var(--chart-4)); }
   .bg-chart-5 { background-color: hsl(var(--chart-5)); }
+
+  /* Neumorphism + glassmorphism helpers */
+  .bg-gd-border-main { background-image: var(--gd-border); }
+  .bg-gd-main { background-image: var(--gd-bg); }
+  .bg-gd-divider { background-image: var(--gd-divider); }
+  .bg-gd-magenta { background-image: var(--gd-magenta); }
+  .bg-gd-magenta-2 { background-image: var(--gd-magenta-2); }
+  .bg-dark { background-color: var(--dark-surface); }
+  .text-green { color: var(--accent-green); }
+  .shadow-main { box-shadow: var(--shadow-main); }
+  .shadow-magenta-btn { box-shadow: var(--shadow-btn-magenta); }
+  .neumorphism-border-1 { background-image: linear-gradient(176deg,rgba(0,0,0,.3) 45%,hsla(0,0%,100%,.07)); }
+  .neumorphism-border-2 { background-image: linear-gradient(165deg,rgba(0,0,0,.3) 50%,hsla(0,0%,100%,.01)); }
 }
 
 /* Keyframes for ContactDock marquee scroll */

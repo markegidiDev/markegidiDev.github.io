@@ -25,16 +25,43 @@ interface Props {
 }
 
 function formatDate(d: string) {
-  const dt = new Date(d)
-  return dt.toLocaleDateString('it-IT', { month: 'short', day: 'numeric' })
+  try {
+    // Assicuriamoci che la data sia in formato valido
+    const dt = new Date(d)
+    // Verifichiamo che la data sia valida
+    if (isNaN(dt.getTime())) {
+      console.warn('Invalid date:', d)
+      return d // Ritorna la stringa originale se la data non è valida
+    }
+    return dt.toLocaleDateString('it-IT', { month: 'short', day: 'numeric' })
+  } catch (error) {
+    console.error('Error parsing date:', d, error)
+    return d // Ritorna la stringa originale in caso di errore
+  }
 }
 
 export const ActivityAreaChart = memo(function ActivityAreaChart({ data, series, keys, animationKey, animate = true, animationDuration = 500 }: Props) {
-  const processed = useMemo(() => data.map(r => ({
-    ...r,
-    // ensure numeric
-    ...Object.fromEntries(Object.entries(r).map(([k,v]) => [k, typeof v === 'string' ? Number(v) : v]))
-  })), [data])
+  const processed = useMemo(() => {
+    const result = data.map((r) => {
+      // Keep date as-is; coerce only numeric-like string values for other keys
+      const coercedEntries = Object.entries(r).map(([k, v]) => {
+        if (k === 'date') return [k, v]
+        if (typeof v === 'string') {
+          const maybeNum = Number(v)
+          return [k, Number.isFinite(maybeNum) ? maybeNum : v]
+        }
+        return [k, v]
+      })
+      return Object.fromEntries(coercedEntries) as typeof r
+    })
+
+    // Debug: stampa i primi 3 elementi per vedere il formato
+    if (result.length > 0) {
+      console.log('First 3 data points:', result.slice(0, 3))
+    }
+
+    return result
+  }, [data])
 
   // Generate chart config based on series
   const chartConfig = useMemo(() => {
@@ -53,7 +80,7 @@ export const ActivityAreaChart = memo(function ActivityAreaChart({ data, series,
       <ChartContainer config={chartConfig} className="h-full w-full">
         <AreaChart key={animationKey} data={processed} margin={{ top: 10, right: 20, bottom: 0, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--muted)/0.5)" />
-          <XAxis dataKey="date" tickFormatter={formatDate} stroke="hsl(var(--muted-foreground))" />
+          <XAxis dataKey="date" tickFormatter={formatDate} stroke="hsl(var(--muted-foreground))" minTickGap={12} />
           <YAxis stroke="hsl(var(--muted-foreground))" />
           <ChartTooltip content={<ChartTooltipContent />} />
           {keys.map((k) => (

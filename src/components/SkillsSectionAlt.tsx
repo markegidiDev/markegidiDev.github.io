@@ -1,5 +1,4 @@
-import { Badge } from "@/components/ui/badge";
-import { BarChart2, Code, PanelTop, Palette, Wrench } from "lucide-react";
+import { BarChart2, Code, PanelTop } from "lucide-react";
 import { SkillRadialChart } from "@/components/SkillRadialChart";
 
 interface Skill {
@@ -54,8 +53,6 @@ const SkillsSection = () => {
                     skillName={skill.name}
                     percentage={skill.level}
                     color={skill.color}
-                    description={`Livello di competenza: ${skill.level}%`}
-                    size={180}
                   />
                 </div>
               ))}
@@ -77,8 +74,6 @@ const SkillsSection = () => {
                     skillName={skill.name}
                     percentage={skill.level}
                     color={skill.color}
-                    description={`Livello di competenza: ${skill.level}%`}
-                    size={180}
                   />
                 </div>
               ))}
@@ -100,8 +95,6 @@ const SkillsSection = () => {
                     skillName={skill.name}
                     percentage={skill.level}
                     color={skill.color}
-                    description={`Livello di competenza: ${skill.level}%`}
-                    size={180}
                   />
                 </div>
               ))}

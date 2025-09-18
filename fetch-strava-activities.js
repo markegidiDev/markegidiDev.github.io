@@ -31,74 +31,71 @@ async function getAccessToken() {
   }
 }
 
-// Function to fetch activities
+// Function to fetch activities (paginated)
 async function getActivities(token) {
-  try {
-    // Calculate the timestamp for one year ago from today
-    const oneYearAgo = new Date();
-    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
-    const oneYearAgoTimestamp = Math.floor(oneYearAgo.getTime() / 1000);
+  // Calculate the timestamp for one year ago from today
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+  const oneYearAgoTimestamp = Math.floor(oneYearAgo.getTime() / 1000);
 
-    console.log(`Fetching activities since: ${oneYearAgo.toISOString().split('T')[0]}`);
-    
+  console.log(`Fetching activities since: ${oneYearAgo.toISOString().split('T')[0]}`);
+
+  const perPage = 200;
+  let page = 1;
+  const all = [];
+  while (true) {
     const response = await axios.get('https://www.strava.com/api/v3/athlete/activities', {
       headers: { Authorization: `Bearer ${token}` },
-      params: {
-        after: oneYearAgoTimestamp, // Fetch activities after this timestamp
-        per_page: 200, // Fetch up to 200 activities
-        page: 1
-      }
+      params: { after: oneYearAgoTimestamp, per_page: perPage, page },
     });
-    console.log(`Fetched ${response.data.length} activities from Strava.`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching activities:', error.response ? JSON.stringify(error.response.data, null, 2) : error.message);
-    throw error; // Re-throw
+    const batch = response.data || [];
+    console.log(`Fetched page ${page} with ${batch.length} activities.`);
+    all.push(...batch);
+    if (batch.length < perPage) break; // last page
+    page += 1;
   }
+  console.log(`Total fetched activities: ${all.length}`);
+  return all;
 }
 
-// Function to process activities into the desired chart format
+// Process raw activities into daily stacked series for chart
 function processActivitiesForChart(activities) {
   const aggregatedData = {}; // Use an object for easier aggregation by date
 
-  activities.forEach(act => {
-    // Ensure start_date_local exists and is a string
+  (activities || []).forEach((act) => {
     if (!act.start_date_local || typeof act.start_date_local !== 'string') {
-        console.warn('Skipping activity due to missing or invalid start_date_local:', act.id, act.name);
-        return; // Skip this activity
+      console.warn('Skipping activity due to missing or invalid start_date_local:', act?.id, act?.name);
+      return; // Skip this activity
     }
     const date = act.start_date_local.split('T')[0]; // "YYYY-MM-DD"
-    const distanceKm = parseFloat((act.distance / 1000).toFixed(2)); // Distance in km
+    const distanceKm = parseFloat(((act.distance || 0) / 1000).toFixed(2)); // Distance in km
 
     if (!aggregatedData[date]) {
-      aggregatedData[date] = {
-        date: date,
-        corsa: 0,
-        nuoto: 0,
-        ciclismo: 0,
-      };
+      aggregatedData[date] = { date, corsa: 0, nuoto: 0, ciclismo: 0, camminata: 0 };
     }
-    
+
     const activityType = act.type;
     // Strava activity types: https://developers.strava.com/docs/reference/#api-models-ActivityType
-    if (['Run', 'VirtualRun', 'TrailRun', 'Walk', 'Hike'].includes(activityType)) { // Consider Walk/Hike as Corsa too
+    if (['Run', 'VirtualRun', 'TrailRun'].includes(activityType)) {
       aggregatedData[date].corsa += distanceKm;
+    } else if (['Walk', 'Hike'].includes(activityType)) {
+      aggregatedData[date].camminata += distanceKm;
     } else if (activityType === 'Swim') {
       aggregatedData[date].nuoto += distanceKm;
     } else if (['Ride', 'VirtualRide', 'EBikeRide', 'Handcycle', 'Velomobile'].includes(activityType)) {
       aggregatedData[date].ciclismo += distanceKm;
     }
-    // Other activity types are ignored for this chart
   });
 
   // Convert aggregatedData object to an array
-  let chartData = Object.values(aggregatedData);
-  
+  const chartData = Object.values(aggregatedData);
+
   // Round the aggregated distances to 2 decimal places
-  chartData.forEach(dataPoint => {
+  chartData.forEach((dataPoint) => {
     dataPoint.corsa = parseFloat(dataPoint.corsa.toFixed(2));
     dataPoint.nuoto = parseFloat(dataPoint.nuoto.toFixed(2));
     dataPoint.ciclismo = parseFloat(dataPoint.ciclismo.toFixed(2));
+    dataPoint.camminata = parseFloat(dataPoint.camminata.toFixed(2));
   });
 
   // Sort by date in ascending order
@@ -106,6 +103,101 @@ function processActivitiesForChart(activities) {
 
   console.log(`Processed ${chartData.length} daily data points for the chart.`);
   return chartData;
+}
+
+// Build weekly aggregates by ISO week (YYYY-Www)
+function isoWeekKey(dateStr) {
+  const d = new Date(dateStr);
+  // copy date and set to Thursday in current week according to ISO
+  const target = new Date(d.valueOf());
+  const dayNr = (d.getDay() + 6) % 7; // Mon=0..Sun=6
+  target.setDate(target.getDate() - dayNr + 3);
+  const firstThursday = new Date(target.getFullYear(), 0, 4);
+  const firstDayNr = (firstThursday.getDay() + 6) % 7;
+  firstThursday.setDate(firstThursday.getDate() - firstDayNr + 3);
+  const week = 1 + Math.round((target - firstThursday) / (7 * 24 * 3600 * 1000));
+  const yyyy = target.getFullYear();
+  const ww = String(week).padStart(2, '0');
+  return `${yyyy}-W${ww}`;
+}
+
+function buildWeeklyAggregates(daily) {
+  const weeks = {};
+  for (const row of daily) {
+    const key = isoWeekKey(row.date);
+    if (!weeks[key]) weeks[key] = { week: key, corsa: 0, ciclismo: 0, nuoto: 0, camminata: 0 };
+    weeks[key].corsa += row.corsa || 0;
+    weeks[key].ciclismo += row.ciclismo || 0;
+    weeks[key].nuoto += row.nuoto || 0;
+    weeks[key].camminata += row.camminata || 0;
+  }
+  return Object.values(weeks).sort((a,b) => a.week.localeCompare(b.week));
+}
+
+function deriveRunBestEffortsFromSplits(activity) {
+  const out = [];
+  const splits = activity.splits_metric || [];
+  const kmSplits = splits.filter(s => Math.abs((s.distance || 0) - 1000) < 80);
+  const sum = (arr, k, from, to) => arr.slice(from, to).reduce((a, s) => a + (s[k] || 0), 0);
+  const windows = [1, 5, 10, 21];
+  windows.forEach(km => {
+    if (kmSplits.length >= km) {
+      let best = null;
+      for (let i = 0; i <= kmSplits.length - km; i++) {
+        const dist = sum(kmSplits, 'distance', i, i + km);
+        const time = sum(kmSplits, 'moving_time', i, i + km);
+        if (dist >= km * 900 && time > 0) { // allow small tolerance
+          const pace = time / (dist / 1000);
+          if (!best || pace < best.pace_s_per_km) best = { dist_km: dist / 1000, time_s: time, pace_s_per_km: pace };
+        }
+      }
+      if (best) out.push({ date: (activity.start_date_local || activity.start_date || '').slice(0,10), type: 'run', label: `${km}k`, ...best });
+    }
+  });
+  return out;
+}
+
+function summarizeZones(zones, sport, id) {
+  const out = { id, sport, hr: null, power: null };
+  for (const z of zones || []) {
+    if (z.type === 'heartrate') {
+      out.hr = (z.distribution_buckets || []).map(b => b.time || 0);
+    }
+    if (z.type === 'power') {
+      out.power = (z.distribution_buckets || []).map(b => b.time || 0);
+    }
+  }
+  return out;
+}
+
+// Lightweight athlete and activity helpers
+async function getAthlete(token) {
+  const r = await axios.get('https://www.strava.com/api/v3/athlete', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return r.data;
+}
+
+async function getAthleteStats(token, athleteId) {
+  const r = await axios.get(`https://www.strava.com/api/v3/athletes/${athleteId}/stats`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return r.data;
+}
+
+async function getDetailedActivity(token, id) {
+  const r = await axios.get(`https://www.strava.com/api/v3/activities/${id}`, {
+    headers: { Authorization: `Bearer ${token}` },
+    params: { include_all_efforts: false },
+  });
+  return r.data;
+}
+
+async function getActivityZones(token, id) {
+  const r = await axios.get(`https://www.strava.com/api/v3/activities/${id}/zones`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  return r.data;
 }
 
 // Main execution block
@@ -117,6 +209,17 @@ function processActivitiesForChart(activities) {
     }
 
     const accessToken = await getAccessToken();
+    // Athlete and stats (cheap)
+    let athlete = null;
+    let athleteStats = null;
+    try {
+      athlete = await getAthlete(accessToken);
+      if (athlete && athlete.id) {
+        athleteStats = await getAthleteStats(accessToken, athlete.id);
+      }
+    } catch (e) {
+      console.warn('Warning: could not fetch athlete or stats:', e?.response?.data || e?.message);
+    }
     const rawActivities = await getActivities(accessToken);
     
     let chartData = [];
@@ -126,7 +229,7 @@ function processActivitiesForChart(activities) {
       console.log('No activities found in the last year to process for the chart.');
     }
     
-    // Ensure the /public directory exists
+  // Ensure the /public directory exists
     const publicDir = path.join(__dirname, 'public');
     if (!fs.existsSync(publicDir)){
         fs.mkdirSync(publicDir, { recursive: true });
@@ -135,6 +238,40 @@ function processActivitiesForChart(activities) {
 
     const outputPath = path.join(publicDir, 'strava-data.json');
     fs.writeFileSync(outputPath, JSON.stringify(chartData, null, 2));
+    // Weekly aggregates
+    const weekly = buildWeeklyAggregates(chartData);
+    fs.writeFileSync(path.join(publicDir, 'strava-aggregates.json'), JSON.stringify(weekly, null, 2));
+    // Athlete stats
+    if (athleteStats) {
+      fs.writeFileSync(path.join(publicDir, 'athlete-stats.json'), JSON.stringify(athleteStats, null, 2));
+    }
+
+    // Best efforts (runs) and zones summary for a limited subset to respect rate limits
+    const BEST_LIMIT = Number(process.env.BEST_EFFORTS_LIMIT || 24); // ~24 detailed calls max
+    const ZONES_LIMIT = Number(process.env.ZONES_LIMIT || 24);      // ~24 zone calls max
+    const recentRunIds = (rawActivities || [])
+      .filter((a) => ['Run', 'TrailRun', 'VirtualRun'].includes(a.type))
+      .slice(0, BEST_LIMIT)
+      .map((a) => a.id);
+    const recentForZones = (rawActivities || []).slice(0, ZONES_LIMIT).map((a) => ({ id: a.id, type: a.type }));
+
+    const bestEfforts = [];
+    for (const id of recentRunIds) {
+      try {
+        const det = await getDetailedActivity(accessToken, id);
+        bestEfforts.push(...deriveRunBestEffortsFromSplits(det));
+      } catch (e) { /* ignore */ }
+    }
+    fs.writeFileSync(path.join(publicDir, 'best-efforts.json'), JSON.stringify(bestEfforts, null, 2));
+
+    const zonesSummary = [];
+    for (const a of recentForZones) {
+      try {
+        const z = await getActivityZones(accessToken, a.id);
+        zonesSummary.push(summarizeZones(z, a.type, a.id));
+      } catch (e) { /* ignore */ }
+    }
+    fs.writeFileSync(path.join(publicDir, 'zones-summary.json'), JSON.stringify(zonesSummary, null, 2));
     
     if (chartData.length > 0) {
       console.log(`✅ strava-data.json successfully created/updated at ${outputPath} with ${chartData.length} data points.`);
