@@ -165,7 +165,7 @@ const DashboardPage = () => {
           <div className="mb-6">
             <h2 className="text-2xl md:text-3xl font-medium mb-2">Dashboard Attività Sportive</h2>
             {athleteStats ? <AthleteStatsKPI stats={athleteStats} /> : null}
-            <GdCard className="mb-6" contentClassName="p-4">
+            <GdCard className="mb-6 overflow-visible" contentClassName="p-4">
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <p className="text-muted-foreground text-sm md:text-base">
                   Filtra le attività per intervallo di tempo e tipo
@@ -181,7 +181,7 @@ const DashboardPage = () => {
                           <ChevronUpDownIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                         </span>
                       </Listbox.Button>
-                      <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-gd-main border border-transparent neumorphism-border-2 py-1 text-base shadow-lg focus:outline-none sm:text-sm">
+                      <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-gd-main border border-transparent neumorphism-border-2 py-1 text-base shadow-lg focus:outline-none sm:text-sm">
                         {typeOptions.map((opt) => (
                           <Listbox.Option
                             key={opt.id}
@@ -219,7 +219,7 @@ const DashboardPage = () => {
                           <ChevronUpDownIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
                         </span>
                       </Listbox.Button>
-                      <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-gd-main border border-transparent neumorphism-border-2 py-1 text-base shadow-lg focus:outline-none sm:text-sm">
+                      <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-gd-main border border-transparent neumorphism-border-2 py-1 text-base shadow-lg focus:outline-none sm:text-sm">
                         {timeOptions.map((opt) => (
                           <Listbox.Option
                             key={opt.id}
