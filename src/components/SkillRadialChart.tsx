@@ -15,9 +15,10 @@ interface SkillRadialChartProps {
   skillName: string;
   percentage: number; // 0-100
   color: string; // e.g., "hsl(var(--primary))"
+  size?: number; // optional custom height in px
 }
 
-export function SkillRadialChart({ skillName, percentage, color }: SkillRadialChartProps) {
+export function SkillRadialChart({ skillName, percentage, color, size = 180 }: SkillRadialChartProps) {
   const chartData = [
     { browser: "safari", visitors: percentage, fill: color },
   ];
@@ -35,7 +36,8 @@ export function SkillRadialChart({ skillName, percentage, color }: SkillRadialCh
   return (
     <ChartContainer
       config={chartConfig}
-      className="mx-auto w-full h-[180px] max-h-[250px]"
+      className="mx-auto w-full"
+      style={{ height: `${size}px`, maxHeight: "250px" }}
     >
       <RadialBarChart
         data={chartData}
