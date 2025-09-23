@@ -232,9 +232,16 @@
   },
   {
     "week": "2025-W38",
+    "corsa": 4,
+    "ciclismo": 0,
+    "nuoto": 7.3500000000000005,
+    "camminata": 3.15
+  },
+  {
+    "week": "2025-W39",
     "corsa": 0,
     "ciclismo": 0,
-    "nuoto": 2.1,
+    "nuoto": 3.05,
     "camminata": 0
   }
 ]
