@@ -200,6 +200,113 @@ async function getActivityZones(token, id) {
   return r.data;
 }
 
+async function getActivityStreams(token, id, streamTypes = ["time", "distance", "moving", "cadence"]) {
+  try {
+    const r = await axios.get(`https://www.strava.com/api/v3/activities/${id}/streams`, {
+      headers: { Authorization: `Bearer ${token}` },
+      params: {
+        keys: streamTypes.join(','),
+        key_by_type: true
+      }
+    });
+    return r.data;
+  } catch (e) {
+    console.warn(`Could not fetch streams for activity ${id}:`, e?.response?.data || e?.message);
+    return null;
+  }
+}
+
+// Calcola la maschera di movimento reale per escludere le pause
+function calculateMovingMask(streams) {
+  if (!streams?.time?.data || !streams?.distance?.data) return null;
+  
+  const time = streams.time.data;
+  const dist = streams.distance.data;
+  const moving = streams.moving?.data || [];
+  const cadence = streams.cadence?.data || [];
+  
+  const n = time.length;
+  const active = new Array(n).fill(false);
+  
+  // Identifica i secondi di movimento attivo
+  for (let i = 0; i < n; i++) {
+    const distIncrease = i > 0 ? (dist[i] - dist[i-1]) : 0;
+    const isMoving = (moving[i] === true) || (distIncrease > 0.1) || ((cadence[i] || 0) > 0);
+    active[i] = !!isMoving;
+  }
+  
+  // Chiudi gap piccoli (≤2s) e richiedi pause minime (≥5s)
+  const closeGaps = 2;
+  const minPause = 5;
+  
+  // Chiudi gap brevi
+  for (let i = 1; i < n - 1; i++) {
+    if (!active[i]) {
+      let left = i - 1;
+      let right = i + 1;
+      let gap = 1;
+      
+      while (right < n && !active[right] && gap <= closeGaps) {
+        right++;
+        gap++;
+      }
+      
+      if (active[left] && right < n && active[right] && gap <= closeGaps) {
+        for (let k = i; k < right; k++) {
+          active[k] = true;
+        }
+      }
+    }
+  }
+  
+  // Filtra pause troppo brevi
+  let i = 0;
+  while (i < n) {
+    if (!active[i]) {
+      let j = i;
+      while (j < n && !active[j]) j++;
+      if ((j - i) < minPause) {
+        for (let k = i; k < j; k++) {
+          active[k] = true;
+        }
+      }
+      i = j;
+    } else {
+      i++;
+    }
+  }
+  
+  return active;
+}
+
+// Calcola il passo reale per un'attività di nuoto
+function calculateRealSwimPace(streams) {
+  const movingMask = calculateMovingMask(streams);
+  if (!movingMask || !streams?.distance?.data) return null;
+  
+  const dist = streams.distance.data;
+  const totalMeters = dist[dist.length - 1] || 0;
+  const movingSeconds = movingMask.filter(Boolean).length;
+  
+  if (totalMeters <= 0 || movingSeconds <= 0) return null;
+  
+  // Passo in secondi per 100m
+  const pace100m = (movingSeconds / totalMeters) * 100;
+  
+  return {
+    totalMeters: Math.round(totalMeters),
+    movingSeconds,
+    pace100m,
+    paceFormatted: formatPace(pace100m)
+  };
+}
+
+function formatPace(paceSeconds) {
+  const minutes = Math.floor(paceSeconds / 60);
+  const seconds = Math.round(paceSeconds % 60);
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
 // Main execution block
 (async () => {
   try {
@@ -249,11 +356,23 @@ async function getActivityZones(token, id) {
     // Best efforts (runs) and zones summary for a limited subset to respect rate limits
     const BEST_LIMIT = Number(process.env.BEST_EFFORTS_LIMIT || 24); // ~24 detailed calls max
     const ZONES_LIMIT = Number(process.env.ZONES_LIMIT || 24);      // ~24 zone calls max
+    const SWIM_PACE_LIMIT = Number(process.env.SWIM_PACE_LIMIT || 8); // ~8 swim streams calls max
+    
     const recentRunIds = (rawActivities || [])
       .filter((a) => ['Run', 'TrailRun', 'VirtualRun'].includes(a.type))
       .slice(0, BEST_LIMIT)
       .map((a) => a.id);
     const recentForZones = (rawActivities || []).slice(0, ZONES_LIMIT).map((a) => ({ id: a.id, type: a.type }));
+    
+    // Ultime nuotate per calcolare il passo reale
+    const recentSwimActivities = (rawActivities || [])
+      .filter((a) => a.type === 'Swim')
+      .slice(0, SWIM_PACE_LIMIT)
+      .map((a) => ({ 
+        id: a.id, 
+        date: (a.start_date_local || a.start_date || '').slice(0, 10),
+        distance: a.distance || 0
+      }));
 
     const bestEfforts = [];
     for (const id of recentRunIds) {
@@ -273,6 +392,29 @@ async function getActivityZones(token, id) {
     }
     fs.writeFileSync(path.join(publicDir, 'zones-summary.json'), JSON.stringify(zonesSummary, null, 2));
     
+    // Calcola i passi reali per le ultime nuotate
+    const swimPaces = [];
+    console.log(`Calculating real pace for ${recentSwimActivities.length} recent swim activities...`);
+    for (const swim of recentSwimActivities) {
+      try {
+        const streams = await getActivityStreams(accessToken, swim.id, ["time", "distance", "moving", "cadence"]);
+        if (streams) {
+          const paceData = calculateRealSwimPace(streams);
+          if (paceData) {
+            swimPaces.push({
+              id: swim.id,
+              date: swim.date,
+              ...paceData
+            });
+            console.log(`Activity ${swim.id} (${swim.date}): ${paceData.paceFormatted}/100m`);
+          }
+        }
+      } catch (e) {
+        console.warn(`Could not calculate pace for swim ${swim.id}:`, e?.message);
+      }
+    }
+    fs.writeFileSync(path.join(publicDir, 'swim-paces.json'), JSON.stringify(swimPaces, null, 2));
+    
     if (chartData.length > 0) {
       console.log(`✅ strava-data.json successfully created/updated at ${outputPath} with ${chartData.length} data points.`);
     } else {
@@ -280,7 +422,10 @@ async function getActivityZones(token, id) {
     }
 
   } catch (error) {
-    // Error already logged by the function that threw it
-    console.error('Failed to fetch and process Strava data. See error messages above.');
+    // Ensure the CI step fails and doesn't deploy stale data
+    const details = error?.response?.data ? JSON.stringify(error.response.data) : (error?.message || 'Unknown error');
+    console.error('Failed to fetch and process Strava data. See error messages above. Details:', details);
+    // Non-zero exit code to signal failure in CI
+    process.exit(1);
   }
 })();

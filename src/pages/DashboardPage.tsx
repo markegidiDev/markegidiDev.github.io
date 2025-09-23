@@ -11,6 +11,7 @@ import { WeeklyAggregatesChart } from '@/components/charts/WeeklyAggregatesChart
 import { AthleteStatsKPI, type AthleteStats } from '@/components/dashboard/AthleteStatsKPI';
 import { ZonesDonut } from '@/components/charts/ZonesDonut';
 import { GdCard } from '@/components/ui/GdCard';
+import { SwimPacesTable } from '@/components/dashboard/SwimPacesTable';
 
 // TypeScript interface for chart data points
 interface DataPoint {
@@ -34,13 +35,14 @@ const DashboardPage = () => {
   const [athleteStats, setAthleteStats] = useState<AthleteStats | null>(null);
   const [bestEfforts, setBestEfforts] = useState<Array<{ date: string; type: 'run'; label: string; dist_km: number; time_s: number; pace_s_per_km: number }>>([]);
   const [zonesSummary, setZonesSummary] = useState<Array<{ id: number; sport: string; hr?: number[]; power?: number[] }>>([]);
+  const [swimPaces, setSwimPaces] = useState<Array<{ id: number; date: string; totalMeters: number; movingSeconds: number; pace100m: number; paceFormatted: string }>>([]);
   const [timeRange, setTimeRange] = useState<FilterPeriod>('90d');
   const [activityType, setActivityType] = useState<ActivityType>('all');
   const [selectedDirection, setSelectedDirection] = useState<Direction>('default'); // Stato iniziale per TrafficLight
 
   useEffect(() => {
     // Cache-busting query param per forzare aggiornamento
-    fetch(`/strava-data.json?t=${Date.now()}`)
+  fetch(`/strava-data.json?t=${Date.now()}`, { cache: 'no-store' })
       .then(response => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -56,25 +58,30 @@ const DashboardPage = () => {
         setStravaData([]);
       });
     // Fetch weekly aggregates (optional)
-    fetch(`/strava-aggregates.json?t=${Date.now()}`)
+  fetch(`/strava-aggregates.json?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => (r.ok ? r.json() : []))
       .then((d) => setWeeklyData(Array.isArray(d) ? d : []))
       .catch(() => setWeeklyData([]));
     // Fetch athlete stats (optional)
-    fetch(`/athlete-stats.json?t=${Date.now()}`)
+  fetch(`/athlete-stats.json?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => (r.ok ? r.json() : null))
       .then((d) => setAthleteStats(d))
       .catch(() => setAthleteStats(null));
     // Fetch best efforts (optional)
-    fetch(`/best-efforts.json?t=${Date.now()}`)
+  fetch(`/best-efforts.json?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => (r.ok ? r.json() : []))
       .then((d) => setBestEfforts(Array.isArray(d) ? d : []))
       .catch(() => setBestEfforts([]));
     // Fetch zones summary (optional)
-    fetch(`/zones-summary.json?t=${Date.now()}`)
+    fetch(`/zones-summary.json?t=${Date.now()}`, { cache: 'no-store' })
       .then(r => (r.ok ? r.json() : []))
       .then((d) => setZonesSummary(Array.isArray(d) ? d : []))
       .catch(() => setZonesSummary([]));
+    // Fetch swim paces (optional)
+    fetch(`/swim-paces.json?t=${Date.now()}`, { cache: 'no-store' })
+      .then(r => (r.ok ? r.json() : []))
+      .then((d) => setSwimPaces(Array.isArray(d) ? d : []))
+      .catch(() => setSwimPaces([]));
   }, []);
 
   // Debounce dei filtri per ridurre i re-render
@@ -313,8 +320,8 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* Bottom: Records + Zones */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+        {/* Bottom: Records + Zones + Swim Paces */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
           <div>
             {(() => {
               const want = ['400m','1k','5k','10k','21k'];
@@ -358,6 +365,11 @@ const DashboardPage = () => {
                 })()}
               </GdCard>
             ) : null}
+          </div>
+          <div>
+            <GdCard contentClassName="p-4">
+              <SwimPacesTable swimPaces={swimPaces} />
+            </GdCard>
           </div>
         </div>
 
