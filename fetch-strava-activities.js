@@ -375,20 +375,32 @@ function formatPace(paceSeconds) {
       }));
 
     const bestEfforts = [];
+    console.log(`Fetching best efforts for ${recentRunIds.length} runs...`);
     for (const id of recentRunIds) {
       try {
         const det = await getDetailedActivity(accessToken, id);
         bestEfforts.push(...deriveRunBestEffortsFromSplits(det));
-      } catch (e) { /* ignore */ }
+      } catch (e) { 
+        if (e?.response?.status === 429) {
+          console.warn(`Rate limit hit while fetching run ${id}, stopping best efforts fetch.`);
+          break;
+        }
+      }
     }
     fs.writeFileSync(path.join(publicDir, 'best-efforts.json'), JSON.stringify(bestEfforts, null, 2));
 
     const zonesSummary = [];
+    console.log(`Fetching zones for ${recentForZones.length} activities...`);
     for (const a of recentForZones) {
       try {
         const z = await getActivityZones(accessToken, a.id);
         zonesSummary.push(summarizeZones(z, a.type, a.id));
-      } catch (e) { /* ignore */ }
+      } catch (e) { 
+        if (e?.response?.status === 429) {
+          console.warn(`Rate limit hit while fetching zones for ${a.id}, stopping zones fetch.`);
+          break;
+        }
+      }
     }
     fs.writeFileSync(path.join(publicDir, 'zones-summary.json'), JSON.stringify(zonesSummary, null, 2));
     
@@ -410,10 +422,16 @@ function formatPace(paceSeconds) {
           }
         }
       } catch (e) {
-        console.warn(`Could not calculate pace for swim ${swim.id}:`, e?.message);
+        if (e?.response?.status === 429) {
+          console.warn(`Rate limit hit while fetching streams for swim ${swim.id}, stopping swim pace calculation.`);
+          break;
+        } else {
+          console.warn(`Could not calculate pace for swim ${swim.id}:`, e?.message);
+        }
       }
     }
     fs.writeFileSync(path.join(publicDir, 'swim-paces.json'), JSON.stringify(swimPaces, null, 2));
+    console.log(`✅ Generated swim-paces.json with ${swimPaces.length} entries.`);
     
     if (chartData.length > 0) {
       console.log(`✅ strava-data.json successfully created/updated at ${outputPath} with ${chartData.length} data points.`);
@@ -422,7 +440,15 @@ function formatPace(paceSeconds) {
     }
 
   } catch (error) {
-    // Ensure the CI step fails and doesn't deploy stale data
+    // Check if it's a rate limit error
+    if (error?.response?.status === 429) {
+      console.warn('⚠️ Rate limit exceeded. Partial data may have been saved.');
+      console.warn('Rate limit info:', error?.response?.headers?.['x-ratelimit-usage']);
+      console.warn('Consider reducing BEST_EFFORTS_LIMIT, ZONES_LIMIT, SWIM_PACE_LIMIT or increasing schedule frequency.');
+      // Don't exit with error code for rate limits - we want to deploy partial data
+      process.exit(0);
+    }
+    // Ensure the CI step fails and doesn't deploy stale data for other errors
     const details = error?.response?.data ? JSON.stringify(error.response.data) : (error?.message || 'Unknown error');
     console.error('Failed to fetch and process Strava data. See error messages above. Details:', details);
     // Non-zero exit code to signal failure in CI

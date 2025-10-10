@@ -2,7 +2,7 @@ name: Fetch Strava Data and Deploy
 
 on:
   schedule:
-    - cron: '*/20 * * * *'  # Ogni 20 minuti
+    - cron: '0 */2 * * *'  # Ogni 2 ore invece di 20 minuti
   workflow_dispatch:
 
 # Aggiungi questi permessi espliciti
@@ -35,6 +35,9 @@ jobs:
           STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
           STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
           STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+          BEST_EFFORTS_LIMIT: 6
+          ZONES_LIMIT: 6
+          SWIM_PACE_LIMIT: 4
 
       - name: Show latest JSON date
         run: |
