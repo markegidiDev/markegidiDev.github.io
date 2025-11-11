@@ -1328,5 +1328,12 @@
     "nuoto": 0.28,
     "ciclismo": 0,
     "camminata": 0
+  },
+  {
+    "date": "2025-11-10",
+    "corsa": 0,
+    "nuoto": 0.68,
+    "ciclismo": 0,
+    "camminata": 0
   }
 ]
