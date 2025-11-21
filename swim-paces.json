@@ -1,1 +1,34 @@
-[]
+[
+  {
+    "id": 16519053641,
+    "date": "2025-11-20",
+    "totalMeters": 1125,
+    "movingSeconds": 2907,
+    "pace100m": 258.40000000000003,
+    "paceFormatted": "4:18"
+  },
+  {
+    "id": 16499391145,
+    "date": "2025-11-18",
+    "totalMeters": 2900,
+    "movingSeconds": 4717,
+    "pace100m": 162.6551724137931,
+    "paceFormatted": "2:43"
+  },
+  {
+    "id": 16459164073,
+    "date": "2025-11-14",
+    "totalMeters": 675,
+    "movingSeconds": 3735,
+    "pace100m": 553.3333333333334,
+    "paceFormatted": "9:13"
+  },
+  {
+    "id": 16450277866,
+    "date": "2025-11-13",
+    "totalMeters": 550,
+    "movingSeconds": 1178,
+    "pace100m": 214.18181818181816,
+    "paceFormatted": "3:34"
+  }
+]
