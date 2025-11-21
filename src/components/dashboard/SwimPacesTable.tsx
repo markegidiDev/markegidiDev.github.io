@@ -58,27 +58,28 @@ export const SwimPacesTable = memo(function SwimPacesTable({ swimPaces }: Props)
 
   return (
     <div className="space-y-3">
-      <div className="text-sm font-medium mb-2">Ultime 4 nuotate</div>
       <div className="grid grid-cols-2 gap-3">
         {rows.flat().map((swim, idx) => (
           <div 
             key={idx} 
-            className="rounded-xl bg-gd-main neumorphism-border-1 p-3 min-h-[80px] flex flex-col justify-center"
+            className="rounded-xl bg-black/20 border border-white/5 p-3 min-h-[80px] flex flex-col justify-center hover:bg-white/5 transition-colors"
           >
             {swim ? (
               <>
-                <div className="text-xs text-muted-foreground">
-                  {formatDate(swim.date)}
+                <div className="flex justify-between items-start">
+                   <div className="text-xs text-muted-foreground">
+                     {formatDate(swim.date)}
+                   </div>
+                   <div className="text-xs font-medium text-white/60">
+                     {formatDistance(swim.totalMeters)}
+                   </div>
                 </div>
-                <div className="text-lg font-semibold text-blue-400">
-                  {swim.paceFormatted}/100m
-                </div>
-                <div className="text-xs text-muted-foreground">
-                  {formatDistance(swim.totalMeters)}
+                <div className="text-xl font-bold text-blue-400 mt-1">
+                  {swim.paceFormatted}<span className="text-xs font-normal text-muted-foreground ml-1">/100m</span>
                 </div>
               </>
             ) : (
-              <div className="text-xs text-muted-foreground text-center">
+              <div className="text-xs text-muted-foreground text-center opacity-30">
                 -
               </div>
             )}
@@ -86,7 +87,7 @@ export const SwimPacesTable = memo(function SwimPacesTable({ swimPaces }: Props)
         ))}
       </div>
       {last4Swims.length > 0 && (
-        <div className="text-xs text-muted-foreground text-center">
+        <div className="text-[10px] text-muted-foreground/50 text-center uppercase tracking-widest">
           Passo reale (esclude pause)
         </div>
       )}

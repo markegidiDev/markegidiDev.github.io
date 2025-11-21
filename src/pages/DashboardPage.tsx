@@ -6,7 +6,7 @@ import TrafficLight, { type Direction } from '@/components/dashboard/TrafficLigh
 import { ActivityAreaChart } from '@/components/charts/ActivityAreaChart';
 import { lttb } from '@/lib/downsample';
 import { Listbox } from '@headlessui/react';
-import { ChevronUpDownIcon, CheckIcon } from '@heroicons/react/20/solid';
+import { ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { WeeklyAggregatesChart } from '@/components/charts/WeeklyAggregatesChart';
 import { AthleteStatsKPI, type AthleteStats } from '@/components/dashboard/AthleteStatsKPI';
 import { ZonesDonut } from '@/components/charts/ZonesDonut';
@@ -93,18 +93,27 @@ const DashboardPage = () => {
 
   const filteredData = useMemo(() => {
     const referenceDate = new Date();
+    // Normalizziamo la data di riferimento a mezzanotte per evitare problemi di orario
+    referenceDate.setHours(0, 0, 0, 0);
+
     let daysToSubtract = 90;
     if (debounced.timeRange === '30d') daysToSubtract = 30;
     else if (debounced.timeRange === '7d') daysToSubtract = 7;
+    else if (debounced.timeRange === '6months') daysToSubtract = 180;
+    else if (debounced.timeRange === '1year') daysToSubtract = 365;
+    else if (debounced.timeRange === 'all') daysToSubtract = 3650; // 10 anni
+
     const startDate = new Date(referenceDate);
     startDate.setDate(startDate.getDate() - daysToSubtract);
+
     return stravaData.filter(item => {
-      // Filtra per data
-      const isInTimeRange = new Date(item.date) >= startDate;
-      // Se l'utente ha selezionato "all", non filtriamo per tipo di attività
+      const itemDate = new Date(item.date);
+      itemDate.setHours(0, 0, 0, 0); // Assicuriamoci che anche la data dell'item sia a mezzanotte
+      
+      const isInTimeRange = itemDate >= startDate;
+      
       if (debounced.activityType === 'all') return isInTimeRange;
-      // Altrimenti, verifichiamo che il tipo di attività selezionato abbia valore > 0 in quel giorno
-      return isInTimeRange && item[debounced.activityType] !== undefined && item[debounced.activityType]! > 0;
+      return isInTimeRange && item[debounced.activityType] !== undefined && Number(item[debounced.activityType]) > 0;
     });
   }, [stravaData, debounced]);
 
@@ -167,9 +176,16 @@ const DashboardPage = () => {
   // Totali ultimi 7 giorni per "mini tiles" della card performance
   const last7 = useMemo(() => {
     const today = new Date();
-    const start = new Date();
-    start.setDate(today.getDate() - 7);
-    const windowData = stravaData.filter(d => new Date(d.date) >= start);
+    today.setHours(0, 0, 0, 0);
+    const start = new Date(today);
+    start.setDate(today.getDate() - 6); // Ultimi 7 giorni inclusi oggi
+    
+    const windowData = stravaData.filter(d => {
+      const dDate = new Date(d.date);
+      dDate.setHours(0, 0, 0, 0);
+      return dDate >= start;
+    });
+
     const sum = (key: keyof DataPoint) => windowData.reduce((s, x) => s + (Number(x[key]) || 0), 0);
     return {
       run: sum('corsa'),
@@ -181,180 +197,195 @@ const DashboardPage = () => {
   }, [stravaData]);
 
   return (
-    <div className="container max-w-[1400px] mx-auto px-4 py-6 sm:px-6 sm:py-8 md:py-12 bg-background text-foreground">
-      <div className="space-y-6 md:space-y-8">
-        {/* Top header KPI bar */}
-        <GdCard contentClassName="p-4 md:p-5">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <h2 className="text-2xl md:text-3xl font-medium">Dashboard Attività Sportive</h2>
-            <div className="flex gap-3 text-sm">
-              <div className="px-3 py-1 rounded-full bg-gd-main neumorphism-border-1">Sessioni: {kpi.sessions}</div>
-              <div className="px-3 py-1 rounded-full bg-gd-main neumorphism-border-1">Totale: {(kpi.distance + kpi.walk).toFixed(1)} km</div>
-            </div>
+    <div className="container max-w-[1600px] mx-auto px-4 py-6 sm:px-6 sm:py-8 bg-background text-foreground min-h-screen">
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground">Panoramica delle attività sportive</p>
           </div>
-        </GdCard>
-
-        {/* Main two-column content */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
-          {/* Left: Summary + Filters + Athlete Stats */}
-          <div className="lg:col-span-6 xl:col-span-7 space-y-6">
-            <GdCard className="overflow-visible" contentClassName="p-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <p className="text-muted-foreground text-sm md:text-base">
-                  Filtra per intervallo di tempo e tipo
-                </p>
-                <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center sm:justify-end">
-                  <div className="relative w-[200px]">
-                    <Listbox value={activityType} onChange={setActivityType}>
-                      <Listbox.Button className="relative w-full cursor-default rounded-lg bg-gd-main border border-transparent neumorphism-border-1 py-2 pl-3 pr-10 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff2d55]/60">
-                        <span className="block truncate">{typeOptions.find((opt) => opt.id === activityType)?.name}</span>
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                          <ChevronUpDownIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-                        </span>
-                      </Listbox.Button>
-                      <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-gd-main border border-transparent neumorphism-border-2 py-1 text-base shadow-lg focus:outline-none sm:text-sm">
-                        {typeOptions.map((opt) => (
-                          <Listbox.Option key={opt.id} className={({ active }) => `relative cursor-default select-none py-1.5 pl-8 pr-4 ${active ? 'bg-gd-divider text-foreground' : 'text-foreground'}`} value={opt.id}>
-                            {({ selected }) => (
-                              <>
-                                <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{opt.name}</span>
-                                {selected ? (
-                                  <span className="absolute inset-y-0 left-0 flex items-center pl-2">
-                                    <CheckIcon className="h-4 w-4" aria-hidden="true" />
-                                  </span>
-                                ) : null}
-                              </>
-                            )}
-                          </Listbox.Option>
-                        ))}
-                      </Listbox.Options>
-                    </Listbox>
-                  </div>
-                  <div className="relative w-[200px]">
-                    <Listbox value={timeRange} onChange={setTimeRange}>
-                      <Listbox.Button className="relative w-full cursor-default rounded-lg bg-gd-main border border-transparent neumorphism-border-1 py-2 pl-3 pr-10 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-[#ff2d55]/60">
-                        <span className="block truncate">{timeOptions.find((opt) => opt.id === timeRange)?.name}</span>
-                        <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
-                          <ChevronUpDownIcon className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-                        </span>
-                      </Listbox.Button>
-                      <Listbox.Options className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md bg-gd-main border border-transparent neumorphism-border-2 py-1 text-base shadow-lg focus:outline-none sm:text-sm">
-                        {timeOptions.map((opt) => (
-                          <Listbox.Option key={opt.id} className={({ active }) => `relative cursor-default select-none py-1.5 pl-8 pr-4 ${active ? 'bg-gd-divider text-foreground' : 'text-foreground'}`} value={opt.id}>
-                            {({ selected }) => (
-                              <>
-                                <span className={`block truncate ${selected ? 'font-medium' : 'font-normal'}`}>{opt.name}</span>
-                                {selected ? (
-                                  <span className="absolute inset-y-0 left-0 flex items-center pl-2">
-                                    <CheckIcon className="h-4 w-4" aria-hidden="true" />
-                                  </span>
-                                ) : null}
-                              </>
-                            )}
-                          </Listbox.Option>
-                        ))}
-                      </Listbox.Options>
-                    </Listbox>
-                  </div>
-                </div>
-              </div>
-            </GdCard>
-            {athleteStats ? <GdCard contentClassName="p-4"><AthleteStatsKPI stats={athleteStats} /></GdCard> : null}
-          </div>
-
-          {/* Right: Performance by type with segmented tabs */}
-          <div className="lg:col-span-6 xl:col-span-5 space-y-6">
-            <GdCard contentClassName="p-4">
-              <Tab.Group>
-                <div className="flex items-center justify-between mb-3">
-                  <div className="text-base md:text-lg font-medium">Performance per tipo</div>
-                  <Tab.List className="flex gap-2">
-                    {['Giornaliero', 'Settimanale'].map(label => (
-                      <Tab key={label} className={({ selected }) => `px-3 py-1.5 text-sm font-medium rounded-full focus:outline-none transition-colors ${selected ? 'bg-gd-magenta-2 text-white shadow-magenta-btn' : 'bg-gd-main text-muted-foreground hover:bg-gd-divider'}`}>
-                        {label}
-                      </Tab>
-                    ))}
-                  </Tab.List>
-                </div>
-                <Tab.Panels>
-                  <Tab.Panel>
-                    <ActivityAreaChart
-                      data={downsampled}
-                      series={chartConfig}
-                      keys={visibleAreas}
-                      animationKey={`${debounced.timeRange}-${debounced.activityType}-${downsampled.length}`}
-                      animate={true}
-                      animationDuration={500}
-                    />
-                  </Tab.Panel>
-                  <Tab.Panel>
-                    {weeklyFiltered.length ? (
-                      <WeeklyAggregatesChart data={weeklyFiltered} keys={["corsa","nuoto","ciclismo","camminata"]} series={chartConfig} />
-                    ) : (
-                      <div className="text-muted-foreground">Nessun dato settimanale disponibile</div>
-                    )}
-                  </Tab.Panel>
-                </Tab.Panels>
-              </Tab.Group>
-
-              {/* Mini tiles - last 7 days */}
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                <div className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
-                  <div className="text-xs text-muted-foreground">Corsa (7g)</div>
-                  <div className="text-lg font-semibold">{Number.isFinite(last7.run) ? last7.run.toFixed(1) : '0.0'} km</div>
-                </div>
-                <div className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
-                  <div className="text-xs text-muted-foreground">Ciclismo (7g)</div>
-                  <div className="text-lg font-semibold">{Number.isFinite(last7.ride) ? last7.ride.toFixed(1) : '0.0'} km</div>
-                </div>
-                <div className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
-                  <div className="text-xs text-muted-foreground">Nuoto (7g)</div>
-                  <div className="text-lg font-semibold">{Number.isFinite(last7.swim) ? last7.swim.toFixed(1) : '0.0'} km</div>
-                </div>
-                <div className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
-                  <div className="text-xs text-muted-foreground">Camminata (7g)</div>
-                  <div className="text-lg font-semibold">{Number.isFinite(last7.walk) ? last7.walk.toFixed(1) : '0.0'} km</div>
-                </div>
-              </div>
-            </GdCard>
+          <div className="flex gap-3">
+             <div className="px-4 py-2 rounded-full bg-gd-main border border-white/10 shadow-sm flex items-center">
+                <span className="text-sm text-muted-foreground mr-2">Sessioni</span>
+                <span className="font-semibold">{kpi.sessions}</span>
+             </div>
+             <div className="px-4 py-2 rounded-full bg-gd-main border border-white/10 shadow-sm flex items-center">
+                <span className="text-sm text-muted-foreground mr-2">Totale Km</span>
+                <span className="font-semibold">{(kpi.distance + kpi.walk).toFixed(1)}</span>
+             </div>
           </div>
         </div>
 
-        {/* Bottom: Records + Zones + Swim Paces */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-          <div>
-            {(() => {
-              const want = ['400m','1k','5k','10k','21k'];
-              const pick = (label: string) => (bestEfforts || []).filter(e => e.label === label).sort((a,b) => a.time_s - b.time_s)[0];
-              const items = want.map(l => ({ label: l, entry: pick(l) })).filter(x => x.entry);
-              if (!items.length) return null;
-              return (
-                <GdCard contentClassName="p-4">
-                  <div className="text-sm font-medium mb-2">Best Times</div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                    {items.map(({ label, entry }, idx) => (
-                      <div key={idx} className="rounded-xl bg-gd-main neumorphism-border-1 p-3">
-                        <div className="text-xs text-muted-foreground">{label}</div>
-                        <div className="text-lg font-semibold">
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          
+          {/* Main Chart Section (2 cols) */}
+          <div className="xl:col-span-2">
+            <GdCard className="h-full" contentClassName="p-0 flex flex-col h-full">
+               <Tab.Group>
+                 {/* Card Header with Controls */}
+                 <div className="p-4 md:p-6 border-b border-white/5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+                    <div className="flex items-center gap-4">
+                       <h2 className="text-lg font-semibold">Performance</h2>
+                       <Tab.List className="flex bg-black/20 rounded-lg p-1">
+                          {['Giornaliero', 'Settimanale'].map(label => (
+                             <Tab key={label} className={({ selected }) => `px-3 py-1 text-xs font-medium rounded-md transition-all focus:outline-none ${selected ? 'bg-gd-magenta-2 text-white shadow-sm' : 'text-muted-foreground hover:text-white'}`}>
+                                {label}
+                             </Tab>
+                          ))}
+                       </Tab.List>
+                    </div>
+                    
+                    {/* Filters */}
+                    <div className="flex gap-2">
+                       <Listbox value={activityType} onChange={setActivityType}>
+                          <div className="relative w-32 md:w-40">
+                             <Listbox.Button className="w-full bg-black/20 border border-white/5 rounded-lg py-1.5 px-3 text-left text-sm focus:outline-none focus:ring-1 focus:ring-primary flex items-center justify-between">
+                                <span className="block truncate">{typeOptions.find(o => o.id === activityType)?.name}</span>
+                                <ChevronUpDownIcon className="h-4 w-4 text-muted-foreground" />
+                             </Listbox.Button>
+                             <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-[#1f2023] border border-white/10 py-1 text-sm shadow-xl focus:outline-none">
+                                {typeOptions.map((opt) => (
+                                   <Listbox.Option key={opt.id} value={opt.id} className={({ active }) => `relative cursor-default select-none py-2 pl-3 pr-9 ${active ? 'bg-white/5 text-white' : 'text-gray-300'}`}>
+                                      {opt.name}
+                                   </Listbox.Option>
+                                ))}
+                             </Listbox.Options>
+                          </div>
+                       </Listbox>
+
+                       <Listbox value={timeRange} onChange={setTimeRange}>
+                          <div className="relative w-36 md:w-44">
+                             <Listbox.Button className="w-full bg-black/20 border border-white/5 rounded-lg py-1.5 px-3 text-left text-sm focus:outline-none focus:ring-1 focus:ring-primary flex items-center justify-between">
+                                <span className="block truncate">{timeOptions.find(o => o.id === timeRange)?.name}</span>
+                                <ChevronUpDownIcon className="h-4 w-4 text-muted-foreground" />
+                             </Listbox.Button>
+                             <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-[#1f2023] border border-white/10 py-1 text-sm shadow-xl focus:outline-none">
+                                {timeOptions.map((opt) => (
+                                   <Listbox.Option key={opt.id} value={opt.id} className={({ active }) => `relative cursor-default select-none py-2 pl-3 pr-9 ${active ? 'bg-white/5 text-white' : 'text-gray-300'}`}>
+                                      {opt.name}
+                                   </Listbox.Option>
+                                ))}
+                             </Listbox.Options>
+                          </div>
+                       </Listbox>
+                    </div>
+                 </div>
+
+                 {/* Chart Content */}
+                 <div className="p-4 md:p-6 flex-1 min-h-[350px]">
+                    <Tab.Panels className="h-full">
+                       <Tab.Panel className="h-full">
+                          {downsampled.length > 0 ? (
+                            <ActivityAreaChart
+                              data={downsampled}
+                              series={chartConfig}
+                              keys={visibleAreas}
+                              animationKey={`${debounced.timeRange}-${debounced.activityType}-${downsampled.length}`}
+                              animate={true}
+                              animationDuration={500}
+                            />
+                          ) : (
+                            <div className="flex flex-col h-full items-center justify-center text-muted-foreground gap-2">
+                              <p>Nessuna attività trovata in questo periodo.</p>
+                              <p className="text-xs opacity-50">Prova a selezionare un intervallo più ampio.</p>
+                            </div>
+                          )}
+                       </Tab.Panel>
+                       <Tab.Panel className="h-full">
+                          {weeklyFiltered.length ? (
+                            <WeeklyAggregatesChart data={weeklyFiltered} keys={["corsa","nuoto","ciclismo","camminata"]} series={chartConfig} />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-muted-foreground">Nessun dato settimanale disponibile</div>
+                          )}
+                       </Tab.Panel>
+                    </Tab.Panels>
+                 </div>
+
+                 {/* Footer Metrics (Last 7 Days) */}
+                 <div className="grid grid-cols-2 md:grid-cols-4 border-t border-white/5 divide-x divide-white/5 bg-black/10">
+                    <div className="p-4 text-center md:text-left">
+                       <div className="text-xs text-muted-foreground mb-1">Corsa (7g)</div>
+                       <div className="text-xl font-bold text-white">{Number.isFinite(last7.run) ? last7.run.toFixed(1) : '0.0'} <span className="text-xs font-normal text-muted-foreground">km</span></div>
+                    </div>
+                    <div className="p-4 text-center md:text-left">
+                       <div className="text-xs text-muted-foreground mb-1">Ciclismo (7g)</div>
+                       <div className="text-xl font-bold text-white">{Number.isFinite(last7.ride) ? last7.ride.toFixed(1) : '0.0'} <span className="text-xs font-normal text-muted-foreground">km</span></div>
+                    </div>
+                    <div className="p-4 text-center md:text-left">
+                       <div className="text-xs text-muted-foreground mb-1">Nuoto (7g)</div>
+                       <div className="text-xl font-bold text-white">{Number.isFinite(last7.swim) ? last7.swim.toFixed(1) : '0.0'} <span className="text-xs font-normal text-muted-foreground">km</span></div>
+                    </div>
+                    <div className="p-4 text-center md:text-left">
+                       <div className="text-xs text-muted-foreground mb-1">Camminata (7g)</div>
+                       <div className="text-xl font-bold text-white">{Number.isFinite(last7.walk) ? last7.walk.toFixed(1) : '0.0'} <span className="text-xs font-normal text-muted-foreground">km</span></div>
+                    </div>
+                 </div>
+               </Tab.Group>
+            </GdCard>
+          </div>
+
+          {/* Sidebar (1 col) */}
+          <div className="space-y-6">
+             {/* Athlete Stats */}
+             {athleteStats && (
+                <GdCard contentClassName="p-6">
+                   <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">Statistiche Atleta</h3>
+                   <AthleteStatsKPI stats={athleteStats} />
+                </GdCard>
+             )}
+
+             {/* Best Efforts */}
+             <GdCard contentClassName="p-6">
+                <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">Record Personali</h3>
+                <div className="space-y-3">
+                  {(() => {
+                    const want = ['400m','1k','5k','10k','21k'];
+                    const pick = (label: string) => (bestEfforts || []).filter(e => e.label === label).sort((a,b) => a.time_s - b.time_s)[0];
+                    const items = want.map(l => ({ label: l, entry: pick(l) })).filter(x => x.entry);
+                    
+                    if (!items.length) return <div className="text-sm text-muted-foreground">Nessun record trovato</div>;
+                    
+                    return items.map(({ label, entry }, idx) => (
+                      <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5">
+                        <div className="flex flex-col">
+                           <span className="text-xs text-muted-foreground font-medium uppercase">{label}</span>
+                           <span className="text-xs text-muted-foreground/60">{new Date(entry!.date).toLocaleDateString('it-IT')}</span>
+                        </div>
+                        <div className="text-lg font-bold font-mono text-white">
                           {(() => {
                             const m = Math.floor(entry!.time_s / 60);
                             const s = Math.round(entry!.time_s % 60).toString().padStart(2,'0');
                             return `${m}:${s}`;
                           })()}
                         </div>
-                        <div className="text-xs text-muted-foreground">{new Date(entry!.date).toLocaleDateString('it-IT')}</div>
                       </div>
-                    ))}
-                  </div>
-                </GdCard>
-              );
-            })()}
+                    ));
+                  })()}
+                </div>
+             </GdCard>
           </div>
-          <div>
-            {zonesSummary?.length ? (
-              <GdCard contentClassName="p-4">
-                <div className="text-sm font-medium mb-2">Distribuzione zone (ultime attività)</div>
-                {(() => {
+
+        </div>
+
+        {/* Bottom Row */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+           {/* Swim Paces */}
+           <GdCard contentClassName="p-0 overflow-hidden h-full">
+              <div className="p-4 border-b border-white/5 bg-black/10">
+                 <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Ultime Nuotate</h3>
+              </div>
+              <div className="p-4">
+                 <SwimPacesTable swimPaces={swimPaces} />
+              </div>
+           </GdCard>
+
+           {/* Zones */}
+           <GdCard contentClassName="p-6 h-full">
+              <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-4">Zone Cardiache / Potenza</h3>
+              {zonesSummary?.length ? (
+                (() => {
                   const total = (zonesSummary || []).reduce((acc, z) => {
                     const hr = z.hr || [];
                     hr.forEach((sec, i) => { acc[i] = (acc[i] || 0) + (sec || 0); });
@@ -362,21 +393,18 @@ const DashboardPage = () => {
                   }, [] as number[]);
                   const data = (total.length ? total : [0,0,0,0,0]).slice(0,5).map((s, i) => ({ zone: `Z${i+1}`, seconds: s }));
                   return <ZonesDonut data={data} />;
-                })()}
-              </GdCard>
-            ) : null}
-          </div>
-          <div>
-            <GdCard contentClassName="p-4">
-              <SwimPacesTable swimPaces={swimPaces} />
-            </GdCard>
-          </div>
+                })()
+              ) : (
+                <div className="text-muted-foreground text-sm">Nessun dato zone disponibile</div>
+              )}
+           </GdCard>
+        </div>
+        
+        {/* Debug / Extra */}
+        <div className="flex justify-center pt-8 opacity-50 hover:opacity-100 transition-opacity">
+           <TrafficLight selectedDirection={selectedDirection} onDirectionChange={setSelectedDirection} />
         </div>
 
-        {/* Optional: TrafficLight demo */}
-        <GdCard className="max-w-[600px] mx-auto" contentClassName="p-4">
-          <TrafficLight selectedDirection={selectedDirection} onDirectionChange={setSelectedDirection} />
-        </GdCard>
       </div>
     </div>
   );

@@ -74,58 +74,68 @@ export default function TrafficLight({ selectedDirection = 'default', onDirectio
 
   return (
     <div className="max-w-md mx-auto bg-background/50 backdrop-blur-sm border border-border/60 rounded-[var(--radius)] p-6 shadow-lg transition-all duration-300 hover:shadow-xl">
-      <div className="mb-6">        <h3 className="text-xl font-medium mb-2">Semaforo Incroci</h3>        <p className="text-muted-foreground mb-4">
-          Seleziona la direzione per vedere il tempo rimanente
-        </p>
-        <div className="mb-5">
-          <DirectionCombobox 
-            value={selectedDirection}
-            onValueChange={onDirectionChange || (() => {})}
-            buttonClassName="w-full shadow-sm traffic-light-combobox"
-            dropdownClassName="max-w-[280px]"
-          />        </div>
-      
-        <div className={`traffic-light-housing flex flex-col items-center p-4 rounded-lg mx-auto mb-4 mt-2 
-          ${selectedDirection === 'default' ? 'bg-[oklch(0.274_0.006_286.033)]' : 
-            selectedDirection === 'caerano' ? 'bg-[oklch(var(--chart-1))]' : 
-            selectedDirection === 'monte' ? 'bg-[oklch(var(--chart-2))]' : 
-            selectedDirection === 'ospedale' ? 'bg-[oklch(var(--chart-3))]' : 
-            'bg-[oklch(var(--chart-4))]'} bg-opacity-20`}>
-          <div className={`
-            traffic-light-light flex items-center justify-center
-            ${active === 'red' ? 'red active' : 'inactive'}
-          `}>
-            {active === 'red' && timeLeft}
+      <div className="flex flex-col md:flex-row gap-8 items-center">
+        <div className="flex-1">
+          <h3 className="text-xl font-medium mb-2">Semaforo Incroci</h3>
+          <p className="text-muted-foreground mb-4">
+            Seleziona la direzione per vedere il tempo rimanente
+          </p>
+          <div className="mb-5">
+            <DirectionCombobox 
+              value={selectedDirection}
+              onValueChange={onDirectionChange || (() => {})}
+              buttonClassName="w-full shadow-sm traffic-light-combobox"
+              dropdownClassName="max-w-[280px]"
+            />
           </div>
           
-          <div className={`
-            traffic-light-light flex items-center justify-center
-            ${active === 'yellow' ? 'yellow active' : 'inactive'}
-          `}>
-            {active === 'yellow' && timeLeft}
-          </div>
-          
-          <div className={`
-            traffic-light-light flex items-center justify-center
-            ${active === 'green' ? 'green active' : 'inactive'}
-          `}>
-            {active === 'green' && timeLeft}
+          <div className="pt-4 mt-4 flex flex-col border-t border-border">
+            <p className={`font-medium ${
+              selectedDirection === 'default' ? 'text-primary' : 
+              selectedDirection === 'caerano' ? 'text-[oklch(var(--chart-1))]' : 
+              selectedDirection === 'monte' ? 'text-[oklch(var(--chart-2))]' : 
+              selectedDirection === 'ospedale' ? 'text-[oklch(var(--chart-3))]' : 
+              'text-[oklch(var(--chart-4))]'}`}>
+              {selectedDirection !== 'default' ? `Direzione: ${selectedDirection.charAt(0).toUpperCase() + selectedDirection.slice(1)}` : 'Semaforo Predefinito'}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {active === 'red' ? 'Rosso' : active === 'yellow' ? 'Giallo' : 'Verde'} - Cambio in {timeLeft}s
+            </p>
           </div>
         </div>
-      </div>
-       
-      <div className="pt-4 mt-4 flex flex-col text-center border-t border-border">
-        <p className={`font-medium ${
-          selectedDirection === 'default' ? 'text-primary' : 
-          selectedDirection === 'caerano' ? 'text-[oklch(var(--chart-1))]' : 
-          selectedDirection === 'monte' ? 'text-[oklch(var(--chart-2))]' : 
-          selectedDirection === 'ospedale' ? 'text-[oklch(var(--chart-3))]' : 
-          'text-[oklch(var(--chart-4))]'}`}>
-          {selectedDirection !== 'default' ? `Direzione: ${selectedDirection.charAt(0).toUpperCase() + selectedDirection.slice(1)}` : 'Semaforo Predefinito'}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          {active.charAt(0).toUpperCase() + active.slice(1)} - Cambio in {timeLeft} secondi
-        </p>
+      
+        {/* Visual Traffic Light */}
+        <div className="bg-gray-900 p-4 rounded-3xl border-4 border-gray-800 shadow-2xl flex flex-col gap-4 w-24 items-center relative">
+          {/* Hoods for realism */}
+          <div className="absolute top-[-10px] w-20 h-4 bg-gray-800 rounded-t-xl z-0"></div>
+          
+          {/* Red Light */}
+          <div className={`w-16 h-16 rounded-full border-4 border-black/30 transition-all duration-300 flex items-center justify-center relative z-10 ${
+            active === 'red' 
+              ? 'bg-red-600 shadow-[0_0_30px_rgba(220,38,38,0.6)] scale-105' 
+              : 'bg-red-950/30 opacity-40'
+          }`}>
+            {active === 'red' && <span className="text-white font-bold text-xl drop-shadow-md">{timeLeft}</span>}
+          </div>
+          
+          {/* Yellow Light */}
+          <div className={`w-16 h-16 rounded-full border-4 border-black/30 transition-all duration-300 flex items-center justify-center relative z-10 ${
+            active === 'yellow' 
+              ? 'bg-yellow-500 shadow-[0_0_30px_rgba(234,179,8,0.6)] scale-105' 
+              : 'bg-yellow-950/30 opacity-40'
+          }`}>
+            {active === 'yellow' && <span className="text-black font-bold text-xl">{timeLeft}</span>}
+          </div>
+          
+          {/* Green Light */}
+          <div className={`w-16 h-16 rounded-full border-4 border-black/30 transition-all duration-300 flex items-center justify-center relative z-10 ${
+            active === 'green' 
+              ? 'bg-green-500 shadow-[0_0_30px_rgba(34,197,94,0.6)] scale-105' 
+              : 'bg-green-950/30 opacity-40'
+          }`}>
+            {active === 'green' && <span className="text-white font-bold text-xl drop-shadow-md">{timeLeft}</span>}
+          </div>
+        </div>
       </div>
     </div>
   );

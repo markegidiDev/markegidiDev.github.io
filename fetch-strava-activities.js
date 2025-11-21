@@ -135,6 +135,37 @@ function buildWeeklyAggregates(daily) {
 }
 
 function deriveRunBestEffortsFromSplits(activity) {
+  // 1. Try to use Strava's native "best_efforts" if available (much more accurate)
+  if (activity.best_efforts && Array.isArray(activity.best_efforts) && activity.best_efforts.length > 0) {
+    const mapped = [];
+    const date = (activity.start_date_local || activity.start_date || '').slice(0,10);
+    
+    activity.best_efforts.forEach(be => {
+      let label = null;
+      // Normalize Strava labels to our dashboard format
+      if (be.name === '400m') label = '400m';
+      else if (be.name === '1k' || be.name === '1 km') label = '1k';
+      else if (be.name === '5k' || be.name === '5 km') label = '5k';
+      else if (be.name === '10k' || be.name === '10 km') label = '10k';
+      else if (be.name === 'Half-Marathon' || be.name === '21k') label = '21k';
+      else if (be.name === 'Marathon' || be.name === '42k') label = '42k';
+
+      if (label) {
+        mapped.push({
+          date: date,
+          type: 'run',
+          label: label,
+          dist_km: be.distance / 1000,
+          time_s: be.moving_time, // Use moving_time for consistency
+          pace_s_per_km: be.moving_time / (be.distance / 1000)
+        });
+      }
+    });
+    
+    if (mapped.length > 0) return mapped;
+  }
+
+  // 2. Fallback: Calculate from splits if native data is missing
   const out = [];
   const splits = activity.splits_metric || [];
   const kmSplits = splits.filter(s => Math.abs((s.distance || 0) - 1000) < 80);
@@ -218,21 +249,35 @@ async function getActivityStreams(token, id, streamTypes = ["time", "distance", 
 
 // Calcola la maschera di movimento reale per escludere le pause
 function calculateMovingMask(streams) {
-  if (!streams?.time?.data || !streams?.distance?.data) return null;
+  if (!streams) return null;
   
-  const time = streams.time.data;
-  const dist = streams.distance.data;
-  const moving = streams.moving?.data || [];
-  const cadence = streams.cadence?.data || [];
-  
-  const n = time.length;
+  const timeData = streams.time?.data;
+  const movingData = streams.moving?.data;
+  const distData = streams.distance?.data;
+  const cadenceData = streams.cadence?.data;
+
+  // Determine length from any available stream
+  const n = (timeData || movingData || distData || cadenceData || []).length;
+  if (n === 0) return null;
+
   const active = new Array(n).fill(false);
-  
-  // Identifica i secondi di movimento attivo
-  for (let i = 0; i < n; i++) {
-    const distIncrease = i > 0 ? (dist[i] - dist[i-1]) : 0;
-    const isMoving = (moving[i] === true) || (distIncrease > 0.1) || ((cadence[i] || 0) > 0);
-    active[i] = !!isMoving;
+
+  if (movingData) {
+    // Trust the moving stream if available
+    for (let i = 0; i < n; i++) {
+      active[i] = movingData[i];
+    }
+  } else if (distData) {
+    // Fallback to distance/cadence logic
+    const cadence = cadenceData || [];
+    for (let i = 0; i < n; i++) {
+      const distIncrease = i > 0 ? (distData[i] - distData[i-1]) : 0;
+      const isMoving = (distIncrease > 0.1) || ((cadence[i] || 0) > 0);
+      active[i] = !!isMoving;
+    }
+  } else {
+    // Cannot determine movement without moving stream or distance stream
+    return null;
   }
   
   // Chiudi gap piccoli (≤2s) e richiedi pause minime (≥5s)
@@ -280,15 +325,28 @@ function calculateMovingMask(streams) {
 }
 
 // Calcola il passo reale per un'attività di nuoto
-function calculateRealSwimPace(streams) {
+function calculateRealSwimPace(streams, activityId, totalDistanceOverride = 0) {
   const movingMask = calculateMovingMask(streams);
-  if (!movingMask || !streams?.distance?.data) return null;
+  if (!movingMask) {
+    console.log(`[Swim Debug] Activity ${activityId}: No moving mask (missing moving/distance streams?)`);
+    return null;
+  }
   
-  const dist = streams.distance.data;
-  const totalMeters = dist[dist.length - 1] || 0;
+  let totalMeters = 0;
+  if (streams.distance?.data) {
+    const dist = streams.distance.data;
+    totalMeters = dist[dist.length - 1] || 0;
+  } else {
+    // Fallback to activity summary distance if stream is missing
+    totalMeters = totalDistanceOverride;
+  }
+  
   const movingSeconds = movingMask.filter(Boolean).length;
   
-  if (totalMeters <= 0 || movingSeconds <= 0) return null;
+  if (totalMeters <= 0 || movingSeconds <= 0) {
+    console.log(`[Swim Debug] Activity ${activityId}: Zero meters (${totalMeters}) or zero moving seconds (${movingSeconds})`);
+    return null;
+  }
   
   // Passo in secondi per 100m
   const pace100m = (movingSeconds / totalMeters) * 100;
@@ -329,6 +387,9 @@ function formatPace(paceSeconds) {
     }
     const rawActivities = await getActivities(accessToken);
     
+    // Create a sorted copy (Newest -> Oldest) for selecting "recent" items
+    const sortedActivities = [...(rawActivities || [])].sort((a, b) => new Date(b.start_date) - new Date(a.start_date));
+
     let chartData = [];
     if (rawActivities && rawActivities.length > 0) {
       chartData = processActivitiesForChart(rawActivities);
@@ -358,14 +419,16 @@ function formatPace(paceSeconds) {
     const ZONES_LIMIT = Number(process.env.ZONES_LIMIT || 24);      // ~24 zone calls max
     const SWIM_PACE_LIMIT = Number(process.env.SWIM_PACE_LIMIT || 8); // ~8 swim streams calls max
     
-    const recentRunIds = (rawActivities || [])
+    // Use sortedActivities to get the MOST RECENT activities
+    const recentRunIds = sortedActivities
       .filter((a) => ['Run', 'TrailRun', 'VirtualRun'].includes(a.type))
       .slice(0, BEST_LIMIT)
       .map((a) => a.id);
-    const recentForZones = (rawActivities || []).slice(0, ZONES_LIMIT).map((a) => ({ id: a.id, type: a.type }));
+      
+    const recentForZones = sortedActivities.slice(0, ZONES_LIMIT).map((a) => ({ id: a.id, type: a.type }));
     
-    // Ultime nuotate per calcolare il passo reale
-    const recentSwimActivities = (rawActivities || [])
+    // Ultime nuotate per calcolare il passo reale (Most recent first)
+    const recentSwimActivities = sortedActivities
       .filter((a) => a.type === 'Swim')
       .slice(0, SWIM_PACE_LIMIT)
       .map((a) => ({ 
@@ -387,7 +450,38 @@ function formatPace(paceSeconds) {
         }
       }
     }
-    fs.writeFileSync(path.join(publicDir, 'best-efforts.json'), JSON.stringify(bestEfforts, null, 2));
+    // Merge with existing best efforts to preserve history
+    let existingBestEfforts = [];
+    const bestEffortsPath = path.join(publicDir, 'best-efforts.json');
+    if (fs.existsSync(bestEffortsPath)) {
+      try {
+        existingBestEfforts = JSON.parse(fs.readFileSync(bestEffortsPath, 'utf8'));
+        if (!Array.isArray(existingBestEfforts)) existingBestEfforts = [];
+      } catch (e) {
+        console.warn('Could not read existing best-efforts.json, starting fresh.');
+      }
+    }
+
+    // Combine and deduplicate (keep the best time for each label/date combination or just append?)
+    // Strategy: Append new ones, then filter to keep only the absolute best for each label?
+    // Or just keep all and let frontend sort? Frontend sorts by time_s.
+    // Let's just append and deduplicate by (date + label) to avoid duplicates if script runs again.
+    const combinedEfforts = [...existingBestEfforts];
+    
+    bestEfforts.forEach(newEffort => {
+      const exists = combinedEfforts.some(e => e.date === newEffort.date && e.label === newEffort.label);
+      if (!exists) {
+        combinedEfforts.push(newEffort);
+      } else {
+        // If exists, update if this one is better (or just different? Strava native is better than split calc)
+        // Since we switched to native, we should prefer the new one if the old one was split-based.
+        // Simple logic: replace if date/label matches.
+        const idx = combinedEfforts.findIndex(e => e.date === newEffort.date && e.label === newEffort.label);
+        combinedEfforts[idx] = newEffort;
+      }
+    });
+
+    fs.writeFileSync(bestEffortsPath, JSON.stringify(combinedEfforts, null, 2));
 
     const zonesSummary = [];
     console.log(`Fetching zones for ${recentForZones.length} activities...`);
@@ -409,9 +503,14 @@ function formatPace(paceSeconds) {
     console.log(`Calculating real pace for ${recentSwimActivities.length} recent swim activities...`);
     for (const swim of recentSwimActivities) {
       try {
-        const streams = await getActivityStreams(accessToken, swim.id, ["time", "distance", "moving", "cadence"]);
+        // Try fetching 'distance' stream specifically, as 'time' might be implicit or missing for swims
+        const streams = await getActivityStreams(accessToken, swim.id, ["distance", "moving", "cadence"]);
+        
         if (streams) {
-          const paceData = calculateRealSwimPace(streams);
+          // Debug: print available stream keys
+          console.log(`[Swim Debug] Activity ${swim.id} streams keys:`, Object.keys(streams));
+          
+          const paceData = calculateRealSwimPace(streams, swim.id, swim.distance);
           if (paceData) {
             swimPaces.push({
               id: swim.id,
@@ -420,6 +519,8 @@ function formatPace(paceSeconds) {
             });
             console.log(`Activity ${swim.id} (${swim.date}): ${paceData.paceFormatted}/100m`);
           }
+        } else {
+          console.log(`[Swim Debug] Activity ${swim.id}: No streams returned`);
         }
       } catch (e) {
         if (e?.response?.status === 429) {
