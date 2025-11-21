@@ -1,66 +1,34 @@
 [
   {
-    "id": 14046544200,
-    "date": "2025-01-07",
-    "totalMeters": 1575,
-    "movingSeconds": 1137,
-    "pace100m": 72.19047619047619,
-    "paceFormatted": "1:12"
+    "id": 16519053641,
+    "date": "2025-11-20",
+    "totalMeters": 1125,
+    "movingSeconds": 2907,
+    "pace100m": 258.40000000000003,
+    "paceFormatted": "4:18"
   },
   {
-    "id": 14046544186,
-    "date": "2025-01-09",
-    "totalMeters": 2050,
-    "movingSeconds": 1180,
-    "pace100m": 57.56097560975609,
-    "paceFormatted": "0:58"
+    "id": 16499391145,
+    "date": "2025-11-18",
+    "totalMeters": 2900,
+    "movingSeconds": 4717,
+    "pace100m": 162.6551724137931,
+    "paceFormatted": "2:43"
   },
   {
-    "id": 14046544177,
-    "date": "2025-01-13",
-    "totalMeters": 1925,
-    "movingSeconds": 1112,
-    "pace100m": 57.76623376623377,
-    "paceFormatted": "0:58"
+    "id": 16459164073,
+    "date": "2025-11-14",
+    "totalMeters": 675,
+    "movingSeconds": 3735,
+    "pace100m": 553.3333333333334,
+    "paceFormatted": "9:13"
   },
   {
-    "id": 14046544193,
-    "date": "2025-01-16",
-    "totalMeters": 1325,
-    "movingSeconds": 1087,
-    "pace100m": 82.0377358490566,
-    "paceFormatted": "1:22"
-  },
-  {
-    "id": 14046544323,
-    "date": "2025-01-20",
-    "totalMeters": 1900,
-    "movingSeconds": 1110,
-    "pace100m": 58.42105263157895,
-    "paceFormatted": "0:58"
-  },
-  {
-    "id": 14046544180,
-    "date": "2025-01-22",
-    "totalMeters": 775,
-    "movingSeconds": 1324,
-    "pace100m": 170.83870967741936,
-    "paceFormatted": "2:51"
-  },
-  {
-    "id": 14046544319,
-    "date": "2025-01-23",
-    "totalMeters": 725,
-    "movingSeconds": 729,
-    "pace100m": 100.55172413793103,
-    "paceFormatted": "1:41"
-  },
-  {
-    "id": 14046544329,
-    "date": "2025-02-03",
-    "totalMeters": 1300,
-    "movingSeconds": 934,
-    "pace100m": 71.84615384615385,
-    "paceFormatted": "1:12"
+    "id": 16450277866,
+    "date": "2025-11-13",
+    "totalMeters": 550,
+    "movingSeconds": 1178,
+    "pace100m": 214.18181818181816,
+    "paceFormatted": "3:34"
   }
 ]
