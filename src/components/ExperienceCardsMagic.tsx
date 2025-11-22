@@ -1,6 +1,5 @@
-import { Calendar, Building2, ExternalLink } from "lucide-react"
+import { Calendar, Building2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { experiences } from "@/components/experiences"
 
 type Tech = string
