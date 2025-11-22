@@ -326,5 +326,37 @@
     "dist_km": 21.097,
     "time_s": 8685,
     "pace_s_per_km": 411.66990567379247
+  },
+  {
+    "date": "2025-09-03",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 105,
+    "pace_s_per_km": 262.5
+  },
+  {
+    "date": "2025-08-31",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 100,
+    "pace_s_per_km": 250
+  },
+  {
+    "date": "2025-08-26",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 92,
+    "pace_s_per_km": 230
+  },
+  {
+    "date": "2025-08-16",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 87,
+    "pace_s_per_km": 217.5
   }
 ]
