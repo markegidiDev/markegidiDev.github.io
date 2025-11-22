@@ -9,13 +9,17 @@ interface Skill {
 }
 
 const skillsData: Skill[] = [
-  { name: "C++", level: 70, color: "hsl(var(--chart-1))", category: "programming" },
-  { name: "Python", level: 50, color: "hsl(var(--chart-2))", category: "programming" },
-  { name: "JavaScript/TypeScript", level: 20, color: "hsl(var(--chart-3))", category: "programming" },
-  { name: "React", level: 20, color: "hsl(var(--chart-4))", category: "programming" },
+  { name: "Python", level: 90, color: "hsl(var(--chart-2))", category: "programming" },
+  { name: "JavaScript/TypeScript", level: 85, color: "hsl(var(--chart-3))", category: "programming" },
+  { name: "SQL & Relational DBs", level: 80, color: "hsl(var(--chart-5))", category: "programming" },
+  { name: "React", level: 80, color: "hsl(var(--chart-4))", category: "programming" },
+  { name: "Odoo Framework", level: 85, color: "hsl(var(--primary))", category: "programming" },
+  { name: "AWS (EC2, Cognito)", level: 65, color: "hsl(var(--chart-1))", category: "tools" },
+  { name: "Docker", level: 70, color: "hsl(var(--foreground))", category: "tools" },
+  { name: "Git & GitHub", level: 90, color: "hsl(var(--foreground))", category: "tools" },
   { name: "Premiere Pro", level: 90, color: "hsl(var(--chart-5))", category: "design" },
   { name: "Lightroom", level: 80, color: "hsl(var(--primary))", category: "design" },
-  { name: "AWS", level: 15, color: "hsl(var(--chart-1))", category: "tools" },
+  { name: "GenAI (Bedrock/LLMs)", level: 75, color: "hsl(var(--chart-2))", category: "tools" },
   { name: "Notion", level: 70, color: "hsl(var(--foreground))", category: "tools" },
 ];
 

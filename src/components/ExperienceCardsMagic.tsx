@@ -87,21 +87,10 @@ export default function ExperienceCardsMagic() {
               ) : null}
 
               {/* Footer */}
-              <div className="mt-5 flex items-center justify-between">
+              <div className="mt-5 flex items-center justify-start">
                 <Badge variant="outline" className="text-[10px] !px-6 !py-2">
                   {exp.type}
                 </Badge>
-                {meta?.link ? (
-                  <Button asChild size="sm" variant="default" className="bg-foreground text-background hover:bg-foreground/90">
-                    <a href={meta.link} target="_blank" rel="noreferrer">
-                      <ExternalLink className="mr-2 h-4 w-4" /> Website
-                    </a>
-                  </Button>
-                ) : (
-                  <Button size="sm" variant="outline" disabled>
-                    <ExternalLink className="mr-2 h-4 w-4" /> Website
-                  </Button>
-                )}
               </div>
             </div>
           </article>

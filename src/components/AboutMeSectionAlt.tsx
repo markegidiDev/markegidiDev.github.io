@@ -5,10 +5,10 @@ import { Highlighter } from '@/components/magicui/highlighter';
 // Tech / tool names (mapped to simpleicons via cdn.simpleicons.org/<slug>/<colorSlug>)
 // NOTE: Some slugs may not exist on simpleicons; they will gracefully fallback to text badges.
 const rawTech: string[] = [
-  'langflow', 'langchain', 'mongodb', 'pytest', 'amazoncognito', 'octopusdeploy', 'boto3', 'awsvpc',
-  'amazonkinesis', 'amazonses', 'googlecloud', 'firebase', 'python', 'anaconda', 'html5', 'css3',
-  'typescript', 'react', 'reactrouter', 'vite', 'tailwindcss', 'docker', 'drizzle', 'zod', 'axios',
-  'cypress', 'flask', 'yaml', 'json'
+  'mongodb', 'amazonaws', 'octopusdeploy', 'googlecloud', 'firebase', 'python', 'anaconda', 'html5', 'css3',
+  'typescript', 'react', 'vite', 'tailwindcss', 'docker', 'axios',
+  'cypress', 'flask', 'yaml', 'git', 'github', 'visualstudiocode', 'linux', 'postgresql', 'openai',
+  'javascript', 'nodedotjs'
 ];
 
 const imageUrls = rawTech.map(slug => `https://cdn.simpleicons.org/${slug}/${slug}`);

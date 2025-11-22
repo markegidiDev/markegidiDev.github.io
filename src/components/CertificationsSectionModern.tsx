@@ -17,6 +17,25 @@ interface Certification {
 const certifications: Certification[] = [
   {
     id: 1,
+    name: "AWS Intro to Cost Management for SaaS",
+    organization: "Amazon Web Services (AWS)",
+    date: "May 2025",
+    expirationDate: undefined,
+    skills: ["AWS", "SaaS", "Cost Management", "Budgeting"],
+    type: "Cloud Certification"
+  },
+  {
+    id: 2,
+    name: "Reply Hack the Code Challenge",
+    organization: "Reply",
+    date: "Mar 2025",
+    expirationDate: undefined,
+    skills: ["Cybersecurity", "Cryptography", "Problem Solving", "Teamwork"],
+    type: "Hackathon / Competition",
+    link: "https://challenges.reply.com/"
+  },
+  {
+    id: 3,
     name: "Microsoft Azure Fundamentals",
     organization: "Microsoft",
     date: "August 2023",
@@ -26,32 +45,13 @@ const certifications: Certification[] = [
     link: "https://docs.microsoft.com/en-us/learn/certifications/azure-fundamentals/"
   },
   {
-    id: 2,
+    id: 4,
     name: "CCNA: Introduction to Networks",
     organization: "Cisco",
     date: "May 2022",
     expirationDate: "May 2025",
     skills: ["Networking", "TCP/IP", "Routing", "Switching"],
     type: "Network Certification"
-  },
-  {
-    id: 3,
-    name: "JavaScript Algorithms and Data Structures",
-    organization: "freeCodeCamp",
-    date: "Jan 2022",
-    expirationDate: undefined,
-    skills: ["JavaScript", "Algorithms", "Data Structures", "Problem Solving"],
-    type: "Programming Course",
-    link: "https://www.freecodecamp.org/certification/marcofcc/javascript-algorithms-and-data-structures"
-  },
-  {
-    id: 4,
-    name: "Web Development with React",
-    organization: "Coursera",
-    date: "October 2021",
-    expirationDate: undefined,
-    skills: ["React", "Redux", "Hooks", "Modern JavaScript"],
-    type: "Web Development Course"
   }
 ];
 

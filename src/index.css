@@ -56,39 +56,50 @@
   }
 
   .dark {
+    /* --background: #020817 (Dark Navy/Black) - Neutral base for LightRays */
     --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    /* --light-cyan: #caf0f8 -> 190 77% 88% */
+    --foreground: 190 77% 88%;
 
-    --card: 222.2 84% 6%;
-    --card-foreground: 210 40% 98%;
+    /* --french-blue: #023e8a -> 214 97% 27% */
+    --card: 214 97% 27%;
+    --card-foreground: 190 77% 88%;
 
-    --popover: 222.2 84% 6%;
-    --popover-foreground: 210 40% 98%;
+    /* --french-blue: #023e8a */
+    --popover: 214 97% 27%;
+    --popover-foreground: 190 77% 88%;
 
-    --primary: 217.2 91.2% 59.8%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* --sky-aqua: #48cae4 -> 188 75% 59% */
+    --primary: 188 75% 59%;
+    /* --deep-twilight for contrast */
+    --primary-foreground: 239 94% 19%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    /* --bright-teal-blue: #0077b6 -> 201 100% 36% */
+    --secondary: 201 100% 36%;
+    --secondary-foreground: 190 77% 88%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* --blue-green: #0096c7 -> 195 100% 39% */
+    --muted: 195 100% 39%;
+    --muted-foreground: 190 76% 82%; /* Frosted Blue 2 for muted text */
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    /* --turquoise-surf: #00b4d8 -> 190 100% 42% */
+    --accent: 190 100% 42%;
+    --accent-foreground: 190 77% 88%;
 
     --destructive: 0 72% 40%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 190 77% 88%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 224.3 76.3% 48%;
+    /* --bright-teal-blue for borders */
+    --border: 201 100% 36%;
+    --input: 201 100% 36%;
+    --ring: 188 75% 59%;
 
-    --chart-1: 220 70% 60%;
-    --chart-2: 160 55% 50%;
-    --chart-3: 40 85% 55%;
-    --chart-4: 280 60% 60%;
-    --chart-5: 0 65% 60%;
+    /* Chart colors mapped to palette */
+    --chart-1: 188 75% 59%; /* Sky Aqua */
+    --chart-2: 190 100% 42%; /* Turquoise Surf */
+    --chart-3: 189 74% 75%; /* Frosted Blue */
+    --chart-4: 201 100% 36%; /* Bright Teal Blue */
+    --chart-5: 190 76% 82%; /* Frosted Blue 2 */
   }
 
   /* Extra theme: "nord" (misto verde/blu/viola) */

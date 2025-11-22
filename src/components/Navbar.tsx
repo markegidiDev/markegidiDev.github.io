@@ -8,8 +8,9 @@ import { Tab, TabGroup, TabList } from '@headlessui/react';
 // Slimmed to only the three requested tabs
 const navLinks = [
   { to: "/", label: "Home" },
+  { to: "/#projects", label: "Progetti" },
   { to: "/dashboard", label: "Dashboard" },
-  { to: "/#contact", label: "Contact" },
+  { to: "/#contact", label: "Contatti" },
 ];
 
 interface NavbarProps {
@@ -183,15 +184,15 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
   return (
-  <nav className={`sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border transition-[height,background,backdrop-filter] duration-300 ${className}`}>        
-      <div className="container mx-auto px-6 lg:px-8">
-  <div className={`relative flex items-center justify-between transition-all duration-300 ${shrink ? 'h-14' : 'h-20'}`}>
+  <nav className={`sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border transition-all duration-300 ${className}`}>        
+      <div className="w-full px-6 md:px-12 max-w-[1920px] mx-auto">
+  <div className={`relative flex items-center justify-between transition-all duration-300 ${shrink ? 'h-16' : 'h-24'}`}>
           {/* Logo and Brand */}
-          <Link to="/" className="text-xl font-bold flex items-center group">
-            <div className={`rounded-full flex items-center justify-center mr-3 bg-primary text-primary-foreground transition-all duration-300 group-hover:scale-105 ${shrink ? 'w-9 h-9 text-sm' : 'w-10 h-10'}`}>
+          <Link to="/" className="text-2xl font-bold flex items-center group">
+            <div className={`rounded-full flex items-center justify-center mr-3 bg-primary text-primary-foreground transition-all duration-300 group-hover:scale-110 shadow-lg ${shrink ? 'w-10 h-10 text-base' : 'w-12 h-12 text-lg'}`}>
               ME
             </div>
-            <span className="hidden sm:inline text-foreground">Marco Egidi</span>
+            <span className="hidden sm:inline text-foreground tracking-tight">Marco Egidi</span>
           </Link>
           {/* Desktop Navigation as Tabs */}
           <div className="hidden md:flex items-center rounded-full px-3 py-2 backdrop-blur-sm border border-border/50 bg-background/60 absolute left-1/2 -translate-x-1/2">
@@ -233,44 +234,44 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center gap-3">
+          <div className="md:hidden flex items-center gap-4">
             <ThemeMenu />
             
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="rounded-full border-border text-foreground mobile-menu-container w-10 h-10"
+              className="rounded-full hover:bg-accent text-foreground w-12 h-12 flex items-center justify-center"
               aria-label="Toggle menu"
             >
-              {isMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </Button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden mobile-menu-container">
-            <div className="px-4 pt-4 pb-6 space-y-2 border-t border-border bg-card/80 backdrop-blur-sm rounded-b-lg mx-4 mb-4">              {navLinks.map((link) => (
+        {/* Mobile Menu - Full Screen Overlay */}
+        <div className={`md:hidden fixed inset-0 top-[calc(var(--navbar-height,80px))] z-40 bg-background/95 backdrop-blur-xl transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full pointer-events-none'}`} style={{ top: shrink ? '64px' : '96px' }}>
+            <div className="flex flex-col items-center justify-center h-[calc(100vh-100px)] gap-8 p-6">
+              {navLinks.map((link, i) => (
                 <NavLink
                   key={link.label}
                   to={link.to}
                   onClick={() => link.to.includes("#") ? handleHashLinkClick(link.to) : handleHashLinkClick("")}
                   className={() => {
                     const isActive = isLinkActive(link.to);
-                    return `flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors duration-200 w-full ${
+                    return `text-3xl font-bold transition-all duration-300 hover:scale-110 ${
                       isActive
-                        ? 'text-primary-foreground bg-primary'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-accent/80'
+                        ? 'text-primary'
+                        : 'text-muted-foreground hover:text-foreground'
                     }`
                   }}
+                  style={{ transitionDelay: `${i * 50}ms` }}
                 >
                   {link.label}
                 </NavLink>
               ))}
             </div>
-          </div>
-        )}
+        </div>
       </div>
     </nav>
   );

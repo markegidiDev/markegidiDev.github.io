@@ -250,83 +250,106 @@ async function getActivityStreams(token, id, streamTypes = ["time", "distance", 
 // Calcola la maschera di movimento reale per escludere le pause
 function calculateMovingMask(streams) {
   if (!streams) return null;
-  
+
   const timeData = streams.time?.data;
-  const movingData = streams.moving?.data;
   const distData = streams.distance?.data;
   const cadenceData = streams.cadence?.data;
+  const movingData = streams.moving?.data;
 
-  // Determine length from any available stream
-  const n = (timeData || movingData || distData || cadenceData || []).length;
+  const n = (timeData || distData || cadenceData || movingData || []).length;
   if (n === 0) return null;
 
   const active = new Array(n).fill(false);
+  const speedThreshold = 0.25;  // m/s ~ 8:20/100m, sotto questo consideriamo fermo
+  const cadenceThreshold = 1;   // >1 bracciata significa movimento
 
-  if (movingData) {
-    // Trust the moving stream if available
-    for (let i = 0; i < n; i++) {
-      active[i] = movingData[i];
-    }
-  } else if (distData) {
-    // Fallback to distance/cadence logic
-    const cadence = cadenceData || [];
-    for (let i = 0; i < n; i++) {
-      const distIncrease = i > 0 ? (distData[i] - distData[i-1]) : 0;
-      const isMoving = (distIncrease > 0.1) || ((cadence[i] || 0) > 0);
-      active[i] = !!isMoving;
-    }
-  } else {
-    // Cannot determine movement without moving stream or distance stream
-    return null;
+  for (let i = 0; i < n; i++) {
+    const dt = (i > 0 && timeData) ? Math.max(1, timeData[i] - timeData[i - 1]) : 1;
+    const distIncrease = distData && i > 0 ? Math.max(0, distData[i] - distData[i - 1]) : 0;
+    const speed = dt > 0 ? distIncrease / dt : 0;
+    const cadenceActive = cadenceData ? ((cadenceData[i] || 0) > cadenceThreshold) : false;
+    const stravaMoving = movingData ? !!movingData[i] : false;
+
+    active[i] = stravaMoving || speed > speedThreshold || cadenceActive;
   }
-  
-  // Chiudi gap piccoli (≤2s) e richiedi pause minime (≥5s)
-  const closeGaps = 2;
-  const minPause = 5;
-  
-  // Chiudi gap brevi
+
+  // Chiudi solo drop-out di 1s (rumore), non le soste
+  const closeGaps = 1;
   for (let i = 1; i < n - 1; i++) {
-    if (!active[i]) {
-      let left = i - 1;
-      let right = i + 1;
-      let gap = 1;
-      
-      while (right < n && !active[right] && gap <= closeGaps) {
-        right++;
-        gap++;
-      }
-      
-      if (active[left] && right < n && active[right] && gap <= closeGaps) {
-        for (let k = i; k < right; k++) {
-          active[k] = true;
-        }
-      }
+    if (!active[i] && active[i - 1] && active[i + 1]) {
+      const gapSeconds = timeData ? (timeData[i + 1] - timeData[i - 1]) : 2;
+      if (gapSeconds <= closeGaps + 1) active[i] = true;
     }
   }
-  
-  // Filtra pause troppo brevi
+
+  // Considera pause reali >=2s come stop
+  const minPause = 2;
   let i = 0;
   while (i < n) {
     if (!active[i]) {
       let j = i;
       while (j < n && !active[j]) j++;
       if ((j - i) < minPause) {
-        for (let k = i; k < j; k++) {
-          active[k] = true;
-        }
+        for (let k = i; k < j; k++) active[k] = true;
       }
       i = j;
     } else {
       i++;
     }
   }
-  
+
   return active;
 }
 
 // Calcola il passo reale per un'attività di nuoto
 function calculateRealSwimPace(streams, activityId, totalDistanceOverride = 0) {
-  const movingMask = calculateMovingMask(streams);
+  let movingMask = calculateMovingMask(streams);
+  
+  // Tenta di raffinare il calcolo usando la cadenza (bracciate) per escludere le pause a bordo vasca
+  // Strava a volte considera "moving" anche le pause se non si preme il tasto lap.
+  if (movingMask && streams.cadence?.data && streams.cadence.data.length > 0) {
+    const cadenceData = streams.cadence.data;
+    const n = cadenceData.length;
+    
+    if (n === movingMask.length) {
+      const cadenceMask = new Array(n).fill(false);
+      
+      // 1. Segna i momenti con bracciate attive
+      for (let i = 0; i < n; i++) {
+        if (cadenceData[i] > 0) cadenceMask[i] = true;
+      }
+      
+      // 2. Riempi i gap (virate/scivolamento) - tolleranza corta ~6s
+      // (Una virata lenta + scivolamento puo durare alcuni secondi, ma non vogliamo inglobare le pause a bordo)
+      const MAX_GLIDE_GAP = 6;
+      
+      for (let i = 0; i < n; i++) {
+        if (cadenceMask[i]) {
+          let j = i + 1;
+          // Cerca la prossima bracciata
+          while (j < n && !cadenceMask[j] && (j - i) <= MAX_GLIDE_GAP) {
+            j++;
+          }
+          // Se trovata entro il gap, riempi tutto lo spazio in mezzo (è nuoto continuo)
+          if (j < n && cadenceMask[j]) {
+            for (let k = i + 1; k < j; k++) cadenceMask[k] = true;
+          }
+        }
+      }
+
+      // 3. Usa questa maschera raffinata se ha senso
+      const originalSeconds = movingMask.filter(Boolean).length;
+      const refinedSeconds = cadenceMask.filter(Boolean).length;
+      
+      // Usa il calcolo basato sulla cadenza solo se riduce il tempo (quindi rimuove pause)
+      // ma non è troppo drastico (es. sensore rotto che dà 0 bracciate)
+      if (refinedSeconds > 0 && refinedSeconds < originalSeconds && refinedSeconds > (originalSeconds * 0.1)) {
+           console.log(`[Swim Debug] Activity ${activityId}: Refined moving time using cadence (${refinedSeconds}s vs Strava ${originalSeconds}s)`);
+           movingMask = cadenceMask;
+      }
+    }
+  }
+
   if (!movingMask) {
     console.log(`[Swim Debug] Activity ${activityId}: No moving mask (missing moving/distance streams?)`);
     return null;

@@ -270,5 +270,93 @@
     "dist_km": 0.4,
     "time_s": 89,
     "pace_s_per_km": 222.5
+  },
+  {
+    "date": "2025-11-05",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 100,
+    "pace_s_per_km": 250
+  },
+  {
+    "date": "2025-10-11",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 107,
+    "pace_s_per_km": 267.5
+  },
+  {
+    "date": "2025-10-05",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 105,
+    "pace_s_per_km": 262.5
+  },
+  {
+    "date": "2025-09-25",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 101,
+    "pace_s_per_km": 252.5
+  },
+  {
+    "date": "2025-09-21",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 191,
+    "pace_s_per_km": 477.5
+  },
+  {
+    "date": "2025-09-14",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 113,
+    "pace_s_per_km": 282.5
+  },
+  {
+    "date": "2025-09-14",
+    "type": "run",
+    "label": "21k",
+    "dist_km": 21.097,
+    "time_s": 8685,
+    "pace_s_per_km": 411.66990567379247
+  },
+  {
+    "date": "2025-09-03",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 105,
+    "pace_s_per_km": 262.5
+  },
+  {
+    "date": "2025-08-31",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 100,
+    "pace_s_per_km": 250
+  },
+  {
+    "date": "2025-08-26",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 92,
+    "pace_s_per_km": 230
+  },
+  {
+    "date": "2025-08-16",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 87,
+    "pace_s_per_km": 217.5
   }
 ]

@@ -22,7 +22,7 @@ function ModeToggleButton() {
       title="Theme"
       className={cn(
         buttonVariants({ variant: "ghost", size: "icon" }),
-        "size-12 rounded-full"
+        "size-full rounded-full !text-black hover:bg-black/10"
       )}
     >
       <Icon className="size-4" />
@@ -32,8 +32,11 @@ function ModeToggleButton() {
 
 export default function ContactDock() {
   return (
-    <div className="relative flex items-center justify-center">
-      <Dock direction="middle" className="shadow-lg">
+    <div className="relative flex items-center justify-center w-full">
+      <Dock 
+        direction="middle" 
+        className="bg-white dark:bg-white border-white/50 shadow-2xl backdrop-blur-xl z-50"
+      >
         {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
           <DockIcon key={label}>
             <a
@@ -42,7 +45,7 @@ export default function ContactDock() {
               title={label}
               className={cn(
                 buttonVariants({ variant: "ghost", size: "icon" }),
-                "size-12 rounded-full"
+                "size-full rounded-full !text-black hover:bg-black/10"
               )}
             >
               <Icon className="size-4" />
@@ -50,7 +53,7 @@ export default function ContactDock() {
           </DockIcon>
         ))}
 
-        <Separator orientation="vertical" className="h-10 mx-1" />
+        <Separator orientation="vertical" className="h-full py-2 mx-1 bg-black/10" />
 
         {SOCIAL_ITEMS.map(({ href, label, icon: Icon }) => (
           <DockIcon key={label}>
@@ -60,7 +63,7 @@ export default function ContactDock() {
               title={label}
               className={cn(
                 buttonVariants({ variant: "ghost", size: "icon" }),
-                "size-12 rounded-full"
+                "size-full rounded-full !text-black hover:bg-black/10"
               )}
             >
               <Icon className="size-4" />
@@ -68,7 +71,7 @@ export default function ContactDock() {
           </DockIcon>
         ))}
 
-        <Separator orientation="vertical" className="h-10 mx-1" />
+        <Separator orientation="vertical" className="h-full py-2 mx-1 bg-black/10" />
 
         <DockIcon>
           <ModeToggleButton />
@@ -119,8 +122,8 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 const SOCIAL_ITEMS: SocialItem[] = [
-  { href: "#", label: "GitHub", icon: Icons.gitHub },
-  { href: "#", label: "LinkedIn", icon: Icons.linkedin },
-  { href: "#", label: "YouTube", icon: Icons.youtube },
-  { href: "#", label: "Email", icon: Icons.email },
+  { href: "https://github.com/markegidiDev", label: "GitHub", icon: Icons.gitHub },
+  { href: "https://www.linkedin.com/in/marcoegidi/", label: "LinkedIn", icon: Icons.linkedin },
+  { href: "https://www.youtube.com/@markegidi", label: "YouTube", icon: Icons.youtube },
+  { href: "mailto:marco.egidi.dev@gmail.com", label: "Email", icon: Icons.email },
 ];
