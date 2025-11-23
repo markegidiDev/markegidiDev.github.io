@@ -1,5 +1,17 @@
 [
   {
+    "id": 16541762557,
+    "sport": "Run",
+    "hr": [
+      109,
+      713,
+      2055,
+      237,
+      0
+    ],
+    "power": null
+  },
+  {
     "id": 16532953364,
     "sport": "Swim",
     "hr": [
@@ -50,12 +62,6 @@
   {
     "id": 16478792510,
     "sport": "Workout",
-    "hr": null,
-    "power": null
-  },
-  {
-    "id": 16474288083,
-    "sport": "Walk",
     "hr": null,
     "power": null
   }
