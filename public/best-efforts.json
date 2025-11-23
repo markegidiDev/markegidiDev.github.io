@@ -358,5 +358,13 @@
     "dist_km": 0.4,
     "time_s": 87,
     "pace_s_per_km": 217.5
+  },
+  {
+    "date": "2025-11-23",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 2,
+    "pace_s_per_km": 5
   }
 ]
