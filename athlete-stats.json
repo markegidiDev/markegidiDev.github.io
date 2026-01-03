@@ -32,10 +32,10 @@
     "elevation_gain": 4312.700000000001
   },
   "recent_swim_totals": {
-    "count": 1,
-    "distance": 750,
-    "moving_time": 1148,
-    "elapsed_time": 1148,
+    "count": 0,
+    "distance": 0,
+    "moving_time": 0,
+    "elapsed_time": 0,
     "elevation_gain": 0,
     "achievement_count": 0
   },
