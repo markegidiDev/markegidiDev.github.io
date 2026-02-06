@@ -26,7 +26,7 @@ import baseTimesData from '@/data/worldAquaticsBaseTimes.json';
 import SegmentTable from '@/components/swim/SegmentTable';
 import SegmentCharts from '@/components/swim/SegmentCharts';
 import PredictionModule from '@/components/swim/PredictionModule';
-import { Save, Upload, Download, Plus, Trash2, Timer, Waves, Activity, Zap, Trophy, Gauge, Clock, TrendingUp, BarChart3, LineChart, Table2 } from 'lucide-react';
+import { Save, Upload, Download, Plus, Trash2, Timer, Waves, Activity, Zap, Trophy, Gauge, Clock, TrendingUp, LineChart, Table2 } from 'lucide-react';
 
 interface RaceData {
   event: EventKey;
