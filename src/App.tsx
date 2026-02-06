@@ -3,6 +3,7 @@ import Navbar from '@/components/Navbar';
 import HomePage from '@/pages/HomePage';
 import DashboardPage from '@/pages/DashboardPage';
 import ContactPage from '@/pages/ContactPage';
+import SwimAnalyzerPage from '@/pages/SwimAnalyzerPage';
 import { ThemeProvider } from '@/features/theme/theme-provider';
 
 function App() {
@@ -18,6 +19,7 @@ function App() {
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/swim-analyzer" element={<SwimAnalyzerPage />} />
               <Route path="/contact" element={<ContactPage />} />
             </Routes>
           </main>

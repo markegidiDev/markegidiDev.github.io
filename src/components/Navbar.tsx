@@ -10,6 +10,7 @@ const navLinks = [
   { to: "/", label: "Home" },
   { to: "/#projects", label: "Progetti" },
   { to: "/dashboard", label: "Dashboard" },
+  { to: "/swim-analyzer", label: "Swim Analyzer" },
   { to: "/#contact", label: "Contatti" },
 ];
 

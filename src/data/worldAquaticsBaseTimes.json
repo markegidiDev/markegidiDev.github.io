@@ -1,0 +1,111 @@
+{
+  "version": "2026",
+  "validityPeriod": {
+    "SCM": "01/09/2025 - 31/08/2026",
+    "LCM": "2026"
+  },
+  "baseTimes": {
+    "SCM": {
+      "M": {
+        "50_FREE": 20.16,
+        "100_FREE": 44.94,
+        "200_FREE": 100.08,
+        "400_FREE": 212.06,
+        "800_FREE": 436.54,
+        "1500_FREE": 831.02,
+        "50_BACK": 22.22,
+        "100_BACK": 48.33,
+        "200_BACK": 106.28,
+        "50_BREAST": 25.25,
+        "100_BREAST": 55.34,
+        "200_BREAST": 121.75,
+        "50_FLY": 21.75,
+        "100_FLY": 48.08,
+        "200_FLY": 108.24,
+        "100_IM": 50.30,
+        "200_IM": 110.34,
+        "400_IM": 237.21
+      },
+      "F": {
+        "50_FREE": 22.93,
+        "100_FREE": 50.70,
+        "200_FREE": 112.98,
+        "400_FREE": 237.12,
+        "800_FREE": 488.86,
+        "1500_FREE": 929.19,
+        "50_BACK": 25.27,
+        "100_BACK": 54.89,
+        "200_BACK": 119.82,
+        "50_BREAST": 28.56,
+        "100_BREAST": 62.61,
+        "200_BREAST": 137.25,
+        "50_FLY": 24.38,
+        "100_FLY": 54.61,
+        "200_FLY": 121.21,
+        "100_IM": 56.51,
+        "200_IM": 123.10,
+        "400_IM": 264.13
+      }
+    },
+    "LCM": {
+      "M": {
+        "50_FREE": 20.91,
+        "100_FREE": 46.91,
+        "200_FREE": 102.00,
+        "400_FREE": 220.07,
+        "800_FREE": 452.12,
+        "1500_FREE": 858.52,
+        "50_BACK": 23.80,
+        "100_BACK": 51.85,
+        "200_BACK": 111.92,
+        "50_BREAST": 25.95,
+        "100_BREAST": 56.88,
+        "200_BREAST": 126.12,
+        "50_FLY": 22.27,
+        "100_FLY": 49.82,
+        "200_FLY": 111.81,
+        "200_IM": 113.00,
+        "400_IM": 243.84
+      },
+      "F": {
+        "50_FREE": 23.67,
+        "100_FREE": 51.71,
+        "200_FREE": 113.73,
+        "400_FREE": 239.11,
+        "800_FREE": 494.79,
+        "1500_FREE": 942.08,
+        "50_BACK": 26.98,
+        "100_BACK": 57.45,
+        "200_BACK": 123.35,
+        "50_BREAST": 29.48,
+        "100_BREAST": 64.13,
+        "200_BREAST": 139.84,
+        "50_FLY": 24.43,
+        "100_FLY": 54.69,
+        "200_FLY": 121.81,
+        "200_IM": 125.78,
+        "400_IM": 269.06
+      }
+    }
+  },
+  "events": [
+    { "key": "50_FREE", "label": "50m Freestyle", "distance": 50, "stroke": "FREE" },
+    { "key": "100_FREE", "label": "100m Freestyle", "distance": 100, "stroke": "FREE" },
+    { "key": "200_FREE", "label": "200m Freestyle", "distance": 200, "stroke": "FREE" },
+    { "key": "400_FREE", "label": "400m Freestyle", "distance": 400, "stroke": "FREE" },
+    { "key": "800_FREE", "label": "800m Freestyle", "distance": 800, "stroke": "FREE" },
+    { "key": "1500_FREE", "label": "1500m Freestyle", "distance": 1500, "stroke": "FREE" },
+    { "key": "50_BACK", "label": "50m Backstroke", "distance": 50, "stroke": "BACK" },
+    { "key": "100_BACK", "label": "100m Backstroke", "distance": 100, "stroke": "BACK" },
+    { "key": "200_BACK", "label": "200m Backstroke", "distance": 200, "stroke": "BACK" },
+    { "key": "50_BREAST", "label": "50m Breaststroke", "distance": 50, "stroke": "BREAST" },
+    { "key": "100_BREAST", "label": "100m Breaststroke", "distance": 100, "stroke": "BREAST" },
+    { "key": "200_BREAST", "label": "200m Breaststroke", "distance": 200, "stroke": "BREAST" },
+    { "key": "50_FLY", "label": "50m Butterfly", "distance": 50, "stroke": "FLY" },
+    { "key": "100_FLY", "label": "100m Butterfly", "distance": 100, "stroke": "FLY" },
+    { "key": "200_FLY", "label": "200m Butterfly", "distance": 200, "stroke": "FLY" },
+    { "key": "100_IM", "label": "100m IM", "distance": 100, "stroke": "IM" },
+    { "key": "200_IM", "label": "200m IM", "distance": 200, "stroke": "IM" },
+    { "key": "400_IM", "label": "400m IM", "distance": 400, "stroke": "IM" }
+  ]
+}
