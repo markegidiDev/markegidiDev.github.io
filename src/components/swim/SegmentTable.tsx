@@ -37,8 +37,59 @@ const SegmentTable: React.FC<SegmentTableProps> = ({ segments }) => {
     return null;
   };
 
-  return (
-    <div className="rounded-lg border border-border overflow-hidden">
+  // Mobile card layout
+  const mobileCards = (
+    <div className="space-y-3 md:hidden">
+      {segments.map((seg, idx) => (
+        <div key={idx} className="rounded-xl border border-border/60 bg-muted/10 p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <div className="font-semibold text-sm flex items-center">
+              {seg.segment}
+              {getKeyZoneBadge(seg.segment)}
+            </div>
+            <span className="text-xs text-muted-foreground">{formatValue(seg.distance, 0)}m</span>
+          </div>
+          {seg.notes && (
+            <p className="text-xs text-muted-foreground">{seg.notes}</p>
+          )}
+          <div className="grid grid-cols-3 gap-x-4 gap-y-2 text-sm">
+            <div>
+              <div className="text-xs text-muted-foreground">Split</div>
+              <div className="font-medium">{formatValue(seg.splitTime)}s</div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Cumul.</div>
+              <div className="font-medium">{formatValue(seg.cumulativeTime)}s</div>
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Velocity</div>
+              <div className="font-medium">{formatValue(seg.velocity)} m/s</div>
+            </div>
+            {seg.strokeCount !== undefined && (
+              <>
+                <div>
+                  <div className="text-xs text-muted-foreground">Strokes</div>
+                  <div className="font-medium">{seg.strokeCount}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">SR</div>
+                  <div className="font-medium">{formatValue(seg.strokeRate, 1)}</div>
+                </div>
+                <div>
+                  <div className="text-xs text-muted-foreground">DPS</div>
+                  <div className="font-medium">{formatValue(seg.dps, 1)}</div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  // Desktop table layout
+  const desktopTable = (
+    <div className="hidden md:block rounded-lg border border-border overflow-hidden">
       <div className="overflow-x-auto">
         <Table>
           <TableHeader>
@@ -84,6 +135,13 @@ const SegmentTable: React.FC<SegmentTableProps> = ({ segments }) => {
         </Table>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      {mobileCards}
+      {desktopTable}
+    </>
   );
 };
 

@@ -82,9 +82,9 @@ const PredictionModule: React.FC<PredictionModuleProps> = ({
   }
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden">
+    <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden min-w-0">
       {/* Header */}
-      <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
+      <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
         <h2 className="text-xl font-semibold flex items-center gap-2">
           <Target className="h-5 w-5 text-primary" />
           Prediction & Targets
@@ -94,7 +94,7 @@ const PredictionModule: React.FC<PredictionModuleProps> = ({
         </p>
       </div>
 
-      <div className="px-6 sm:px-8 py-6 sm:py-8 space-y-6">
+      <div className="px-4 sm:px-8 py-6 sm:py-8 space-y-6">
         {/* Current Stats */}
         <div className="grid grid-cols-2 gap-4">
           <div className="p-4 rounded-xl bg-gradient-to-br from-muted/40 to-muted/20 border border-border/40">
@@ -127,13 +127,13 @@ const PredictionModule: React.FC<PredictionModuleProps> = ({
 
         {/* Difficulty Analysis */}
         {difficultyInfo && (
-          <div className="space-y-4 p-5 rounded-xl border border-border/60 bg-muted/10">
+          <div className="space-y-4 p-4 sm:p-5 rounded-xl border border-border/60 bg-muted/10">
             <h3 className="text-base font-semibold flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-muted-foreground" />
               Difficulty Analysis
             </h3>
 
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="p-3 rounded-lg bg-background/50 border border-border/30">
                 <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">Target Points</div>
                 <div className="text-lg font-bold mt-1">{targetPoints}</div>

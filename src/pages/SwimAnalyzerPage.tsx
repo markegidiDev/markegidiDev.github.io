@@ -260,8 +260,8 @@ const SwimAnalyzerPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="min-h-screen bg-background overflow-x-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 min-w-0">
         {/* Header */}
         <div className="mb-10 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
@@ -275,9 +275,9 @@ const SwimAnalyzerPage: React.FC = () => {
         </div>
 
         {/* Input Form */}
-        <div className="rounded-2xl border border-border/60 bg-card shadow-sm mb-10">
+        <div className="rounded-2xl border border-border/60 bg-card shadow-sm mb-10 overflow-hidden min-w-0">
           {/* Form Header */}
-          <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
+          <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
             <h2 className="text-xl font-semibold flex items-center gap-2">
               <Activity className="h-5 w-5 text-primary" />
               Race Details
@@ -285,7 +285,7 @@ const SwimAnalyzerPage: React.FC = () => {
             <p className="text-sm text-muted-foreground mt-1">Inserisci i dati della gara per iniziare l'analisi</p>
           </div>
 
-          <div className="px-6 sm:px-8 py-6 sm:py-8 space-y-8">
+          <div className="px-4 sm:px-8 py-6 sm:py-8 space-y-8">
             {/* Basic Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               <div className="space-y-2">
@@ -481,7 +481,7 @@ const SwimAnalyzerPage: React.FC = () => {
           </div>
 
           {/* Analyze Button Footer */}
-          <div className="px-6 sm:px-8 py-5 border-t border-border/40 bg-muted/20 rounded-b-2xl">
+          <div className="px-4 sm:px-8 py-5 border-t border-border/40 bg-muted/20 rounded-b-2xl">
             <Button onClick={handleAnalyze} size="lg" className="w-full sm:w-auto gap-2 text-base px-8">
               <Activity className="h-4.5 w-4.5" />
               Analyze Race
@@ -493,9 +493,9 @@ const SwimAnalyzerPage: React.FC = () => {
         {results && (
           <div className="space-y-8">
             {/* Summary */}
-            <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden">
+            <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden min-w-0">
               {/* Summary Header */}
-              <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
+              <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
                 <h2 className="text-xl font-semibold flex items-center gap-2">
                   <Trophy className="h-5 w-5 text-primary" />
                   Race Summary
@@ -504,60 +504,60 @@ const SwimAnalyzerPage: React.FC = () => {
               </div>
 
               {/* Metric Cards */}
-              <div className="px-6 sm:px-8 py-6 sm:py-8">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="group p-5 rounded-xl bg-gradient-to-br from-muted/40 to-muted/20 border border-border/40 hover:border-border/60 transition-all">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="p-1.5 rounded-lg bg-foreground/5">
-                        <Clock className="h-4 w-4 text-muted-foreground" />
+              <div className="px-4 sm:px-8 py-6 sm:py-8">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                  <div className="group p-3 sm:p-5 rounded-xl bg-gradient-to-br from-muted/40 to-muted/20 border border-border/40 hover:border-border/60 transition-all">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                      <div className="p-1 sm:p-1.5 rounded-lg bg-foreground/5">
+                        <Clock className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
                       </div>
-                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Final Time</span>
+                      <span className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide">Final Time</span>
                     </div>
-                    <div className="text-2xl sm:text-3xl font-bold tracking-tight">
+                    <div className="text-lg sm:text-2xl md:text-3xl font-bold tracking-tight break-all">
                       {formatSecondsToTime(results.finalTime)}
                     </div>
                   </div>
 
-                  <div className="group p-5 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 hover:border-primary/30 transition-all">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="p-1.5 rounded-lg bg-primary/10">
-                        <Trophy className="h-4 w-4 text-primary" />
+                  <div className="group p-3 sm:p-5 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 hover:border-primary/30 transition-all">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                      <div className="p-1 sm:p-1.5 rounded-lg bg-primary/10">
+                        <Trophy className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                       </div>
-                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">WA Points</span>
+                      <span className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide">WA Points</span>
                     </div>
-                    <div className="text-2xl sm:text-3xl font-bold text-primary tracking-tight">{results.points}</div>
+                    <div className="text-lg sm:text-2xl md:text-3xl font-bold text-primary tracking-tight">{results.points}</div>
                   </div>
 
-                  <div className="group p-5 rounded-xl bg-gradient-to-br from-muted/40 to-muted/20 border border-border/40 hover:border-border/60 transition-all">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="p-1.5 rounded-lg bg-foreground/5">
-                        <Gauge className="h-4 w-4 text-muted-foreground" />
+                  <div className="group p-3 sm:p-5 rounded-xl bg-gradient-to-br from-muted/40 to-muted/20 border border-border/40 hover:border-border/60 transition-all">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                      <div className="p-1 sm:p-1.5 rounded-lg bg-foreground/5">
+                        <Gauge className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
                       </div>
-                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Base Time</span>
+                      <span className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide">Base Time</span>
                     </div>
-                    <div className="text-2xl sm:text-3xl font-bold tracking-tight">
+                    <div className="text-lg sm:text-2xl md:text-3xl font-bold tracking-tight break-all">
                       {formatSecondsToTime(results.baseTime)}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-1">1000 punti</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">1000 punti</div>
                   </div>
 
-                  <div className="group p-5 rounded-xl bg-gradient-to-br from-muted/40 to-muted/20 border border-border/40 hover:border-border/60 transition-all">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="p-1.5 rounded-lg bg-foreground/5">
-                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                  <div className="group p-3 sm:p-5 rounded-xl bg-gradient-to-br from-muted/40 to-muted/20 border border-border/40 hover:border-border/60 transition-all">
+                    <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
+                      <div className="p-1 sm:p-1.5 rounded-lg bg-foreground/5">
+                        <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground" />
                       </div>
-                      <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Avg Velocity</span>
+                      <span className="text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide">Avg Velocity</span>
                     </div>
-                    <div className="text-2xl sm:text-3xl font-bold tracking-tight">
+                    <div className="text-lg sm:text-2xl md:text-3xl font-bold tracking-tight">
                       {(eventDistance / results.finalTime).toFixed(2)}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-1">m/s</div>
+                    <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">m/s</div>
                   </div>
                 </div>
               </div>
 
               {/* Action Buttons Footer */}
-              <div className="px-6 sm:px-8 py-4 border-t border-border/40 bg-muted/20 flex flex-wrap gap-2">
+              <div className="px-4 sm:px-8 py-4 border-t border-border/40 bg-muted/20 flex flex-wrap gap-2">
                 <Button variant="outline" size="sm" onClick={handleSaveRace} className="gap-2">
                   <Save className="h-4 w-4" />
                   Save Race
@@ -574,29 +574,29 @@ const SwimAnalyzerPage: React.FC = () => {
             </div>
 
             {/* Segment Table */}
-            <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden">
-              <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
+            <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden min-w-0">
+              <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
                 <h2 className="text-xl font-semibold flex items-center gap-2">
                   <Table2 className="h-5 w-5 text-primary" />
                   Segment Analysis
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">Dettaglio metriche per ogni segmento di gara</p>
               </div>
-              <div className="px-6 sm:px-8 py-6 sm:py-8">
+              <div className="px-4 sm:px-8 py-6 sm:py-8 min-w-0">
                 <SegmentTable segments={results.metrics} />
               </div>
             </div>
 
             {/* Charts */}
-            <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden">
-              <div className="px-6 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
+            <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden min-w-0">
+              <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
                 <h2 className="text-xl font-semibold flex items-center gap-2">
                   <LineChart className="h-5 w-5 text-primary" />
                   Performance Graphs
                 </h2>
                 <p className="text-sm text-muted-foreground mt-1">Visualizzazione grafica delle performance</p>
               </div>
-              <div className="px-6 sm:px-8 py-6 sm:py-8">
+              <div className="px-3 sm:px-8 py-6 sm:py-8 min-w-0">
                 <SegmentCharts segments={results.metrics} />
               </div>
             </div>
@@ -612,17 +612,17 @@ const SwimAnalyzerPage: React.FC = () => {
 
         {/* Saved Races */}
         {savedRaces.length > 0 && (
-          <div className="mt-10 rounded-2xl border border-border/60 p-6 sm:p-8 bg-card shadow-sm">
+          <div className="mt-10 rounded-2xl border border-border/60 p-4 sm:p-8 bg-card shadow-sm overflow-hidden min-w-0">
             <h2 className="text-xl font-semibold mb-5">Saved Races</h2>
             <div className="space-y-3">
               {savedRaces.map((race, idx) => (
                 <div
                   key={idx}
-                  className="flex items-center justify-between p-4 rounded-xl border border-border/50 hover:bg-muted/30 transition-colors"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl border border-border/50 hover:bg-muted/30 transition-colors gap-3"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">{race.name || 'Unnamed Race'}</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-sm text-muted-foreground break-words">
                       {baseTimesData.events.find((e) => e.key === race.event)?.label} •{' '}
                       {race.course} • {race.sex} • {formatSecondsToTime(race.finalTime)}
                       {race.date && ` • ${new Date(race.date).toLocaleDateString()}`}
