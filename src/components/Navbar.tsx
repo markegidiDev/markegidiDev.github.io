@@ -235,7 +235,7 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center gap-4">
+          <div className="mobile-menu-container md:hidden flex items-center gap-4">
             <ThemeMenu />
             
             <Button
@@ -251,7 +251,7 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
         </div>
 
         {/* Mobile Menu - Full Screen Overlay */}
-        <div className={`md:hidden fixed inset-0 top-[calc(var(--navbar-height,80px))] z-40 bg-background/95 backdrop-blur-xl transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full pointer-events-none'}`} style={{ top: shrink ? '64px' : '96px' }}>
+        <div className={`mobile-menu-container md:hidden fixed inset-0 z-40 bg-background/95 backdrop-blur-xl transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full pointer-events-none'}`} style={{ top: shrink ? '64px' : '96px' }}>
             <div className="flex flex-col items-center justify-center h-[calc(100vh-100px)] gap-8 p-6">
               {navLinks.map((link, i) => (
                 <NavLink

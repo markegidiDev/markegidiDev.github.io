@@ -35,34 +35,38 @@ const SegmentCharts: React.FC<SegmentChartsProps> = ({ segments }) => {
   return (
     <div className="space-y-8">
       {/* Velocity vs Distance */}
-      <div className="rounded-lg border border-border p-4 bg-card">
-        <h3 className="text-lg font-semibold mb-4">Velocity vs Distance</h3>
-        <ResponsiveContainer width="100%" height={300}>
+      <div>
+        <h3 className="text-base font-semibold mb-4">Velocity vs Distance</h3>
+        <ResponsiveContainer width="100%" height={280}>
           <LineChart data={velocityData}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
               dataKey="distance"
               label={{ value: 'Cumulative Time (s)', position: 'insideBottom', offset: -5 }}
               className="text-xs"
+              tick={{ fontSize: 11 }}
             />
             <YAxis
               label={{ value: 'Velocity (m/s)', angle: -90, position: 'insideLeft' }}
               className="text-xs"
+              tick={{ fontSize: 11 }}
+              width={50}
             />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'hsl(var(--card))',
                 border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
+                fontSize: '13px',
               }}
             />
-            <Legend />
+            <Legend wrapperStyle={{ fontSize: '12px' }} />
             <Line
               type="monotone"
               dataKey="velocity"
               stroke="hsl(var(--primary))"
               strokeWidth={2}
-              dot={{ fill: 'hsl(var(--primary))' }}
+              dot={{ fill: 'hsl(var(--primary))', r: 3 }}
               name="Velocity (m/s)"
             />
           </LineChart>
@@ -70,34 +74,38 @@ const SegmentCharts: React.FC<SegmentChartsProps> = ({ segments }) => {
       </div>
 
       {/* Cumulative Time vs Distance */}
-      <div className="rounded-lg border border-border p-4 bg-card">
-        <h3 className="text-lg font-semibold mb-4">Cumulative Time vs Distance</h3>
-        <ResponsiveContainer width="100%" height={300}>
+      <div>
+        <h3 className="text-base font-semibold mb-4">Cumulative Time vs Distance</h3>
+        <ResponsiveContainer width="100%" height={280}>
           <LineChart data={cumulativeData}>
             <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
             <XAxis
               dataKey="distance"
               label={{ value: 'Distance (m)', position: 'insideBottom', offset: -5 }}
               className="text-xs"
+              tick={{ fontSize: 11 }}
             />
             <YAxis
               label={{ value: 'Cumulative Time (s)', angle: -90, position: 'insideLeft' }}
               className="text-xs"
+              tick={{ fontSize: 11 }}
+              width={50}
             />
             <Tooltip
               contentStyle={{
                 backgroundColor: 'hsl(var(--card))',
                 border: '1px solid hsl(var(--border))',
                 borderRadius: '8px',
+                fontSize: '13px',
               }}
             />
-            <Legend />
+            <Legend wrapperStyle={{ fontSize: '12px' }} />
             <Line
               type="monotone"
               dataKey="time"
               stroke="hsl(var(--chart-2))"
               strokeWidth={2}
-              dot={{ fill: 'hsl(var(--chart-2))' }}
+              dot={{ fill: 'hsl(var(--chart-2))', r: 3 }}
               name="Cumulative Time (s)"
             />
           </LineChart>
@@ -107,31 +115,36 @@ const SegmentCharts: React.FC<SegmentChartsProps> = ({ segments }) => {
       {/* Stroke Metrics (if available) */}
       {hasStrokes && (
         <>
-          <div className="rounded-lg border border-border p-4 bg-card">
-            <h3 className="text-lg font-semibold mb-4">Stroke Rate & DPS</h3>
-            <ResponsiveContainer width="100%" height={300}>
+          <div>
+            <h3 className="text-base font-semibold mb-4">Stroke Rate & DPS</h3>
+            <ResponsiveContainer width="100%" height={280}>
               <LineChart data={strokeData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="segment" className="text-xs" />
+                <XAxis dataKey="segment" className="text-xs" tick={{ fontSize: 11 }} />
                 <YAxis
                   yAxisId="left"
-                  label={{ value: 'Stroke Rate (c/min)', angle: -90, position: 'insideLeft' }}
+                  label={{ value: 'SR (c/min)', angle: -90, position: 'insideLeft' }}
                   className="text-xs"
+                  tick={{ fontSize: 11 }}
+                  width={45}
                 />
                 <YAxis
                   yAxisId="right"
                   orientation="right"
-                  label={{ value: 'DPS (cm/cycle)', angle: 90, position: 'insideRight' }}
+                  label={{ value: 'DPS (cm/c)', angle: 90, position: 'insideRight' }}
                   className="text-xs"
+                  tick={{ fontSize: 11 }}
+                  width={45}
                 />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: 'hsl(var(--card))',
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '8px',
+                    fontSize: '13px',
                   }}
                 />
-                <Legend />
+                <Legend wrapperStyle={{ fontSize: '12px' }} />
                 <Line
                   yAxisId="left"
                   type="monotone"
@@ -152,30 +165,33 @@ const SegmentCharts: React.FC<SegmentChartsProps> = ({ segments }) => {
             </ResponsiveContainer>
           </div>
 
-          <div className="rounded-lg border border-border p-4 bg-card">
-            <h3 className="text-lg font-semibold mb-4">Stroke Index</h3>
-            <ResponsiveContainer width="100%" height={300}>
+          <div>
+            <h3 className="text-base font-semibold mb-4">Stroke Index</h3>
+            <ResponsiveContainer width="100%" height={280}>
               <LineChart data={strokeData}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
-                <XAxis dataKey="segment" className="text-xs" />
+                <XAxis dataKey="segment" className="text-xs" tick={{ fontSize: 11 }} />
                 <YAxis
                   label={{ value: 'Stroke Index', angle: -90, position: 'insideLeft' }}
                   className="text-xs"
+                  tick={{ fontSize: 11 }}
+                  width={50}
                 />
                 <Tooltip
                   contentStyle={{
                     backgroundColor: 'hsl(var(--card))',
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '8px',
+                    fontSize: '13px',
                   }}
                 />
-                <Legend />
+                <Legend wrapperStyle={{ fontSize: '12px' }} />
                 <Line
                   type="monotone"
                   dataKey="strokeIndex"
                   stroke="hsl(var(--chart-5))"
                   strokeWidth={2}
-                  dot={{ fill: 'hsl(var(--chart-5))' }}
+                  dot={{ fill: 'hsl(var(--chart-5))', r: 3 }}
                   name="Stroke Index"
                 />
               </LineChart>

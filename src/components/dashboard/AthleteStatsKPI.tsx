@@ -43,11 +43,11 @@ export function AthleteStatsKPI({ stats }: { stats: AthleteStats | null }) {
   if (!cards.length) return null;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       {cards.map((c) => (
-        <div key={c.label} className="rounded-lg border border-border bg-card p-3">
-          <div className="text-xs text-muted-foreground">{c.label}</div>
-          <div className="text-xl font-semibold">{c.value}</div>
+        <div key={c.label} className="rounded-xl bg-black/20 border border-white/5 p-3.5 hover:bg-white/5 transition-colors">
+          <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{c.label}</div>
+          <div className="text-xl font-bold text-white mt-1">{c.value}</div>
           {c.sub ? <div className="text-xs text-muted-foreground mt-0.5">{c.sub}</div> : null}
         </div>
       ))}

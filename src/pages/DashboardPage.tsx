@@ -12,6 +12,7 @@ import { AthleteStatsKPI, type AthleteStats } from '@/components/dashboard/Athle
 import { ZonesDonut } from '@/components/charts/ZonesDonut';
 import { GdCard } from '@/components/ui/GdCard';
 import { SwimPacesTable } from '@/components/dashboard/SwimPacesTable';
+import { Activity, BarChart3, Heart, Waves, Trophy, TrendingUp, Timer } from 'lucide-react';
 
 // TypeScript interface for chart data points
 interface DataPoint {
@@ -197,37 +198,56 @@ const DashboardPage = () => {
   }, [stravaData]);
 
   return (
-    <div className="container max-w-[1600px] mx-auto px-4 py-6 sm:px-6 sm:py-8 bg-background text-foreground min-h-screen">
-      <div className="space-y-6">
+    <div className="container max-w-[1600px] mx-auto px-4 py-8 sm:px-6 sm:py-10 bg-background text-foreground min-h-screen">
+      <div className="space-y-8">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground">Panoramica delle attività sportive</p>
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-3">
+              <Activity className="h-4 w-4" />
+              Strava Connect
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Dashboard</h1>
+            <p className="text-muted-foreground text-lg mt-1">Panoramica delle attivita sportive</p>
           </div>
-          <div className="flex gap-3">
-             <div className="px-4 py-2 rounded-full bg-gd-main border border-white/10 shadow-sm flex items-center">
-                <span className="text-sm text-muted-foreground mr-2">Sessioni</span>
-                <span className="font-semibold">{kpi.sessions}</span>
+          <div className="flex flex-wrap gap-3">
+             <div className="group p-4 rounded-xl bg-gradient-to-br from-muted/40 to-muted/20 border border-border/40 hover:border-border/60 transition-all min-w-[100px]">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="p-1 rounded-md bg-foreground/5">
+                    <BarChart3 className="h-3.5 w-3.5 text-muted-foreground" />
+                  </div>
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Sessioni</span>
+                </div>
+                <div className="text-2xl font-bold tracking-tight">{kpi.sessions}</div>
              </div>
-             <div className="px-4 py-2 rounded-full bg-gd-main border border-white/10 shadow-sm flex items-center">
-                <span className="text-sm text-muted-foreground mr-2">Totale Km</span>
-                <span className="font-semibold">{(kpi.distance + kpi.walk).toFixed(1)}</span>
+             <div className="group p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 hover:border-primary/30 transition-all min-w-[100px]">
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="p-1 rounded-md bg-primary/10">
+                    <TrendingUp className="h-3.5 w-3.5 text-primary" />
+                  </div>
+                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Totale</span>
+                </div>
+                <div className="text-2xl font-bold text-primary tracking-tight">{(kpi.distance + kpi.walk).toFixed(1)} <span className="text-sm font-normal text-muted-foreground">km</span></div>
              </div>
           </div>
         </div>
 
         {/* Main Grid */}
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          
+
           {/* Main Chart Section (2 cols) */}
           <div className="xl:col-span-2">
             <GdCard className="h-full" contentClassName="p-0 flex flex-col h-full">
                <Tab.Group>
                  {/* Card Header with Controls */}
-                 <div className="p-4 md:p-6 border-b border-white/5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                       <h2 className="text-lg font-semibold">Performance</h2>
+                 <div className="px-5 md:px-6 pt-5 md:pt-6 pb-4 border-b border-white/5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                       <div className="flex items-center gap-2">
+                         <div className="p-1.5 rounded-lg bg-white/5">
+                           <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                         </div>
+                         <h2 className="text-lg font-semibold">Performance</h2>
+                       </div>
                        <Tab.List className="flex bg-black/20 rounded-lg p-1">
                           {['Giornaliero', 'Settimanale'].map(label => (
                              <Tab key={label} className={({ selected }) => `px-3 py-1 text-xs font-medium rounded-md transition-all focus:outline-none ${selected ? 'bg-gd-magenta-2 text-white shadow-sm' : 'text-muted-foreground hover:text-white'}`}>
@@ -236,9 +256,9 @@ const DashboardPage = () => {
                           ))}
                        </Tab.List>
                     </div>
-                    
+
                     {/* Filters */}
-                    <div className="flex gap-2">
+                    <div className="flex flex-wrap gap-2">
                        <Listbox value={activityType} onChange={setActivityType}>
                           <div className="relative w-32 md:w-40">
                              <Listbox.Button className="w-full bg-black/20 border border-white/5 rounded-lg py-1.5 px-3 text-left text-sm focus:outline-none focus:ring-1 focus:ring-primary flex items-center justify-between">
@@ -288,8 +308,8 @@ const DashboardPage = () => {
                             />
                           ) : (
                             <div className="flex flex-col h-full items-center justify-center text-muted-foreground gap-2">
-                              <p>Nessuna attività trovata in questo periodo.</p>
-                              <p className="text-xs opacity-50">Prova a selezionare un intervallo più ampio.</p>
+                              <p>Nessuna attivita trovata in questo periodo.</p>
+                              <p className="text-xs opacity-50">Prova a selezionare un intervallo piu ampio.</p>
                             </div>
                           )}
                        </Tab.Panel>
@@ -304,21 +324,33 @@ const DashboardPage = () => {
                  </div>
 
                  {/* Footer Metrics (Last 7 Days) */}
-                 <div className="grid grid-cols-2 md:grid-cols-4 border-t border-white/5 divide-x divide-white/5 bg-black/10">
-                    <div className="p-4 text-center md:text-left">
-                       <div className="text-xs text-muted-foreground mb-1">Corsa (7g)</div>
+                 <div className="grid grid-cols-2 md:grid-cols-4 border-t border-white/5">
+                    <div className="p-4 border-r border-white/5">
+                       <div className="flex items-center gap-1.5 mb-1.5">
+                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'hsl(215, 100%, 60%)' }} />
+                         <span className="text-xs text-muted-foreground font-medium">Corsa (7g)</span>
+                       </div>
                        <div className="text-xl font-bold text-white">{Number.isFinite(last7.run) ? last7.run.toFixed(1) : '0.0'} <span className="text-xs font-normal text-muted-foreground">km</span></div>
                     </div>
-                    <div className="p-4 text-center md:text-left">
-                       <div className="text-xs text-muted-foreground mb-1">Ciclismo (7g)</div>
+                    <div className="p-4 border-r border-white/5">
+                       <div className="flex items-center gap-1.5 mb-1.5">
+                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'hsl(40, 100%, 50%)' }} />
+                         <span className="text-xs text-muted-foreground font-medium">Ciclismo (7g)</span>
+                       </div>
                        <div className="text-xl font-bold text-white">{Number.isFinite(last7.ride) ? last7.ride.toFixed(1) : '0.0'} <span className="text-xs font-normal text-muted-foreground">km</span></div>
                     </div>
-                    <div className="p-4 text-center md:text-left">
-                       <div className="text-xs text-muted-foreground mb-1">Nuoto (7g)</div>
+                    <div className="p-4 border-r border-white/5">
+                       <div className="flex items-center gap-1.5 mb-1.5">
+                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'hsl(140, 100%, 40%)' }} />
+                         <span className="text-xs text-muted-foreground font-medium">Nuoto (7g)</span>
+                       </div>
                        <div className="text-xl font-bold text-white">{Number.isFinite(last7.swim) ? last7.swim.toFixed(1) : '0.0'} <span className="text-xs font-normal text-muted-foreground">km</span></div>
                     </div>
-                    <div className="p-4 text-center md:text-left">
-                       <div className="text-xs text-muted-foreground mb-1">Camminata (7g)</div>
+                    <div className="p-4">
+                       <div className="flex items-center gap-1.5 mb-1.5">
+                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'hsl(290, 70%, 55%)' }} />
+                         <span className="text-xs text-muted-foreground font-medium">Camminata (7g)</span>
+                       </div>
                        <div className="text-xl font-bold text-white">{Number.isFinite(last7.walk) ? last7.walk.toFixed(1) : '0.0'} <span className="text-xs font-normal text-muted-foreground">km</span></div>
                     </div>
                  </div>
@@ -330,27 +362,45 @@ const DashboardPage = () => {
           <div className="space-y-6">
              {/* Athlete Stats */}
              {athleteStats && (
-                <GdCard contentClassName="p-6">
-                   <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">Statistiche Atleta</h3>
-                   <AthleteStatsKPI stats={athleteStats} />
+                <GdCard contentClassName="p-0 overflow-hidden">
+                   <div className="px-5 pt-5 pb-3 border-b border-white/5">
+                     <h3 className="font-semibold flex items-center gap-2">
+                       <div className="p-1.5 rounded-lg bg-white/5">
+                         <Timer className="h-4 w-4 text-muted-foreground" />
+                       </div>
+                       Statistiche Atleta
+                     </h3>
+                     <p className="text-xs text-muted-foreground mt-1">Ultime 4 settimane e anno in corso</p>
+                   </div>
+                   <div className="p-5">
+                     <AthleteStatsKPI stats={athleteStats} />
+                   </div>
                 </GdCard>
              )}
 
              {/* Best Efforts */}
-             <GdCard contentClassName="p-6">
-                <h3 className="text-sm font-medium text-muted-foreground mb-4 uppercase tracking-wider">Record Personali</h3>
-                <div className="space-y-3">
+             <GdCard contentClassName="p-0 overflow-hidden">
+                <div className="px-5 pt-5 pb-3 border-b border-white/5">
+                  <h3 className="font-semibold flex items-center gap-2">
+                    <div className="p-1.5 rounded-lg bg-white/5">
+                      <Trophy className="h-4 w-4 text-amber-400" />
+                    </div>
+                    Record Personali
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1">Migliori tempi nella corsa</p>
+                </div>
+                <div className="p-5 space-y-3">
                   {(() => {
                     const want = ['400m','1k','5k','10k','21k'];
                     const pick = (label: string) => (bestEfforts || []).filter(e => e.label === label).sort((a,b) => a.time_s - b.time_s)[0];
                     const items = want.map(l => ({ label: l, entry: pick(l) })).filter(x => x.entry);
-                    
+
                     if (!items.length) return <div className="text-sm text-muted-foreground">Nessun record trovato</div>;
-                    
+
                     return items.map(({ label, entry }, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3 rounded-lg bg-black/20 border border-white/5">
+                      <div key={idx} className="flex items-center justify-between p-3.5 rounded-xl bg-black/20 border border-white/5 hover:bg-white/5 transition-colors">
                         <div className="flex flex-col">
-                           <span className="text-xs text-muted-foreground font-medium uppercase">{label}</span>
+                           <span className="text-sm font-semibold text-white">{label}</span>
                            <span className="text-xs text-muted-foreground/60">{new Date(entry!.date).toLocaleDateString('it-IT')}</span>
                         </div>
                         <div className="text-lg font-bold font-mono text-white">
@@ -373,33 +423,49 @@ const DashboardPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
            {/* Swim Paces */}
            <GdCard contentClassName="p-0 overflow-hidden h-full">
-              <div className="p-4 border-b border-white/5 bg-black/10">
-                 <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground">Ultime Nuotate</h3>
+              <div className="px-5 pt-5 pb-3 border-b border-white/5">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-blue-500/10">
+                    <Waves className="h-4 w-4 text-blue-400" />
+                  </div>
+                  Ultime Nuotate
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">Passo reale per 100m (esclude pause)</p>
               </div>
-              <div className="p-4">
+              <div className="p-5">
                  <SwimPacesTable swimPaces={swimPaces} />
               </div>
            </GdCard>
 
            {/* Zones */}
-           <GdCard contentClassName="p-6 h-full">
-              <h3 className="font-semibold text-sm uppercase tracking-wider text-muted-foreground mb-4">Zone Cardiache / Potenza</h3>
-              {zonesSummary?.length ? (
-                (() => {
-                  const total = (zonesSummary || []).reduce((acc, z) => {
-                    const hr = z.hr || [];
-                    hr.forEach((sec, i) => { acc[i] = (acc[i] || 0) + (sec || 0); });
-                    return acc;
-                  }, [] as number[]);
-                  const data = (total.length ? total : [0,0,0,0,0]).slice(0,5).map((s, i) => ({ zone: `Z${i+1}`, seconds: s }));
-                  return <ZonesDonut data={data} />;
-                })()
-              ) : (
-                <div className="text-muted-foreground text-sm">Nessun dato zone disponibile</div>
-              )}
+           <GdCard contentClassName="p-0 overflow-hidden h-full">
+              <div className="px-5 pt-5 pb-3 border-b border-white/5">
+                <h3 className="font-semibold flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-red-500/10">
+                    <Heart className="h-4 w-4 text-red-400" />
+                  </div>
+                  Zone Cardiache / Potenza
+                </h3>
+                <p className="text-xs text-muted-foreground mt-1">Distribuzione del tempo nelle zone HR</p>
+              </div>
+              <div className="p-5">
+                {zonesSummary?.length ? (
+                  (() => {
+                    const total = (zonesSummary || []).reduce((acc, z) => {
+                      const hr = z.hr || [];
+                      hr.forEach((sec, i) => { acc[i] = (acc[i] || 0) + (sec || 0); });
+                      return acc;
+                    }, [] as number[]);
+                    const data = (total.length ? total : [0,0,0,0,0]).slice(0,5).map((s, i) => ({ zone: `Z${i+1}`, seconds: s }));
+                    return <ZonesDonut data={data} />;
+                  })()
+                ) : (
+                  <div className="text-muted-foreground text-sm">Nessun dato zone disponibile</div>
+                )}
+              </div>
            </GdCard>
         </div>
-        
+
         {/* Debug / Extra */}
         <div className="flex justify-center pt-8 opacity-50 hover:opacity-100 transition-opacity">
            <TrafficLight selectedDirection={selectedDirection} onDirectionChange={setSelectedDirection} />
