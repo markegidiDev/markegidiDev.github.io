@@ -51,3 +51,6 @@ Thumbs.db
 /dist
 /build
 /.cache
+
+# Scripts di utilità (non servono in produzione)
+scripts/

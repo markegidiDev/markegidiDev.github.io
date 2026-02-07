@@ -16,12 +16,14 @@ interface PredictionModuleProps {
   currentTime: number;
   baseTime: number;
   currentPoints: number;
+  onTargetTimeChange?: (time: number | null) => void;
 }
 
 const PredictionModule: React.FC<PredictionModuleProps> = ({
   currentTime,
   baseTime,
   currentPoints,
+  onTargetTimeChange,
 }) => {
   const [targetTimeInput, setTargetTimeInput] = useState('');
   const [targetPoints, setTargetPoints] = useState<number | null>(null);
@@ -35,6 +37,7 @@ const PredictionModule: React.FC<PredictionModuleProps> = ({
       const targetTime = parseTimeToSeconds(targetTimeInput);
       const pts = computeWorldAquaticsPoints(targetTime, baseTime);
       setTargetPoints(pts);
+      onTargetTimeChange?.(targetTime);
     } catch {
       alert('Invalid target time format');
     }
@@ -119,9 +122,9 @@ const PredictionModule: React.FC<PredictionModuleProps> = ({
               placeholder="es. 31.45 o 1:05.30"
               value={targetTimeInput}
               onChange={(e) => setTargetTimeInput(e.target.value)}
-              className="flex-1 h-11 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+              className="flex-1 h-11 px-3 rounded-md border-2 border-primary/30 bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
             />
-            <Button onClick={handleCalculateDifficulty} className="h-11 px-6">Calculate</Button>
+            <Button onClick={handleCalculateDifficulty} className="h-11 px-6 shadow-sm">Calculate</Button>
           </div>
         </div>
 

@@ -26,6 +26,7 @@ import baseTimesData from '@/data/worldAquaticsBaseTimes.json';
 import SegmentTable from '@/components/swim/SegmentTable';
 import SegmentCharts from '@/components/swim/SegmentCharts';
 import PredictionModule from '@/components/swim/PredictionModule';
+import GaussianDistributionChart from '@/components/swim/GaussianDistributionChart';
 import { Save, Upload, Download, Plus, Trash2, Timer, Waves, Activity, Zap, Trophy, Gauge, Clock, TrendingUp, LineChart, Table2 } from 'lucide-react';
 
 interface RaceData {
@@ -61,6 +62,9 @@ const SwimAnalyzerPage: React.FC = () => {
     points: number;
     metrics: SegmentMetrics[];
   } | null>(null);
+
+  // Target time from prediction module
+  const [targetTime, setTargetTime] = useState<number | null>(null);
 
   // Saved races
   const [savedRaces, setSavedRaces] = useState<RaceData[]>([]);
@@ -287,7 +291,7 @@ const SwimAnalyzerPage: React.FC = () => {
 
           <div className="px-4 sm:px-8 py-6 sm:py-8 space-y-8">
             {/* Basic Info */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 p-5 rounded-xl bg-muted/15 border border-border/30">
               <div className="space-y-2">
                 <label className="block text-sm font-medium text-foreground">Event</label>
                 <Select value={event} onValueChange={(v) => setEvent(v as EventKey)}>
@@ -331,7 +335,7 @@ const SwimAnalyzerPage: React.FC = () => {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-sm font-medium text-foreground flex items-center gap-1.5">
+                <label className="text-sm font-medium text-foreground flex items-center gap-1.5">
                   <Timer className="h-3.5 w-3.5 text-muted-foreground" />
                   Final Time
                 </label>
@@ -340,7 +344,7 @@ const SwimAnalyzerPage: React.FC = () => {
                   placeholder="es. 31.45 o 1:05.30"
                   value={finalTimeInput}
                   onChange={(e) => setFinalTimeInput(e.target.value)}
-                  className="w-full h-11 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-colors"
+                  className="w-full h-11 px-3 rounded-md border-2 border-primary/30 bg-background text-sm font-medium focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary transition-colors"
                 />
               </div>
             </div>
@@ -481,8 +485,8 @@ const SwimAnalyzerPage: React.FC = () => {
           </div>
 
           {/* Analyze Button Footer */}
-          <div className="px-4 sm:px-8 py-5 border-t border-border/40 bg-muted/20 rounded-b-2xl">
-            <Button onClick={handleAnalyze} size="lg" className="w-full sm:w-auto gap-2 text-base px-8">
+          <div className="px-4 sm:px-8 py-6 border-t-2 border-primary/20 bg-gradient-to-r from-primary/5 to-transparent rounded-b-2xl">
+            <Button onClick={handleAnalyze} size="lg" className="w-full sm:w-auto gap-2 text-base px-10 py-3 shadow-md hover:shadow-lg transition-shadow">
               <Activity className="h-4.5 w-4.5" />
               Analyze Race
             </Button>
@@ -491,7 +495,7 @@ const SwimAnalyzerPage: React.FC = () => {
 
         {/* Results */}
         {results && (
-          <div className="space-y-8">
+          <div className="space-y-10">
             {/* Summary */}
             <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden min-w-0">
               {/* Summary Header */}
@@ -505,7 +509,7 @@ const SwimAnalyzerPage: React.FC = () => {
 
               {/* Metric Cards */}
               <div className="px-4 sm:px-8 py-6 sm:py-8">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-5 sm:gap-6">
                   <div className="group p-3 sm:p-5 rounded-xl bg-gradient-to-br from-muted/40 to-muted/20 border border-border/40 hover:border-border/60 transition-all">
                     <div className="flex items-center gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                       <div className="p-1 sm:p-1.5 rounded-lg bg-foreground/5">
@@ -601,11 +605,21 @@ const SwimAnalyzerPage: React.FC = () => {
               </div>
             </div>
 
+            {/* Gaussian Distribution */}
+            <GaussianDistributionChart
+              event={event}
+              course={course}
+              sex={sex}
+              userTime={results.finalTime}
+              predictionTime={targetTime}
+            />
+
             {/* Prediction Module */}
             <PredictionModule
               currentTime={results.finalTime}
               baseTime={results.baseTime}
               currentPoints={results.points}
+              onTargetTimeChange={setTargetTime}
             />
           </div>
         )}

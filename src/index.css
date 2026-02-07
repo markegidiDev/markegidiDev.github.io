@@ -56,87 +56,79 @@
   }
 
   .dark {
-    /* --background: #020817 (Dark Navy/Black) - Neutral base for LightRays */
-    --background: 222.2 84% 4.9%;
-    /* --light-cyan: #caf0f8 -> 190 77% 88% */
-    --foreground: 190 77% 88%;
+    /* Clean professional dark palette */
+    --background: 224 12% 8%;
+    --foreground: 210 20% 90%;
 
-    /* --french-blue: #023e8a -> 214 97% 27% */
-    --card: 214 97% 27%;
-    --card-foreground: 190 77% 88%;
+    --card: 224 12% 12%;
+    --card-foreground: 210 20% 90%;
 
-    /* --french-blue: #023e8a */
-    --popover: 214 97% 27%;
-    --popover-foreground: 190 77% 88%;
+    --popover: 224 12% 11%;
+    --popover-foreground: 210 20% 90%;
 
-    /* --sky-aqua: #48cae4 -> 188 75% 59% */
-    --primary: 188 75% 59%;
-    /* --deep-twilight for contrast */
-    --primary-foreground: 239 94% 19%;
+    --primary: 217 76% 56%;
+    --primary-foreground: 0 0% 100%;
 
-    /* --bright-teal-blue: #0077b6 -> 201 100% 36% */
-    --secondary: 201 100% 36%;
-    --secondary-foreground: 190 77% 88%;
+    --secondary: 220 14% 18%;
+    --secondary-foreground: 210 20% 80%;
 
-    /* --blue-green: #0096c7 -> 195 100% 39% */
-    --muted: 195 100% 39%;
-    --muted-foreground: 190 76% 82%; /* Frosted Blue 2 for muted text */
+    --muted: 220 12% 16%;
+    --muted-foreground: 215 12% 55%;
 
-    /* --turquoise-surf: #00b4d8 -> 190 100% 42% */
-    --accent: 190 100% 42%;
-    --accent-foreground: 190 77% 88%;
+    --accent: 217 76% 56%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 40%;
-    --destructive-foreground: 190 77% 88%;
+    --destructive: 0 62% 52%;
+    --destructive-foreground: 0 0% 100%;
 
-    /* --bright-teal-blue for borders */
-    --border: 201 100% 36%;
-    --input: 201 100% 36%;
-    --ring: 188 75% 59%;
+    --border: 220 12% 20%;
+    --input: 220 12% 20%;
+    --ring: 217 76% 56%;
 
-    /* Chart colors mapped to palette */
-    --chart-1: 188 75% 59%; /* Sky Aqua */
-    --chart-2: 190 100% 42%; /* Turquoise Surf */
-    --chart-3: 189 74% 75%; /* Frosted Blue */
-    --chart-4: 201 100% 36%; /* Bright Teal Blue */
-    --chart-5: 190 76% 82%; /* Frosted Blue 2 */
+    /* Chart colors — varied & readable on dark */
+    --chart-1: 217 80% 62%;  /* Blue */
+    --chart-2: 160 55% 52%;  /* Teal/Green */
+    --chart-3: 35 85% 62%;   /* Amber */
+    --chart-4: 270 60% 66%;  /* Purple */
+    --chart-5: 350 70% 62%;  /* Rose */
   }
 
-  /* Extra theme: "nord" (misto verde/blu/viola) */
+  /* Extra theme: "nord" — official Nord palette inspired */
   .nord {
-    --background: 220 24% 10%;
-    --foreground: 210 36% 96%;
+    --background: 220 16% 12%;      /* Nord0  #2E3440 */
+    --foreground: 218 27% 88%;      /* Nord6  #ECEFF4 */
 
-    --card: 221 22% 14%;
-    --card-foreground: 210 36% 96%;
+    --card: 220 16% 16%;            /* Nord1  #3B4252 */
+    --card-foreground: 218 27% 88%;
 
-    --popover: 221 22% 14%;
-    --popover-foreground: 210 36% 96%;
+    --popover: 220 16% 14%;
+    --popover-foreground: 218 27% 88%;
 
-    --primary: 248 35% 65%; /* violet */
-    --primary-foreground: 220 24% 10%;
+    --primary: 213 32% 52%;         /* Nord10 #5E81AC */
+    --primary-foreground: 218 27% 94%;
 
-    --secondary: 199 32% 22%;
-    --secondary-foreground: 210 36% 96%;
+    --secondary: 220 16% 22%;       /* Nord2  #434C5E */
+    --secondary-foreground: 218 27% 82%;
 
-    --muted: 221 18% 22%;
-    --muted-foreground: 214 20% 80%;
+    --muted: 220 16% 20%;           /* Nord3-ish */
+    --muted-foreground: 219 20% 60%;
 
-    --accent: 207 24% 22%;
-    --accent-foreground: 210 36% 96%;
+    --accent: 179 25% 50%;          /* Nord7  #8FBCBB */
+    --accent-foreground: 218 27% 94%;
 
-    --destructive: 355 60% 55%;
-    --destructive-foreground: 210 36% 96%;
+    --destructive: 354 42% 56%;     /* Nord11 #BF616A */
+    --destructive-foreground: 218 27% 94%;
 
-    --border: 220 18% 22%;
-    --input: 220 18% 22%;
-    --ring: 248 35% 65%;
+    --border: 220 16% 24%;
+    --input: 220 16% 24%;
+    --ring: 213 32% 52%;
 
-    --chart-1: 200 60% 55%; /* blue */
-    --chart-2: 145 50% 45%; /* green */
-    --chart-3: 270 45% 60%; /* purple */
-    --chart-4: 188 45% 50%; /* cyan */
-    --chart-5: 325 40% 60%; /* magenta */
+    /* Chart: full Nord Frost + Aurora spread */
+    --chart-1: 213 32% 52%;         /* Nord10 — Steel Blue */
+    --chart-2: 92 28% 55%;          /* Nord14 — Sage Green */
+    --chart-3: 40 55% 60%;          /* Nord13 — Sandy Yellow */
+    --chart-4: 311 20% 52%;         /* Nord15 — Muted Purple */
+    --chart-5: 354 42% 56%;         /* Nord11 — Muted Red */
   }
 
   * {
