@@ -16,9 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { formatSecondsToTime, type Course, type Sex, type EventKey } from '@/lib/swimMath';
+import { formatSecondsToTime, parseTimeToSeconds, type Course, type Sex, type EventKey } from '@/lib/swimMath';
 import masterTimesData from '@/data/masterTimes.json';
-import { BarChart3, Users } from 'lucide-react';
+import { BarChart3, Users, Globe } from 'lucide-react';
 
 // ── Types ──────────────────────────────────────────────────
 interface MasterTimesStructure {
@@ -34,6 +34,97 @@ interface MasterTimesStructure {
 const masterTimes = masterTimesData as MasterTimesStructure;
 
 const AGE_GROUPS = ['20', '25', '30', '35', '40', '45', '50', '55', '60', '65', '70', '75', '80', '85', '90'];
+
+// ── World Records ──────────────────────────────────────────
+// Structure: WORLD_RECORDS[course][sex][eventKey] = seconds
+const WORLD_RECORDS: Record<string, Record<string, Record<string, { time: number; holder: string }>>> = {
+  LCM: {
+    M: {
+      '50_FREE':   { time: parseTimeToSeconds('20.91'),   holder: 'César Cielo' },
+      '100_FREE':  { time: parseTimeToSeconds('46.40'),   holder: 'Pan Zhanle' },
+      '200_FREE':  { time: parseTimeToSeconds('1:42.00'), holder: 'Paul Biedermann' },
+      '400_FREE':  { time: parseTimeToSeconds('3:39.96'), holder: 'Lukas Märtens' },
+      '800_FREE':  { time: parseTimeToSeconds('7:32.12'), holder: 'Zhang Lin' },
+      '1500_FREE': { time: parseTimeToSeconds('14:30.67'),holder: 'Bobby Finke' },
+      '50_BACK':   { time: parseTimeToSeconds('23.55'),   holder: 'Kliment Kolesnikov' },
+      '100_BACK':  { time: parseTimeToSeconds('51.60'),   holder: 'Thomas Ceccon' },
+      '200_BACK':  { time: parseTimeToSeconds('1:51.92'), holder: 'Aaron Peirsol' },
+      '50_BREAST': { time: parseTimeToSeconds('25.95'),   holder: 'Adam Peaty' },
+      '100_BREAST':{ time: parseTimeToSeconds('56.88'),   holder: 'Adam Peaty' },
+      '200_BREAST':{ time: parseTimeToSeconds('2:05.48'), holder: 'Qin Haiyang' },
+      '50_FLY':    { time: parseTimeToSeconds('22.27'),   holder: 'Andriy Govorov' },
+      '100_FLY':   { time: parseTimeToSeconds('49.45'),   holder: 'Caeleb Dressel' },
+      '200_FLY':   { time: parseTimeToSeconds('1:50.34'), holder: 'Kristóf Milák' },
+      '200_IM':    { time: parseTimeToSeconds('1:52.69'), holder: 'Léon Marchand' },
+      '400_IM':    { time: parseTimeToSeconds('4:02.50'), holder: 'Léon Marchand' },
+    },
+    F: {
+      '50_FREE':   { time: parseTimeToSeconds('23.61'),   holder: 'Sarah Sjöström' },
+      '100_FREE':  { time: parseTimeToSeconds('51.71'),   holder: 'Sarah Sjöström' },
+      '200_FREE':  { time: parseTimeToSeconds('1:52.23'), holder: 'Ariarne Titmus' },
+      '400_FREE':  { time: parseTimeToSeconds('3:54.18'), holder: 'Summer McIntosh' },
+      '800_FREE':  { time: parseTimeToSeconds('8:04.12'), holder: 'Katie Ledecky' },
+      '1500_FREE': { time: parseTimeToSeconds('15:20.48'),holder: 'Katie Ledecky' },
+      '50_BACK':   { time: parseTimeToSeconds('26.86'),   holder: 'Kaylee McKeown' },
+      '100_BACK':  { time: parseTimeToSeconds('57.13'),   holder: 'Regan Smith' },
+      '200_BACK':  { time: parseTimeToSeconds('2:03.14'), holder: 'Kaylee McKeown' },
+      '50_BREAST': { time: parseTimeToSeconds('29.16'),   holder: 'Rūta Meilutytė' },
+      '100_BREAST':{ time: parseTimeToSeconds('1:04.13'), holder: 'Lilly King' },
+      '200_BREAST':{ time: parseTimeToSeconds('2:17.55'), holder: 'Evgeniia Chikunova' },
+      '50_FLY':    { time: parseTimeToSeconds('24.43'),   holder: 'Sarah Sjöström' },
+      '100_FLY':   { time: parseTimeToSeconds('54.60'),   holder: 'Gretchen Walsh' },
+      '200_FLY':   { time: parseTimeToSeconds('2:01.81'), holder: 'Liu Zige' },
+      '200_IM':    { time: parseTimeToSeconds('2:05.70'), holder: 'Summer McIntosh' },
+      '400_IM':    { time: parseTimeToSeconds('4:23.65'), holder: 'Summer McIntosh' },
+    },
+  },
+  SCM: {
+    M: {
+      '50_FREE':   { time: parseTimeToSeconds('19.90'),   holder: 'Jordan Crooks' },
+      '100_FREE':  { time: parseTimeToSeconds('44.84'),   holder: 'Kyle Chalmers' },
+      '200_FREE':  { time: parseTimeToSeconds('1:38.61'), holder: 'Luke Hobson' },
+      '400_FREE':  { time: parseTimeToSeconds('3:32.25'), holder: 'Yannick Agnel' },
+      '800_FREE':  { time: parseTimeToSeconds('7:20.46'), holder: 'Daniel Wiffen' },
+      '1500_FREE': { time: parseTimeToSeconds('14:06.88'),holder: 'Florian Wellbrock' },
+      '50_BACK':   { time: parseTimeToSeconds('22.11'),   holder: 'Kliment Kolesnikov' },
+      '100_BACK':  { time: parseTimeToSeconds('48.16'),   holder: 'Hubert Kós' },
+      '200_BACK':  { time: parseTimeToSeconds('1:45.12'), holder: 'Hubert Kós' },
+      '50_BREAST': { time: parseTimeToSeconds('24.95'),   holder: 'Emre Sakçı' },
+      '100_BREAST':{ time: parseTimeToSeconds('55.28'),   holder: 'Ilya Shymanovich' },
+      '200_BREAST':{ time: parseTimeToSeconds('1:59.52'), holder: 'Caspar Corbeau' },
+      '50_FLY':    { time: parseTimeToSeconds('21.32'),   holder: 'Noè Ponti' },
+      '100_FLY':   { time: parseTimeToSeconds('47.68'),   holder: 'Joshua Liendo' },
+      '200_FLY':   { time: parseTimeToSeconds('1:46.85'), holder: 'Tomoru Honda' },
+      '100_IM':    { time: parseTimeToSeconds('49.28'),   holder: 'Caeleb Dressel' },
+      '200_IM':    { time: parseTimeToSeconds('1:48.88'), holder: 'Léon Marchand' },
+      '400_IM':    { time: parseTimeToSeconds('3:54.81'), holder: 'Daiya Seto' },
+    },
+    F: {
+      '50_FREE':   { time: parseTimeToSeconds('22.83'),   holder: 'Gretchen Walsh' },
+      '100_FREE':  { time: parseTimeToSeconds('49.93'),   holder: 'Kate Douglass' },
+      '200_FREE':  { time: parseTimeToSeconds('1:49.36'), holder: 'Mollie O\'Callaghan' },
+      '400_FREE':  { time: parseTimeToSeconds('3:50.25'), holder: 'Summer McIntosh' },
+      '800_FREE':  { time: parseTimeToSeconds('7:54.00'), holder: 'Lani Pallister' },
+      '1500_FREE': { time: parseTimeToSeconds('15:08.24'),holder: 'Katie Ledecky' },
+      '50_BACK':   { time: parseTimeToSeconds('25.23'),   holder: 'Regan Smith' },
+      '100_BACK':  { time: parseTimeToSeconds('54.02'),   holder: 'Regan Smith' },
+      '200_BACK':  { time: parseTimeToSeconds('1:57.33'), holder: 'Kaylee McKeown' },
+      '50_BREAST': { time: parseTimeToSeconds('28.37'),   holder: 'Rūta Meilutytė' },
+      '100_BREAST':{ time: parseTimeToSeconds('1:02.36'), holder: 'Rūta Meilutytė / Alia Atkinson' },
+      '200_BREAST':{ time: parseTimeToSeconds('2:12.50'), holder: 'Kate Douglass' },
+      '50_FLY':    { time: parseTimeToSeconds('23.72'),   holder: 'Gretchen Walsh' },
+      '100_FLY':   { time: parseTimeToSeconds('52.71'),   holder: 'Gretchen Walsh' },
+      '200_FLY':   { time: parseTimeToSeconds('1:59.32'), holder: 'Summer McIntosh' },
+      '100_IM':    { time: parseTimeToSeconds('55.11'),   holder: 'Gretchen Walsh' },
+      '200_IM':    { time: parseTimeToSeconds('2:01.63'), holder: 'Kate Douglass' },
+      '400_IM':    { time: parseTimeToSeconds('4:15.48'), holder: 'Summer McIntosh' },
+    },
+  },
+};
+
+function getWorldRecord(course: Course, sex: Sex, event: EventKey): { time: number; holder: string } | null {
+  return WORLD_RECORDS[course]?.[sex]?.[event] ?? null;
+}
 
 interface GaussianChartProps {
   event: EventKey;
@@ -73,6 +164,10 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
   predictionTime,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [showWorldRecord, setShowWorldRecord] = useState<boolean>(false);
+
+  // Get world record for this event/course/sex
+  const worldRecord = useMemo(() => getWorldRecord(course, sex, event), [course, sex, event]);
 
   // Get available categories for this course/sex/event combo
   const availableCategories = useMemo(() => {
@@ -111,8 +206,17 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
     const minTime = Math.min(...times, userTime ?? Infinity, predictionTime ?? Infinity);
     const maxTime = Math.max(...times, userTime ?? -Infinity, predictionTime ?? -Infinity);
     const range = maxTime - minTime;
-    const padding = range * 0.2;
-    const start = Math.max(0, minTime - padding);
+    const padding = range * 0.15;
+
+    // When WR toggle is ON, extend the range left to always include the world record line
+    let start: number;
+    if (showWorldRecord && worldRecord) {
+      const wrFloor = worldRecord.time * 0.97; // small margin below WR
+      start = Math.min(wrFloor, minTime - padding);
+    } else {
+      // Natural range: just use data bounds with padding, clamped to best master time
+      start = Math.max(times[0] * 0.95, minTime - padding);
+    }
     const end = maxTime + padding;
     const step = (end - start) / 120;
 
@@ -130,7 +234,7 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
     const predictionPercentile = predictionTime ? computePercentile(predictionTime, times) : null;
 
     return { chartData, stats, userPercentile, predictionPercentile };
-  }, [times, userTime, predictionTime]);
+  }, [times, userTime, predictionTime, worldRecord, showWorldRecord]);
 
   // Custom tooltip
   const CustomTooltip = ({ active, payload }: { active?: boolean; payload?: Array<{ payload?: { time?: number } }> }) => {
@@ -179,7 +283,7 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
       </div>
 
       <div className="px-4 sm:px-8 py-6 sm:py-8 space-y-6">
-        {/* Category selector */}
+        {/* Category selector + World Record toggle */}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
           <div className="space-y-1.5 flex-1 max-w-xs">
             <label className="text-sm font-medium text-foreground flex items-center gap-1.5">
@@ -200,6 +304,29 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
               </SelectContent>
             </Select>
           </div>
+
+          {/* World Record toggle */}
+          {worldRecord && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowWorldRecord(!showWorldRecord)}
+                className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
+                  showWorldRecord
+                    ? 'bg-amber-500/15 border-amber-500/40 text-amber-600 dark:text-amber-400'
+                    : 'bg-muted/40 border-border/40 text-muted-foreground hover:bg-muted/60'
+                }`}
+              >
+                <Globe className="h-3.5 w-3.5" />
+                WR {showWorldRecord ? 'ON' : 'OFF'}
+              </button>
+              {showWorldRecord && (
+                <span className="text-xs text-muted-foreground">
+                  {formatSecondsToTime(worldRecord.time)} — {worldRecord.holder}
+                </span>
+              )}
+            </div>
+          )}
 
           {/* Stats summary */}
           {stats && (
@@ -317,6 +444,23 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
                     }}
                   />
                 )}
+
+                {/* World Record marker */}
+                {showWorldRecord && worldRecord && (
+                  <ReferenceLine
+                    x={worldRecord.time}
+                    stroke="hsl(40 90% 50%)"
+                    strokeWidth={2.5}
+                    strokeDasharray="8 4"
+                    label={{
+                      value: `WR: ${formatSecondsToTime(worldRecord.time)}`,
+                      position: 'top',
+                      fill: 'hsl(40 90% 50%)',
+                      fontSize: 12,
+                      fontWeight: 600,
+                    }}
+                  />
+                )}
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -380,6 +524,12 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
             <div className="flex items-center gap-2">
               <div className="w-8 h-0.5 bg-muted-foreground/50 rounded" style={{ borderTop: '1px dashed' }} />
               Media
+            </div>
+          )}
+          {showWorldRecord && worldRecord && (
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-0.5 rounded" style={{ backgroundColor: 'hsl(40 90% 50%)' }} />
+              Record del Mondo
             </div>
           )}
         </div>

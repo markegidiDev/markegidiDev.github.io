@@ -186,7 +186,7 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
   }, []);
   return (
   <nav className={`sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border transition-all duration-300 ${className}`}>        
-      <div className="w-full px-6 md:px-12 max-w-[1920px] mx-auto">
+      <div className="w-full px-6 md:px-12">
   <div className={`relative flex items-center justify-between transition-all duration-300 ${shrink ? 'h-16' : 'h-24'}`}>
           {/* Logo and Brand */}
           <Link to="/" className="text-2xl font-bold flex items-center group">

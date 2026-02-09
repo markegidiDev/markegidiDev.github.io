@@ -265,9 +265,9 @@ const SwimAnalyzerPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 min-w-0">
+      <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-10 min-w-0 flex flex-col gap-8">
         {/* Header */}
-        <div className="mb-10 text-center">
+        <div className="text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
             <Waves className="h-4 w-4" />
             World Aquatics Points
@@ -279,7 +279,7 @@ const SwimAnalyzerPage: React.FC = () => {
         </div>
 
         {/* Input Form */}
-        <div className="rounded-2xl border border-border/60 bg-card shadow-sm mb-10 overflow-hidden min-w-0">
+        <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden min-w-0">
           {/* Form Header */}
           <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
             <h2 className="text-xl font-semibold flex items-center gap-2">
@@ -495,7 +495,7 @@ const SwimAnalyzerPage: React.FC = () => {
 
         {/* Results */}
         {results && (
-          <div className="space-y-10">
+          <>
             {/* Summary */}
             <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden min-w-0">
               {/* Summary Header */}
@@ -621,12 +621,12 @@ const SwimAnalyzerPage: React.FC = () => {
               currentPoints={results.points}
               onTargetTimeChange={setTargetTime}
             />
-          </div>
+          </>
         )}
 
         {/* Saved Races */}
         {savedRaces.length > 0 && (
-          <div className="mt-10 rounded-2xl border border-border/60 p-4 sm:p-8 bg-card shadow-sm overflow-hidden min-w-0">
+          <div className="rounded-2xl border border-border/60 p-4 sm:p-8 bg-card shadow-sm overflow-hidden min-w-0">
             <h2 className="text-xl font-semibold mb-5">Saved Races</h2>
             <div className="space-y-3">
               {savedRaces.map((race, idx) => (
