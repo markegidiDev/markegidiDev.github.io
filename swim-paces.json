@@ -1,5 +1,13 @@
 [
   {
+    "id": 17394300338,
+    "date": "2026-02-14",
+    "totalMeters": 1300,
+    "movingSeconds": 2342,
+    "pace100m": 180.15384615384616,
+    "paceFormatted": "3:00"
+  },
+  {
     "id": 17388050955,
     "date": "2026-02-13",
     "totalMeters": 1325,
@@ -22,13 +30,5 @@
     "movingSeconds": 3129,
     "pace100m": 219.57894736842104,
     "paceFormatted": "3:40"
-  },
-  {
-    "id": 17355458987,
-    "date": "2026-02-10",
-    "totalMeters": 1225,
-    "movingSeconds": 2536,
-    "pace100m": 207.0204081632653,
-    "paceFormatted": "3:27"
   }
 ]
