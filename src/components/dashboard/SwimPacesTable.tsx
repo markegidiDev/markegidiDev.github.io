@@ -62,7 +62,7 @@ export const SwimPacesTable = memo(function SwimPacesTable({ swimPaces }: Props)
         {rows.flat().map((swim, idx) => (
           <div 
             key={idx} 
-            className="rounded-xl bg-black/20 border border-white/5 p-3 min-h-[80px] flex flex-col justify-center hover:bg-white/5 transition-colors"
+            className="flex min-h-[86px] flex-col justify-center rounded-xl border border-border/70 bg-card/70 p-3 transition-colors hover:bg-card"
           >
             {swim ? (
               <>
@@ -70,11 +70,11 @@ export const SwimPacesTable = memo(function SwimPacesTable({ swimPaces }: Props)
                    <div className="text-xs text-muted-foreground">
                      {formatDate(swim.date)}
                    </div>
-                   <div className="text-xs font-medium text-white/60">
+                   <div className="text-xs font-medium text-muted-foreground">
                      {formatDistance(swim.totalMeters)}
                    </div>
                 </div>
-                <div className="text-xl font-bold text-blue-400 mt-1">
+                <div className="mt-1 text-xl font-bold text-primary">
                   {swim.paceFormatted}<span className="text-xs font-normal text-muted-foreground ml-1">/100m</span>
                 </div>
               </>

@@ -1,34 +1,59 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useMemo, useState } from 'react';
-import { Tab } from '@headlessui/react';
-import TrafficLight, { type Direction } from '@/components/dashboard/TrafficLight';
-import { ActivityAreaChart } from '@/components/charts/ActivityAreaChart';
-import { lttb } from '@/lib/downsample';
-import { Listbox } from '@headlessui/react';
+import { Listbox, Tab } from '@headlessui/react';
 import { ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import { ActivityAreaChart } from '@/components/charts/ActivityAreaChart';
 import { WeeklyAggregatesChart } from '@/components/charts/WeeklyAggregatesChart';
 import { AthleteStatsKPI, type AthleteStats } from '@/components/dashboard/AthleteStatsKPI';
 import { ZonesDonut } from '@/components/charts/ZonesDonut';
-import { GdCard } from '@/components/ui/GdCard';
 import { SwimPacesTable } from '@/components/dashboard/SwimPacesTable';
-import { Activity, BarChart3, Heart, Waves, Trophy, TrendingUp, Timer } from 'lucide-react';
+import { lttb } from '@/lib/downsample';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { useToast } from '@/components/ui/use-toast';
+import { SaaSCard, SaaSEmptyState, SaaSHeader, SaaSPage, SaaSSkeleton } from '@/components/ui/saas';
+import {
+  Activity,
+  BarChart3,
+  Heart,
+  Loader2,
+  RefreshCw,
+  Timer,
+  Trophy,
+  TrendingUp,
+  Waves,
+} from 'lucide-react';
 
-// TypeScript interface for chart data points
 interface DataPoint {
-  date: string; // Format: "YYYY-MM-DD"
-  corsa?: number;  // Kilometers
-  nuoto?: number;  // Kilometers
-  ciclismo?: number; // Kilometers
-  camminata?: number; // Kilometers (Walk/Hike)
-  // Add other potential activities if needed
+  date: string;
+  corsa?: number;
+  nuoto?: number;
+  ciclismo?: number;
+  camminata?: number;
   [key: string]: string | number | undefined;
 }
 
 export type FilterPeriod = '7d' | '30d' | '90d' | '6months' | '1year' | 'all';
-
-// Tipo di attività disponibili
 export type ActivityType = 'all' | 'corsa' | 'nuoto' | 'ciclismo' | 'camminata';
+
+const timeOptions: Array<{ id: FilterPeriod; name: string }> = [
+  { id: '1year', name: 'Ultimo anno' },
+  { id: '6months', name: 'Ultimi 6 mesi' },
+  { id: '90d', name: 'Ultimi 90 giorni' },
+  { id: '30d', name: 'Ultimi 30 giorni' },
+  { id: '7d', name: 'Ultimi 7 giorni' },
+  { id: 'all', name: 'Tutte le attivita' },
+];
+
+const typeOptions: Array<{ id: ActivityType; name: string }> = [
+  { id: 'all', name: 'Tutte le attivita' },
+  { id: 'corsa', name: 'Corsa' },
+  { id: 'nuoto', name: 'Nuoto' },
+  { id: 'ciclismo', name: 'Ciclismo' },
+  { id: 'camminata', name: 'Camminata' },
+];
+const cardInsetStyle = { paddingInline: '1.75rem', paddingBlock: '1.5rem' } as const;
 
 const DashboardPage = () => {
   const [stravaData, setStravaData] = useState<DataPoint[]>([]);
@@ -39,62 +64,82 @@ const DashboardPage = () => {
   const [swimPaces, setSwimPaces] = useState<Array<{ id: number; date: string; totalMeters: number; movingSeconds: number; pace100m: number; paceFormatted: string }>>([]);
   const [timeRange, setTimeRange] = useState<FilterPeriod>('90d');
   const [activityType, setActivityType] = useState<ActivityType>('all');
-  const [selectedDirection, setSelectedDirection] = useState<Direction>('default'); // Stato iniziale per TrafficLight
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasPrimaryError, setHasPrimaryError] = useState(false);
+
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Cache-busting query param per forzare aggiornamento
-  fetch(`/strava-data.json?t=${Date.now()}`, { cache: 'no-store' })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        return response.json();
-      })
-      .then((data: DataPoint[]) => {
-        const sortedData = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-        setStravaData(sortedData);
-      })
-      .catch(error => {
-        console.error("Could not fetch Strava data:", error);
-        setStravaData([]);
-      });
-    // Fetch weekly aggregates (optional)
-  fetch(`/strava-aggregates.json?t=${Date.now()}`, { cache: 'no-store' })
-      .then(r => (r.ok ? r.json() : []))
-      .then((d) => setWeeklyData(Array.isArray(d) ? d : []))
-      .catch(() => setWeeklyData([]));
-    // Fetch athlete stats (optional)
-  fetch(`/athlete-stats.json?t=${Date.now()}`, { cache: 'no-store' })
-      .then(r => (r.ok ? r.json() : null))
-      .then((d) => setAthleteStats(d))
-      .catch(() => setAthleteStats(null));
-    // Fetch best efforts (optional)
-  fetch(`/best-efforts.json?t=${Date.now()}`, { cache: 'no-store' })
-      .then(r => (r.ok ? r.json() : []))
-      .then((d) => setBestEfforts(Array.isArray(d) ? d : []))
-      .catch(() => setBestEfforts([]));
-    // Fetch zones summary (optional)
-    fetch(`/zones-summary.json?t=${Date.now()}`, { cache: 'no-store' })
-      .then(r => (r.ok ? r.json() : []))
-      .then((d) => setZonesSummary(Array.isArray(d) ? d : []))
-      .catch(() => setZonesSummary([]));
-    // Fetch swim paces (optional)
-    fetch(`/swim-paces.json?t=${Date.now()}`, { cache: 'no-store' })
-      .then(r => (r.ok ? r.json() : []))
-      .then((d) => setSwimPaces(Array.isArray(d) ? d : []))
-      .catch(() => setSwimPaces([]));
-  }, []);
+    let cancelled = false;
 
-  // Debounce dei filtri per ridurre i re-render
+    const fetchJson = async <T,>(
+      path: string,
+      fallback: T,
+      options?: { critical?: boolean; errorTitle?: string }
+    ): Promise<T> => {
+      try {
+        const response = await fetch(`${path}?t=${Date.now()}`, { cache: 'no-store' });
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return (await response.json()) as T;
+      } catch (error) {
+        if (!cancelled && options?.critical) {
+          setHasPrimaryError(true);
+          toast({
+            variant: 'error',
+            title: options.errorTitle ?? 'Impossibile caricare i dati',
+            description: 'Controlla il file JSON o riprova tra poco.',
+          });
+        }
+        if (process.env.NODE_ENV !== 'production') {
+          console.debug('dashboard:fetch failed', path, error);
+        }
+        return fallback;
+      }
+    };
+
+    const load = async () => {
+      setIsLoading(true);
+      setHasPrimaryError(false);
+
+      const [activities, weekly, stats, efforts, zones, paces] = await Promise.all([
+        fetchJson<DataPoint[]>('/strava-data.json', [], {
+          critical: true,
+          errorTitle: 'Dati Strava non disponibili',
+        }),
+        fetchJson<Array<{ week: string; corsa?: number; nuoto?: number; ciclismo?: number; camminata?: number }>>('/strava-aggregates.json', []),
+        fetchJson<AthleteStats | null>('/athlete-stats.json', null),
+        fetchJson<Array<{ date: string; type: 'run'; label: string; dist_km: number; time_s: number; pace_s_per_km: number }>>('/best-efforts.json', []),
+        fetchJson<Array<{ id: number; sport: string; hr?: number[]; power?: number[] }>>('/zones-summary.json', []),
+        fetchJson<Array<{ id: number; date: string; totalMeters: number; movingSeconds: number; pace100m: number; paceFormatted: string }>>('/swim-paces.json', []),
+      ]);
+
+      if (cancelled) return;
+
+      const sorted = [...activities].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      setStravaData(sorted);
+      setWeeklyData(Array.isArray(weekly) ? weekly : []);
+      setAthleteStats(stats);
+      setBestEfforts(Array.isArray(efforts) ? efforts : []);
+      setZonesSummary(Array.isArray(zones) ? zones : []);
+      setSwimPaces(Array.isArray(paces) ? paces : []);
+      setIsLoading(false);
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [toast]);
+
   const [debounced, setDebounced] = useState({ timeRange, activityType });
   useEffect(() => {
-    const id = setTimeout(() => setDebounced({ timeRange, activityType }), 200);
+    const id = setTimeout(() => setDebounced({ timeRange, activityType }), 180);
     return () => clearTimeout(id);
   }, [timeRange, activityType]);
 
   const filteredData = useMemo(() => {
     const referenceDate = new Date();
-    // Normalizziamo la data di riferimento a mezzanotte per evitare problemi di orario
     referenceDate.setHours(0, 0, 0, 0);
 
     let daysToSubtract = 90;
@@ -102,66 +147,46 @@ const DashboardPage = () => {
     else if (debounced.timeRange === '7d') daysToSubtract = 7;
     else if (debounced.timeRange === '6months') daysToSubtract = 180;
     else if (debounced.timeRange === '1year') daysToSubtract = 365;
-    else if (debounced.timeRange === 'all') daysToSubtract = 3650; // 10 anni
+    else if (debounced.timeRange === 'all') daysToSubtract = 3650;
 
     const startDate = new Date(referenceDate);
     startDate.setDate(startDate.getDate() - daysToSubtract);
 
-    return stravaData.filter(item => {
+    return stravaData.filter((item) => {
       const itemDate = new Date(item.date);
-      itemDate.setHours(0, 0, 0, 0); // Assicuriamoci che anche la data dell'item sia a mezzanotte
-      
+      itemDate.setHours(0, 0, 0, 0);
       const isInTimeRange = itemDate >= startDate;
-      
+
       if (debounced.activityType === 'all') return isInTimeRange;
       return isInTimeRange && item[debounced.activityType] !== undefined && Number(item[debounced.activityType]) > 0;
     });
   }, [stravaData, debounced]);
 
-  const chartConfig = useMemo(() => ({
-    corsa: { label: "Corsa", color: "hsl(215, 100%, 60%)" },
-    nuoto: { label: "Nuoto", color: "hsl(140, 100%, 40%)" },
-    ciclismo: { label: "Ciclismo", color: "hsl(40, 100%, 50%)" },
-    camminata: { label: "Camminata", color: "hsl(290, 70%, 55%)" },
-  }), []);
+  const chartConfig = useMemo(
+    () => ({
+      corsa: { label: 'Corsa', color: 'hsl(198 78% 46%)' },
+      nuoto: { label: 'Nuoto', color: 'hsl(var(--primary))' },
+      ciclismo: { label: 'Ciclismo', color: 'hsl(43 93% 52%)' },
+      camminata: { label: 'Camminata', color: 'hsl(262 58% 58%)' },
+    }),
+    []
+  );
 
   const visibleAreas = useMemo(() => {
     if (debounced.activityType === 'all') {
       return Object.keys(chartConfig) as Array<keyof typeof chartConfig>;
-    } else {
-      return [debounced.activityType] as Array<keyof typeof chartConfig>;
     }
+    return [debounced.activityType] as Array<keyof typeof chartConfig>;
   }, [debounced.activityType, chartConfig]);
 
-  // Precalcolo dei dati campionati per performance (utilizza algoritmo LTTB)
   const downsampled = useMemo(() => lttb(filteredData, 600), [filteredData]);
 
-  // Weekly view: optionally filter to last ~26 weeks if timeRange is not 'all'
   const weeklyFiltered = useMemo(() => {
     if (!weeklyData?.length) return [] as typeof weeklyData;
     if (timeRange === 'all') return weeklyData;
-    const max = 26;
-    return weeklyData.slice(-max);
+    return weeklyData.slice(-26);
   }, [weeklyData, timeRange]);
 
-  const timeOptions = [
-    { id: '1year', name: 'Ultimo anno' },
-    { id: '6months', name: 'Ultimi 6 mesi' },
-    { id: '90d', name: 'Ultimi 90 giorni' },
-    { id: '30d', name: 'Ultimi 30 giorni' },
-    { id: '7d', name: 'Ultimi 7 giorni' },
-    { id: 'all', name: 'Tutte le attività' },
-  ];
-
-  const typeOptions = [
-    { id: 'all', name: 'Tutte le attività' },
-    { id: 'corsa', name: 'Corsa' },
-    { id: 'nuoto', name: 'Nuoto' },
-    { id: 'ciclismo', name: 'Ciclismo' },
-    { id: 'camminata', name: 'Camminata' },
-  ];
-
-  // Calcolo KPI (metriche totali sul range filtrato)
   const kpi = useMemo(() => {
     const sum = (key: keyof DataPoint) => filteredData.reduce((s, d) => s + (Number(d[key]) || 0), 0);
     return {
@@ -174,306 +199,418 @@ const DashboardPage = () => {
     };
   }, [filteredData]);
 
-  // Totali ultimi 7 giorni per "mini tiles" della card performance
   const last7 = useMemo(() => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     const start = new Date(today);
-    start.setDate(today.getDate() - 6); // Ultimi 7 giorni inclusi oggi
-    
-    const windowData = stravaData.filter(d => {
+    start.setDate(today.getDate() - 6);
+
+    const windowData = stravaData.filter((d) => {
       const dDate = new Date(d.date);
       dDate.setHours(0, 0, 0, 0);
       return dDate >= start;
     });
 
     const sum = (key: keyof DataPoint) => windowData.reduce((s, x) => s + (Number(x[key]) || 0), 0);
+
     return {
       run: sum('corsa'),
       swim: sum('nuoto'),
       ride: sum('ciclismo'),
       walk: sum('camminata'),
-      sessions: windowData.length,
     };
   }, [stravaData]);
 
+  const hasNoActivities = !isLoading && stravaData.length === 0;
+
   return (
-    <div className="container max-w-[1600px] mx-auto px-4 py-8 sm:px-6 sm:py-10 bg-background text-foreground min-h-screen">
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-3">
-              <Activity className="h-4 w-4" />
-              Strava Connect
+    <SaaSPage>
+      <div className="mx-auto flex w-full flex-col gap-6">
+        <SaaSHeader
+          badge="Strava Connect"
+          icon={<Activity className="h-3.5 w-3.5" />}
+          title="Training Dashboard"
+          subtitle="Panoramica multisport con trend, volumi e metriche recenti"
+          actions={
+            <>
+              <HeaderMetric
+                icon={<BarChart3 className="h-3.5 w-3.5" />}
+                label="Sessioni"
+                value={isLoading ? '...' : String(kpi.sessions)}
+              />
+              <HeaderMetric
+                icon={<TrendingUp className="h-3.5 w-3.5" />}
+                label="Totale"
+                value={isLoading ? '...' : `${(kpi.distance + kpi.walk).toFixed(1)} km`}
+                highlight
+              />
+            </>
+          }
+        />
+
+        {isLoading ? (
+          <DashboardSkeleton />
+        ) : hasNoActivities ? (
+          <SaaSCard>
+            <SaaSEmptyState
+              icon={<Activity className="h-8 w-8" />}
+              title="Nessuna attivita disponibile"
+              description={
+                hasPrimaryError
+                  ? 'Il file dati principale non e stato caricato correttamente.'
+                  : 'Non ci sono attivita da mostrare con i filtri correnti.'
+              }
+            />
+            <div className="mt-4 flex justify-center">
+              <Button variant="secondary" onClick={() => window.location.reload()} className="gap-2">
+                <RefreshCw className="h-4 w-4" />
+                Ricarica
+              </Button>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground text-lg mt-1">Panoramica delle attivita sportive</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-             <div className="group p-4 rounded-xl bg-gradient-to-br from-muted/40 to-muted/20 border border-border/40 hover:border-border/60 transition-all min-w-[100px]">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="p-1 rounded-md bg-foreground/5">
-                    <BarChart3 className="h-3.5 w-3.5 text-muted-foreground" />
-                  </div>
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Sessioni</span>
-                </div>
-                <div className="text-2xl font-bold tracking-tight">{kpi.sessions}</div>
-             </div>
-             <div className="group p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 hover:border-primary/30 transition-all min-w-[100px]">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="p-1 rounded-md bg-primary/10">
-                    <TrendingUp className="h-3.5 w-3.5 text-primary" />
-                  </div>
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Totale</span>
-                </div>
-                <div className="text-2xl font-bold text-primary tracking-tight">{(kpi.distance + kpi.walk).toFixed(1)} <span className="text-sm font-normal text-muted-foreground">km</span></div>
-             </div>
-          </div>
-        </div>
-
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-
-          {/* Main Chart Section (2 cols) */}
-          <div className="xl:col-span-2">
-            <GdCard className="h-full" contentClassName="p-0 flex flex-col h-full">
-               <Tab.Group>
-                 {/* Card Header with Controls */}
-                 <div className="px-5 md:px-6 pt-5 md:pt-6 pb-4 border-b border-white/5 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
-                    <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                       <div className="flex items-center gap-2">
-                         <div className="p-1.5 rounded-lg bg-white/5">
-                           <BarChart3 className="h-4 w-4 text-muted-foreground" />
-                         </div>
-                         <h2 className="text-lg font-semibold">Performance</h2>
-                       </div>
-                       <Tab.List className="flex bg-black/20 rounded-lg p-1">
-                          {['Giornaliero', 'Settimanale'].map(label => (
-                             <Tab key={label} className={({ selected }) => `px-3 py-1 text-xs font-medium rounded-md transition-all focus:outline-none ${selected ? 'bg-gd-magenta-2 text-white shadow-sm' : 'text-muted-foreground hover:text-white'}`}>
-                                {label}
-                             </Tab>
+          </SaaSCard>
+        ) : (
+          <div className="flex flex-col gap-6">
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+            <div className="space-y-6 xl:col-span-8">
+              <SaaSCard className="overflow-visible" contentClassName="p-0">
+                <Tab.Group>
+                  <div
+                    className="border-b border-border/70 px-5 pb-4 pt-5 sm:px-6 sm:pt-6"
+                    style={cardInsetStyle}
+                  >
+                    <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <h2 className="flex items-center gap-2 text-base font-semibold">
+                          <BarChart3 className="h-4 w-4 text-primary" />
+                          Performance
+                        </h2>
+                        <Tab.List className="inline-flex rounded-xl border border-border/70 bg-muted/70 p-1">
+                          {['Giornaliero', 'Settimanale'].map((label) => (
+                            <Tab
+                              key={label}
+                              className={({ selected }) =>
+                                cn(
+                                  'rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors focus:outline-none',
+                                  selected
+                                    ? 'bg-card text-foreground shadow-soft'
+                                    : 'text-muted-foreground hover:text-foreground'
+                                )
+                              }
+                            >
+                              {label}
+                            </Tab>
                           ))}
-                       </Tab.List>
+                        </Tab.List>
+                      </div>
+
+                      <div className="flex flex-wrap gap-2">
+                        <FilterSelect<ActivityType>
+                          value={activityType}
+                          options={typeOptions}
+                          onChange={setActivityType}
+                          widthClassName="w-40"
+                        />
+                        <FilterSelect<FilterPeriod>
+                          value={timeRange}
+                          options={timeOptions}
+                          onChange={setTimeRange}
+                          widthClassName="w-44"
+                        />
+                      </div>
                     </div>
+                  </div>
 
-                    {/* Filters */}
-                    <div className="flex flex-wrap gap-2">
-                       <Listbox value={activityType} onChange={setActivityType}>
-                          <div className="relative w-32 md:w-40">
-                             <Listbox.Button className="w-full bg-black/20 border border-white/5 rounded-lg py-1.5 px-3 text-left text-sm focus:outline-none focus:ring-1 focus:ring-primary flex items-center justify-between">
-                                <span className="block truncate">{typeOptions.find(o => o.id === activityType)?.name}</span>
-                                <ChevronUpDownIcon className="h-4 w-4 text-muted-foreground" />
-                             </Listbox.Button>
-                             <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-[#1f2023] border border-white/10 py-1 text-sm shadow-xl focus:outline-none">
-                                {typeOptions.map((opt) => (
-                                   <Listbox.Option key={opt.id} value={opt.id} className={({ active }) => `relative cursor-default select-none py-2 pl-3 pr-9 ${active ? 'bg-white/5 text-white' : 'text-gray-300'}`}>
-                                      {opt.name}
-                                   </Listbox.Option>
-                                ))}
-                             </Listbox.Options>
-                          </div>
-                       </Listbox>
-
-                       <Listbox value={timeRange} onChange={setTimeRange}>
-                          <div className="relative w-36 md:w-44">
-                             <Listbox.Button className="w-full bg-black/20 border border-white/5 rounded-lg py-1.5 px-3 text-left text-sm focus:outline-none focus:ring-1 focus:ring-primary flex items-center justify-between">
-                                <span className="block truncate">{timeOptions.find(o => o.id === timeRange)?.name}</span>
-                                <ChevronUpDownIcon className="h-4 w-4 text-muted-foreground" />
-                             </Listbox.Button>
-                             <Listbox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-[#1f2023] border border-white/10 py-1 text-sm shadow-xl focus:outline-none">
-                                {timeOptions.map((opt) => (
-                                   <Listbox.Option key={opt.id} value={opt.id} className={({ active }) => `relative cursor-default select-none py-2 pl-3 pr-9 ${active ? 'bg-white/5 text-white' : 'text-gray-300'}`}>
-                                      {opt.name}
-                                   </Listbox.Option>
-                                ))}
-                             </Listbox.Options>
-                          </div>
-                       </Listbox>
-                    </div>
-                 </div>
-
-                 {/* Chart Content */}
-                 <div className="p-4 md:p-6 flex-1 min-h-[350px]">
+                  <div className="min-h-[350px] p-4 sm:p-6" style={cardInsetStyle}>
                     <Tab.Panels className="h-full">
-                       <Tab.Panel className="h-full">
-                          {downsampled.length > 0 ? (
-                            <ActivityAreaChart
-                              data={downsampled}
-                              series={chartConfig}
-                              keys={visibleAreas}
-                              animationKey={`${debounced.timeRange}-${debounced.activityType}-${downsampled.length}`}
-                              animate={true}
-                              animationDuration={500}
-                            />
-                          ) : (
-                            <div className="flex flex-col h-full items-center justify-center text-muted-foreground gap-2">
-                              <p>Nessuna attivita trovata in questo periodo.</p>
-                              <p className="text-xs opacity-50">Prova a selezionare un intervallo piu ampio.</p>
-                            </div>
-                          )}
-                       </Tab.Panel>
-                       <Tab.Panel className="h-full">
-                          {weeklyFiltered.length ? (
-                            <WeeklyAggregatesChart data={weeklyFiltered} keys={["corsa","nuoto","ciclismo","camminata"]} series={chartConfig} />
-                          ) : (
-                            <div className="flex h-full items-center justify-center text-muted-foreground">Nessun dato settimanale disponibile</div>
-                          )}
-                       </Tab.Panel>
+                      <Tab.Panel className="h-full">
+                        {downsampled.length > 0 ? (
+                          <ActivityAreaChart
+                            data={downsampled}
+                            series={chartConfig}
+                            keys={visibleAreas}
+                            animationKey={`${debounced.timeRange}-${debounced.activityType}-${downsampled.length}`}
+                            animate
+                            animationDuration={520}
+                          />
+                        ) : (
+                          <SaaSEmptyState
+                            icon={<Loader2 className="h-5 w-5" />}
+                            title="Nessun dato nel periodo"
+                            description="Prova a selezionare un intervallo temporale piu ampio."
+                            className="min-h-[300px]"
+                          />
+                        )}
+                      </Tab.Panel>
+
+                      <Tab.Panel className="h-full">
+                        {weeklyFiltered.length ? (
+                          <WeeklyAggregatesChart
+                            data={weeklyFiltered}
+                            keys={['corsa', 'nuoto', 'ciclismo', 'camminata']}
+                            series={chartConfig}
+                          />
+                        ) : (
+                          <SaaSEmptyState
+                            title="Nessun aggregato settimanale"
+                            description="Il file aggregato non contiene settimane valide."
+                            className="min-h-[300px]"
+                          />
+                        )}
+                      </Tab.Panel>
                     </Tab.Panels>
-                 </div>
+                  </div>
 
-                 {/* Footer Metrics (Last 7 Days) */}
-                 <div className="grid grid-cols-2 md:grid-cols-4 border-t border-white/5">
-                    <div className="p-4 border-r border-white/5">
-                       <div className="flex items-center gap-1.5 mb-1.5">
-                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'hsl(215, 100%, 60%)' }} />
-                         <span className="text-xs text-muted-foreground font-medium">Corsa (7g)</span>
-                       </div>
-                       <div className="text-xl font-bold text-white">{Number.isFinite(last7.run) ? last7.run.toFixed(1) : '0.0'} <span className="text-xs font-normal text-muted-foreground">km</span></div>
-                    </div>
-                    <div className="p-4 border-r border-white/5">
-                       <div className="flex items-center gap-1.5 mb-1.5">
-                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'hsl(40, 100%, 50%)' }} />
-                         <span className="text-xs text-muted-foreground font-medium">Ciclismo (7g)</span>
-                       </div>
-                       <div className="text-xl font-bold text-white">{Number.isFinite(last7.ride) ? last7.ride.toFixed(1) : '0.0'} <span className="text-xs font-normal text-muted-foreground">km</span></div>
-                    </div>
-                    <div className="p-4 border-r border-white/5">
-                       <div className="flex items-center gap-1.5 mb-1.5">
-                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'hsl(140, 100%, 40%)' }} />
-                         <span className="text-xs text-muted-foreground font-medium">Nuoto (7g)</span>
-                       </div>
-                       <div className="text-xl font-bold text-white">{Number.isFinite(last7.swim) ? last7.swim.toFixed(1) : '0.0'} <span className="text-xs font-normal text-muted-foreground">km</span></div>
-                    </div>
-                    <div className="p-4">
-                       <div className="flex items-center gap-1.5 mb-1.5">
-                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: 'hsl(290, 70%, 55%)' }} />
-                         <span className="text-xs text-muted-foreground font-medium">Camminata (7g)</span>
-                       </div>
-                       <div className="text-xl font-bold text-white">{Number.isFinite(last7.walk) ? last7.walk.toFixed(1) : '0.0'} <span className="text-xs font-normal text-muted-foreground">km</span></div>
-                    </div>
-                 </div>
-               </Tab.Group>
-            </GdCard>
-          </div>
+                  <div className="grid grid-cols-2 border-t border-border/70 sm:grid-cols-4">
+                    <BottomMetric label="Corsa (7g)" value={last7.run} color="hsl(198 78% 46%)" />
+                    <BottomMetric label="Ciclismo (7g)" value={last7.ride} color="hsl(43 93% 52%)" />
+                    <BottomMetric label="Nuoto (7g)" value={last7.swim} color="hsl(var(--primary))" />
+                    <BottomMetric label="Camminata (7g)" value={last7.walk} color="hsl(262 58% 58%)" />
+                  </div>
+                </Tab.Group>
+              </SaaSCard>
+            </div>
 
-          {/* Sidebar (1 col) */}
-          <div className="space-y-6">
-             {/* Athlete Stats */}
-             {athleteStats && (
-                <GdCard contentClassName="p-0 overflow-hidden">
-                   <div className="px-5 pt-5 pb-3 border-b border-white/5">
-                     <h3 className="font-semibold flex items-center gap-2">
-                       <div className="p-1.5 rounded-lg bg-white/5">
-                         <Timer className="h-4 w-4 text-muted-foreground" />
-                       </div>
-                       Statistiche Atleta
-                     </h3>
-                     <p className="text-xs text-muted-foreground mt-1">Ultime 4 settimane e anno in corso</p>
-                   </div>
-                   <div className="p-5">
-                     <AthleteStatsKPI stats={athleteStats} />
-                   </div>
-                </GdCard>
-             )}
+            <div className="space-y-6 xl:col-span-4">
+              {athleteStats ? (
+                <SaaSCard contentClassName="p-0">
+                  <div className="border-b border-border/70 px-5 pb-3 pt-5" style={cardInsetStyle}>
+                    <h3 className="flex items-center gap-2 font-semibold">
+                      <Timer className="h-4 w-4 text-primary" />
+                      Statistiche atleta
+                    </h3>
+                    <p className="mt-1 text-xs text-muted-foreground">Ultime 4 settimane e anno in corso</p>
+                  </div>
+                  <div className="p-5" style={cardInsetStyle}>
+                    <AthleteStatsKPI stats={athleteStats} />
+                  </div>
+                </SaaSCard>
+              ) : null}
 
-             {/* Best Efforts */}
-             <GdCard contentClassName="p-0 overflow-hidden">
-                <div className="px-5 pt-5 pb-3 border-b border-white/5">
-                  <h3 className="font-semibold flex items-center gap-2">
-                    <div className="p-1.5 rounded-lg bg-white/5">
-                      <Trophy className="h-4 w-4 text-amber-400" />
-                    </div>
-                    Record Personali
+              <SaaSCard contentClassName="p-0">
+                <div className="border-b border-border/70 px-5 pb-3 pt-5" style={cardInsetStyle}>
+                  <h3 className="flex items-center gap-2 font-semibold">
+                    <Trophy className="h-4 w-4 text-amber-500" />
+                    Record personali
                   </h3>
-                  <p className="text-xs text-muted-foreground mt-1">Migliori tempi nella corsa</p>
+                  <p className="mt-1 text-xs text-muted-foreground">Migliori tempi recenti di corsa</p>
                 </div>
-                <div className="p-5 space-y-3">
+
+                <div className="space-y-3 p-5" style={cardInsetStyle}>
                   {(() => {
-                    const want = ['400m','1k','5k','10k','21k'];
-                    const pick = (label: string) => (bestEfforts || []).filter(e => e.label === label).sort((a,b) => a.time_s - b.time_s)[0];
-                    const items = want.map(l => ({ label: l, entry: pick(l) })).filter(x => x.entry);
+                    const wanted = ['400m', '1k', '5k', '10k', '21k'];
+                    const pick = (label: string) =>
+                      (bestEfforts || []).filter((entry) => entry.label === label).sort((a, b) => a.time_s - b.time_s)[0];
+                    const items = wanted.map((label) => ({ label, entry: pick(label) })).filter((item) => item.entry);
 
-                    if (!items.length) return <div className="text-sm text-muted-foreground">Nessun record trovato</div>;
+                    if (!items.length) {
+                      return (
+                        <SaaSEmptyState
+                          title="Nessun record disponibile"
+                          description="Carica il file best-efforts per vedere i migliori tempi."
+                          className="min-h-[180px]"
+                        />
+                      );
+                    }
 
-                    return items.map(({ label, entry }, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-3.5 rounded-xl bg-black/20 border border-white/5 hover:bg-white/5 transition-colors">
-                        <div className="flex flex-col">
-                           <span className="text-sm font-semibold text-white">{label}</span>
-                           <span className="text-xs text-muted-foreground/60">{new Date(entry!.date).toLocaleDateString('it-IT')}</span>
+                    return items.map(({ label, entry }) => (
+                      <div
+                        key={`${label}-${entry?.date}`}
+                        className="flex items-center justify-between rounded-xl border border-border/70 bg-card/70 px-3 py-3"
+                      >
+                        <div>
+                          <div className="text-sm font-semibold text-foreground">{label}</div>
+                          <div className="text-xs text-muted-foreground">{new Date(entry!.date).toLocaleDateString('it-IT')}</div>
                         </div>
-                        <div className="text-lg font-bold font-mono text-white">
+                        <div className="text-lg font-bold tracking-tight text-foreground">
                           {(() => {
-                            const m = Math.floor(entry!.time_s / 60);
-                            const s = Math.round(entry!.time_s % 60).toString().padStart(2,'0');
-                            return `${m}:${s}`;
+                            const mins = Math.floor(entry!.time_s / 60);
+                            const secs = Math.round(entry!.time_s % 60).toString().padStart(2, '0');
+                            return `${mins}:${secs}`;
                           })()}
                         </div>
                       </div>
                     ));
                   })()}
                 </div>
-             </GdCard>
+              </SaaSCard>
+            </div>
           </div>
 
-        </div>
-
-        {/* Bottom Row */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-           {/* Swim Paces */}
-           <GdCard contentClassName="p-0 overflow-hidden h-full">
-              <div className="px-5 pt-5 pb-3 border-b border-white/5">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-blue-500/10">
-                    <Waves className="h-4 w-4 text-blue-400" />
-                  </div>
-                  Ultime Nuotate
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <SaaSCard contentClassName="p-0">
+              <div className="border-b border-border/70 px-5 pb-3 pt-5" style={cardInsetStyle}>
+                <h3 className="flex items-center gap-2 font-semibold">
+                  <Waves className="h-4 w-4 text-primary" />
+                  Ultime nuotate
                 </h3>
-                <p className="text-xs text-muted-foreground mt-1">Passo reale per 100m (esclude pause)</p>
+                <p className="mt-1 text-xs text-muted-foreground">Passo reale su 100m, pause escluse</p>
               </div>
-              <div className="p-5">
-                 <SwimPacesTable swimPaces={swimPaces} />
+              <div className="p-5" style={cardInsetStyle}>
+                <SwimPacesTable swimPaces={swimPaces} />
               </div>
-           </GdCard>
+            </SaaSCard>
 
-           {/* Zones */}
-           <GdCard contentClassName="p-0 overflow-hidden h-full">
-              <div className="px-5 pt-5 pb-3 border-b border-white/5">
-                <h3 className="font-semibold flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-red-500/10">
-                    <Heart className="h-4 w-4 text-red-400" />
-                  </div>
-                  Zone Cardiache / Potenza
+            <SaaSCard contentClassName="p-0">
+              <div className="border-b border-border/70 px-5 pb-3 pt-5" style={cardInsetStyle}>
+                <h3 className="flex items-center gap-2 font-semibold">
+                  <Heart className="h-4 w-4 text-red-500" />
+                  Zone cardiache
                 </h3>
-                <p className="text-xs text-muted-foreground mt-1">Distribuzione del tempo nelle zone HR</p>
+                <p className="mt-1 text-xs text-muted-foreground">Distribuzione del tempo per zona HR</p>
               </div>
-              <div className="p-5">
-                {zonesSummary?.length ? (
+              <div className="p-5" style={cardInsetStyle}>
+                {zonesSummary.length ? (
                   (() => {
-                    const total = (zonesSummary || []).reduce((acc, z) => {
-                      const hr = z.hr || [];
-                      hr.forEach((sec, i) => { acc[i] = (acc[i] || 0) + (sec || 0); });
+                    const total = zonesSummary.reduce((acc, zone) => {
+                      (zone.hr || []).forEach((sec, i) => {
+                        acc[i] = (acc[i] || 0) + (sec || 0);
+                      });
                       return acc;
                     }, [] as number[]);
-                    const data = (total.length ? total : [0,0,0,0,0]).slice(0,5).map((s, i) => ({ zone: `Z${i+1}`, seconds: s }));
+                    const data = (total.length ? total : [0, 0, 0, 0, 0])
+                      .slice(0, 5)
+                      .map((seconds, index) => ({ zone: `Z${index + 1}`, seconds }));
                     return <ZonesDonut data={data} />;
                   })()
                 ) : (
-                  <div className="text-muted-foreground text-sm">Nessun dato zone disponibile</div>
+                  <SaaSEmptyState
+                    title="Nessuna zona disponibile"
+                    description="Aggiungi file zone-summary per visualizzare la distribuzione."
+                    className="min-h-[220px]"
+                  />
                 )}
               </div>
-           </GdCard>
-        </div>
+            </SaaSCard>
+          </div>
+          </div>
+        )}
+      </div>
+    </SaaSPage>
+  );
+};
 
-        {/* Debug / Extra */}
-        <div className="flex justify-center pt-8 opacity-50 hover:opacity-100 transition-opacity">
-           <TrafficLight selectedDirection={selectedDirection} onDirectionChange={setSelectedDirection} />
-        </div>
+type HeaderMetricProps = {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  highlight?: boolean;
+};
 
+function HeaderMetric({ icon, label, value, highlight = false }: HeaderMetricProps) {
+  return (
+    <div
+      className={cn(
+        'min-w-[120px] rounded-xl border px-3 py-2.5',
+        highlight ? 'border-primary/30 bg-primary/12' : 'border-border/70 bg-card/70'
+      )}
+    >
+      <div className="mb-1 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+        {icon}
+        {label}
+      </div>
+      <div className={cn('text-base font-bold tracking-tight', highlight ? 'text-primary' : 'text-foreground')}>{value}</div>
+    </div>
+  );
+}
+
+type BottomMetricProps = {
+  label: string;
+  value: number;
+  color: string;
+};
+
+function BottomMetric({ label, value, color }: BottomMetricProps) {
+  return (
+    <div className="border-border/70 px-4 py-3 sm:[&:not(:last-child)]:border-r">
+      <div className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+        <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
+        {label}
+      </div>
+      <div className="text-lg font-semibold text-foreground">
+        {Number.isFinite(value) ? value.toFixed(1) : '0.0'}
+        <span className="ml-1 text-xs font-normal text-muted-foreground">km</span>
       </div>
     </div>
   );
+}
+
+type FilterSelectProps<T extends string> = {
+  value: T;
+  options: Array<{ id: T; name: string }>;
+  onChange: (value: T) => void;
+  widthClassName?: string;
 };
+
+function FilterSelect<T extends string>({ value, options, onChange, widthClassName }: FilterSelectProps<T>) {
+  return (
+    <Listbox value={value} onChange={onChange}>
+      <div className={cn('relative', widthClassName)}>
+        <Listbox.Button className="flex h-10 w-full items-center justify-between rounded-xl border border-border/70 bg-card/80 px-3 text-left text-sm shadow-soft focus:outline-none focus:ring-2 focus:ring-ring/30">
+          <span className="truncate">{options.find((option) => option.id === value)?.name}</span>
+          <ChevronUpDownIcon className="h-4 w-4 text-muted-foreground" />
+        </Listbox.Button>
+
+        <Listbox.Options className="absolute z-30 mt-2 max-h-64 w-full overflow-auto rounded-xl border border-border/70 bg-popover/95 p-1 shadow-soft backdrop-blur-md focus:outline-none">
+          {options.map((option) => (
+            <Listbox.Option
+              key={option.id}
+              value={option.id}
+              className={({ active, selected }) =>
+                cn(
+                  'cursor-pointer rounded-lg px-3 py-2 text-sm',
+                  active && 'bg-accent/15',
+                  selected ? 'font-semibold text-foreground' : 'text-muted-foreground'
+                )
+              }
+            >
+              {option.name}
+            </Listbox.Option>
+          ))}
+        </Listbox.Options>
+      </div>
+    </Listbox>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-12">
+        <SaaSCard className="xl:col-span-8" contentClassName="space-y-4">
+          <SaaSSkeleton className="h-6 w-44" />
+          <SaaSSkeleton className="h-[320px] w-full" />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <SaaSSkeleton className="h-16 w-full" />
+            <SaaSSkeleton className="h-16 w-full" />
+            <SaaSSkeleton className="h-16 w-full" />
+            <SaaSSkeleton className="h-16 w-full" />
+          </div>
+        </SaaSCard>
+
+        <div className="space-y-6 xl:col-span-4">
+          <SaaSCard contentClassName="space-y-3">
+            <SaaSSkeleton className="h-6 w-40" />
+            <SaaSSkeleton className="h-28 w-full" />
+          </SaaSCard>
+          <SaaSCard contentClassName="space-y-3">
+            <SaaSSkeleton className="h-6 w-36" />
+            <SaaSSkeleton className="h-16 w-full" />
+            <SaaSSkeleton className="h-16 w-full" />
+            <SaaSSkeleton className="h-16 w-full" />
+          </SaaSCard>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <SaaSCard>
+          <SaaSSkeleton className="h-56 w-full" />
+        </SaaSCard>
+        <SaaSCard>
+          <SaaSSkeleton className="h-56 w-full" />
+        </SaaSCard>
+      </div>
+    </div>
+  );
+}
 
 export default DashboardPage;

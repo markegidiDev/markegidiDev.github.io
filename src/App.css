@@ -19,7 +19,7 @@
   flex-direction: column !important;
   background-color: hsl(var(--background)) !important;
   color: hsl(var(--foreground)) !important;
-  font-family: 'Inter', system-ui, sans-serif !important;
+  font-family: 'Space Grotesk', system-ui, sans-serif !important;
   margin: 0 auto !important;
 }
 
@@ -29,14 +29,14 @@
   width: 100% !important;
   display: flex !important;
   flex-direction: column !important;
-  align-items: center !important;
+  align-items: stretch !important;
 }
 
 /* Ensure base elements are visible */
 body, html {
   background-color: hsl(var(--background)) !important;
   color: hsl(var(--foreground)) !important;
-  font-family: 'Inter', system-ui, sans-serif !important;
+  font-family: 'Space Grotesk', system-ui, sans-serif !important;
   margin: 0 !important;
   padding: 0 !important;
   min-height: 100vh !important;

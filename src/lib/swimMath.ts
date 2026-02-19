@@ -360,6 +360,8 @@ export interface PerformancePoint {
   context?: string; // e.g., "taper", "training", "competition"
 }
 
+export const MIN_PREDICTION_R2 = 0.28;
+
 /**
  * Simple exponential decay model for time prediction
  * T(t) = T_infinity + (T_0 - T_infinity) * e^(-k*t)
@@ -379,53 +381,71 @@ export function fitExponentialModel(
   }
 
   // Sort by date
-  const sorted = [...history].sort((a, b) => 
+  const sorted = [...history].sort((a, b) =>
     new Date(a.date).getTime() - new Date(b.date).getTime()
   );
 
   // Convert dates to days since first point
   const firstDate = new Date(sorted[0].date).getTime();
-  const data = sorted.map((p) => ({
-    t: (new Date(p.date).getTime() - firstDate) / (1000 * 60 * 60 * 24), // days
-    time: p.time,
-  }));
+  const data = sorted
+    .map((p) => ({
+      t: (new Date(p.date).getTime() - firstDate) / (1000 * 60 * 60 * 24), // days
+      time: p.time,
+    }))
+    .filter((point) => Number.isFinite(point.t) && Number.isFinite(point.time) && point.t >= 0 && point.time > 0);
 
-  // Initial guesses
+  if (data.length < 3) {
+    return null;
+  }
+
+  // Fix T_0 to first observed point and fit T_infinity + k with grid search.
   const T_0 = data[0].time;
-  const T_infinity = baseTime * 1.05; // Start with 5% above base time
-  
-  // Simple gradient descent to fit k
-  let k = 0.01; // initial guess
-  let bestK = k;
+  const minObserved = Math.min(...data.map((d) => d.time));
+  const minAsymptote = Math.max(baseTime * 0.9, minObserved * 0.75);
+  const maxAsymptote = Math.min(minObserved * 0.995, T_0 - 0.01);
+
+  if (!Number.isFinite(minAsymptote) || !Number.isFinite(maxAsymptote) || minAsymptote >= maxAsymptote) {
+    return null;
+  }
+
+  let bestK = 0;
+  let bestTInfinity = minAsymptote;
   let bestSSE = Infinity;
 
-  for (let iter = 0; iter < 100; iter++) {
-    let sse = 0;
-    for (const point of data) {
-      const predicted = T_infinity + (T_0 - T_infinity) * Math.exp(-k * point.t);
-      sse += Math.pow(point.time - predicted, 2);
+  for (let T_infinity = minAsymptote; T_infinity <= maxAsymptote; T_infinity += 0.02) {
+    if (T_0 <= T_infinity) {
+      continue;
     }
 
-    if (sse < bestSSE) {
-      bestSSE = sse;
-      bestK = k;
-    }
+    for (let k = 0.001; k <= 0.25; k += 0.001) {
+      let sse = 0;
+      for (const point of data) {
+        const predicted = T_infinity + (T_0 - T_infinity) * Math.exp(-k * point.t);
+        sse += Math.pow(point.time - predicted, 2);
+      }
 
-    // Try adjusting k
-    k += 0.001;
-    if (k > 0.5) break; // reasonable limit
+      if (sse < bestSSE) {
+        bestSSE = sse;
+        bestK = k;
+        bestTInfinity = T_infinity;
+      }
+    }
+  }
+
+  if (!Number.isFinite(bestSSE) || bestK <= 0) {
+    return null;
   }
 
   // Calculate R²
   const meanTime = data.reduce((sum, d) => sum + d.time, 0) / data.length;
   const sst = data.reduce((sum, d) => sum + Math.pow(d.time - meanTime, 2), 0);
-  const r_squared = 1 - (bestSSE / sst);
+  const r_squared = sst > 1e-9 ? 1 - bestSSE / sst : bestSSE <= 1e-9 ? 1 : 0;
 
   return {
-    T_infinity,
+    T_infinity: bestTInfinity,
     T_0,
     k: bestK,
-    r_squared,
+    r_squared: Math.max(0, Math.min(1, r_squared)),
   };
 }
 
@@ -443,7 +463,7 @@ export function predictTimeToTarget(
 } | null {
   const model = fitExponentialModel(history, baseTime);
   
-  if (!model || model.r_squared < 0.5) {
+  if (!model || model.r_squared < MIN_PREDICTION_R2) {
     return null; // Model doesn't fit well
   }
 
@@ -464,18 +484,21 @@ export function predictTimeToTarget(
   }
 
   const estimatedDays = -Math.log(ratio) / model.k;
+  if (!Number.isFinite(estimatedDays)) {
+    return null;
+  }
 
   let confidence: 'low' | 'medium' | 'high';
-  if (model.r_squared > 0.9) {
+  if (model.r_squared > 0.85) {
     confidence = 'high';
-  } else if (model.r_squared > 0.7) {
+  } else if (model.r_squared > 0.6) {
     confidence = 'medium';
   } else {
     confidence = 'low';
   }
 
   return {
-    estimatedDays,
+    estimatedDays: Math.max(0, estimatedDays),
     confidence,
     model,
   };

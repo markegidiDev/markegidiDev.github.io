@@ -2,10 +2,10 @@ import React, { Fragment, useMemo } from 'react';
 import { Menu, Transition } from '@headlessui/react';
 import { useTheme } from './use-theme';
 import { CheckIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
-import { Moon, Sun, Monitor, Palette } from 'lucide-react';
+import { Moon, Sun, Monitor } from 'lucide-react';
 
 type Option = {
-  value: 'dark' | 'light' | 'nord' | 'system';
+  value: 'dark' | 'light' | 'system';
   label: string;
   icon: React.ReactNode;
 };
@@ -18,7 +18,6 @@ export default function ThemeMenu() {
       { value: 'system', label: 'System', icon: <Monitor className="h-4 w-4" /> },
       { value: 'dark', label: 'Dark', icon: <Moon className="h-4 w-4" /> },
       { value: 'light', label: 'Light', icon: <Sun className="h-4 w-4" /> },
-      { value: 'nord', label: 'Nord', icon: <Palette className="h-4 w-4" /> },
     ],
     []
   );
@@ -64,7 +63,7 @@ export default function ThemeMenu() {
                   <button
                     type="button"
                     onClick={() => setTheme(opt.value)}
-                    className={`$${''} ${
+                    className={`${
                       active ? 'bg-accent text-accent-foreground' : 'text-foreground'
                     } group flex w-full items-center gap-2 px-3 py-2 text-sm`}
                   >

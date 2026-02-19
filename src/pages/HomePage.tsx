@@ -10,14 +10,15 @@ import { TextAnimate } from "@/components/magicui/text-animate";
 import { TypingAnimation } from "@/components/magicui/typing-animation";
 import { LightRays } from "@/registry/magicui/light-rays";
 
+const centerWrapStyle = { maxWidth: "1320px", marginInline: "auto" } as const;
 
 const HomePage = () => {
   return (
     <div className="relative min-h-screen bg-background text-foreground overflow-hidden">
       <LightRays className="fixed inset-0 z-0 pointer-events-none" />
-      <div className="relative z-10 w-full mx-auto px-6 py-12">
+      <div className="relative z-10 w-full px-6 py-12" style={centerWrapStyle}>
         {/* Hero section - with animations */}
-        <div className="w-full mx-auto mb-24 text-center flex flex-col items-center justify-center min-h-[40vh]">
+        <div className="mb-24 flex min-h-[40vh] w-full flex-col items-center justify-center text-center">
           {/* Style 1: Name - Gradient & Massive */}
           <TypingAnimation 
             startOnView={true} 
@@ -48,7 +49,7 @@ const HomePage = () => {
         </div>
 
         {/* Main Content */}
-        <div className="space-y-24 w-full mx-auto">
+        <div className="w-full space-y-24">
           <Separator className="w-full max-w-2xl mx-auto h-px bg-border/50" />
           
           {/* About Me Section */}

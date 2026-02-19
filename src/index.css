@@ -1,163 +1,118 @@
-/* Tailwind base (v4-compatible) */
+﻿@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "tailwindcss/preflight";
 @import "tailwindcss/utilities";
 
-/* Design tokens (light as default) */
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 47.4% 11.2%;
+    --background: 220 16% 96%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 47.4% 11.2%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 47.4% 11.2%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 166 85% 29%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 210 26% 94%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 215 35% 95%;
+    --muted-foreground: 218 17% 38%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 166 85% 29%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 2 74% 57%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --border: 214 39% 90%;
+    --input: 214 39% 90%;
+    --ring: 166 85% 29%;
 
-    --radius: 0.8rem;
+    --radius: 1rem;
 
-    /* Chart palette */
-    --chart-1: 220 70% 55%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 40 90% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 0 70% 60%;
+    --chart-1: 166 85% 29%;
+    --chart-2: 198 86% 48%;
+    --chart-3: 218 81% 57%;
+    --chart-4: 45 93% 58%;
+    --chart-5: 347 75% 57%;
 
-    /* Neumorphism + glassmorphism extras */
-    --gd-bg: linear-gradient(134deg,#1f2023,#27282c);
-    --gd-divider: radial-gradient(50% 50% at 50% 50%,#616161 0%,rgba(160,160,160,0) 100%);
-    --gd-magenta: linear-gradient(356deg,#ff00ff 15%,#930093 84%);
-    --gd-magenta-2: radial-gradient(76.03% 76.03% at 24% 18%,#ff00ff 0%,#670077 100%);
-    --gd-border: linear-gradient(174deg,#343538,rgba(31,32,35,.92));
-    --dark-surface: #191a1c;
-    --accent-green: #14f195;
-    --shadow-main: 13px 14px 12px -6px rgba(16,20,24,.4),-5px -5px 20px 0 rgba(39,40,42,.35);
-    --shadow-btn-magenta: 0 2px 10px 5px rgba(255,0,255,.15),5px 5px 10px 0 #181e24,-5px -5px 10px 0 rgba(59,62,66,.35);
+    --shadow-soft: 0 10px 28px rgba(15, 23, 42, 0.08);
+    --shadow-hover: 0 14px 34px rgba(15, 23, 42, 0.12);
+
+    --blob-green: 12 139 110;
+    --blob-sky: 56 189 248;
   }
 
   .dark {
-    /* Clean professional dark palette */
-    --background: 224 12% 8%;
-    --foreground: 210 20% 90%;
+    --background: 221 27% 10%;
+    --foreground: 210 40% 96%;
 
-    --card: 224 12% 12%;
-    --card-foreground: 210 20% 90%;
+    --card: 220 23% 14%;
+    --card-foreground: 210 40% 96%;
 
-    --popover: 224 12% 11%;
-    --popover-foreground: 210 20% 90%;
+    --popover: 220 24% 13%;
+    --popover-foreground: 210 40% 96%;
 
-    --primary: 217 76% 56%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 166 75% 42%;
+    --primary-foreground: 220 30% 10%;
 
-    --secondary: 220 14% 18%;
-    --secondary-foreground: 210 20% 80%;
+    --secondary: 218 19% 21%;
+    --secondary-foreground: 210 30% 92%;
 
-    --muted: 220 12% 16%;
-    --muted-foreground: 215 12% 55%;
+    --muted: 218 16% 18%;
+    --muted-foreground: 216 16% 70%;
 
-    --accent: 217 76% 56%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 166 75% 42%;
+    --accent-foreground: 220 30% 10%;
 
-    --destructive: 0 62% 52%;
+    --destructive: 2 70% 56%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 12% 20%;
-    --input: 220 12% 20%;
-    --ring: 217 76% 56%;
+    --border: 217 18% 26%;
+    --input: 217 18% 26%;
+    --ring: 166 75% 42%;
 
-    /* Chart colors — varied & readable on dark */
-    --chart-1: 217 80% 62%;  /* Blue */
-    --chart-2: 160 55% 52%;  /* Teal/Green */
-    --chart-3: 35 85% 62%;   /* Amber */
-    --chart-4: 270 60% 66%;  /* Purple */
-    --chart-5: 350 70% 62%;  /* Rose */
-  }
+    --chart-1: 166 75% 46%;
+    --chart-2: 198 84% 56%;
+    --chart-3: 218 81% 66%;
+    --chart-4: 42 96% 64%;
+    --chart-5: 348 78% 66%;
 
-  /* Extra theme: "nord" — official Nord palette inspired */
-  .nord {
-    --background: 220 16% 12%;      /* Nord0  #2E3440 */
-    --foreground: 218 27% 88%;      /* Nord6  #ECEFF4 */
+    --shadow-soft: 0 12px 32px rgba(2, 6, 23, 0.35);
+    --shadow-hover: 0 16px 40px rgba(2, 6, 23, 0.48);
 
-    --card: 220 16% 16%;            /* Nord1  #3B4252 */
-    --card-foreground: 218 27% 88%;
-
-    --popover: 220 16% 14%;
-    --popover-foreground: 218 27% 88%;
-
-    --primary: 213 32% 52%;         /* Nord10 #5E81AC */
-    --primary-foreground: 218 27% 94%;
-
-    --secondary: 220 16% 22%;       /* Nord2  #434C5E */
-    --secondary-foreground: 218 27% 82%;
-
-    --muted: 220 16% 20%;           /* Nord3-ish */
-    --muted-foreground: 219 20% 60%;
-
-    --accent: 179 25% 50%;          /* Nord7  #8FBCBB */
-    --accent-foreground: 218 27% 94%;
-
-    --destructive: 354 42% 56%;     /* Nord11 #BF616A */
-    --destructive-foreground: 218 27% 94%;
-
-    --border: 220 16% 24%;
-    --input: 220 16% 24%;
-    --ring: 213 32% 52%;
-
-    /* Chart: full Nord Frost + Aurora spread */
-    --chart-1: 213 32% 52%;         /* Nord10 — Steel Blue */
-    --chart-2: 92 28% 55%;          /* Nord14 — Sage Green */
-    --chart-3: 40 55% 60%;          /* Nord13 — Sandy Yellow */
-    --chart-4: 311 20% 52%;         /* Nord15 — Muted Purple */
-    --chart-5: 354 42% 56%;         /* Nord11 — Muted Red */
+    --blob-green: 13 148 136;
+    --blob-sky: 14 165 233;
   }
 
   * {
-  /* Tailwind v4 may not allow @apply of custom utilities here; set directly */
-  border-color: hsl(var(--border));
+    border-color: hsl(var(--border));
   }
 
-  /* Reserve scrollbar gutter at root to prevent horizontal shift on Windows */
   html {
-    /* Always reserve vertical scrollbar space to prevent left/right shift */
     overflow-y: scroll;
     scrollbar-gutter: stable;
+    font-family: "Space Grotesk", system-ui, sans-serif;
   }
 
   body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
-    /* Inherit from html; no forced scroll so mobile stays clean */
     overflow-y: auto;
+    font-family: inherit;
   }
 
-  /* If libraries apply overflow hidden on body (e.g., modals), keep layout stable */
   body[style*="overflow: hidden"],
   html:has(body[style*="overflow: hidden"]) {
     scrollbar-gutter: stable;
   }
 }
 
-/* Utilities that map tokens → semantic classes */
 @layer utilities {
   .bg-background { background-color: hsl(var(--background)); }
   .text-foreground { color: hsl(var(--foreground)); }
@@ -190,34 +145,35 @@
   .bg-chart-4 { background-color: hsl(var(--chart-4)); }
   .bg-chart-5 { background-color: hsl(var(--chart-5)); }
 
-  /* Neumorphism + glassmorphism helpers */
-  .bg-gd-border-main { background-image: var(--gd-border); }
-  .bg-gd-main { background-image: var(--gd-bg); }
-  .bg-gd-divider { background-image: var(--gd-divider); }
-  .bg-gd-magenta { background-image: var(--gd-magenta); }
-  .bg-gd-magenta-2 { background-image: var(--gd-magenta-2); }
-  .bg-dark { background-color: var(--dark-surface); }
-  .text-green { color: var(--accent-green); }
-  .shadow-main { box-shadow: var(--shadow-main); }
-  .shadow-magenta-btn { box-shadow: var(--shadow-btn-magenta); }
-  .neumorphism-border-1 { background-image: linear-gradient(176deg,rgba(0,0,0,.3) 45%,hsla(0,0%,100%,.07)); }
-  .neumorphism-border-2 { background-image: linear-gradient(165deg,rgba(0,0,0,.3) 50%,hsla(0,0%,100%,.01)); }
+  .shadow-soft { box-shadow: var(--shadow-soft); }
+  .shadow-soft-hover { box-shadow: var(--shadow-hover); }
+
+  .bg-glass {
+    background-color: hsl(var(--card) / 0.72);
+    backdrop-filter: blur(12px);
+  }
+
+  .glass-border {
+    border: 1px solid hsl(var(--border) / 0.75);
+  }
+
+  .bg-grid-soft {
+    background-image:
+      linear-gradient(to right, hsl(var(--border) / 0.35) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(var(--border) / 0.35) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
 }
 
-/* Keyframes for ContactDock marquee scroll */
 @keyframes scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
 
-/* Default inner padding for generic cards across the site.
-   Applies only when the element has bg-card + border and NO explicit Tailwind padding (p-/px-).
-   This prevents text touching the edges without breaking components that already set padding. */
 .bg-card.border:not([class^="p-"]):not([class*=" p-"]):not([class^="px-"]):not([class*=" px-"]) {
-  padding: clamp(0.875rem, 2vw, 1.25rem); /* ~p-3.5 to p-5 */
+  padding: clamp(0.875rem, 2vw, 1.25rem);
 }
 
-/* Same default for translucent card variants like bg-card/80 */
 [class*="bg-card/"].border:not([class^="p-"]):not([class*=" p-"]):not([class^="px-"]):not([class*=" px-"]) {
   padding: clamp(0.875rem, 2vw, 1.25rem);
 }

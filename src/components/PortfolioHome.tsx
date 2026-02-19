@@ -3,9 +3,11 @@ import SkillsSectionModern from "@/components/SkillsSectionModern"
 import CertificationsSectionModern from "@/components/CertificationsSectionModern"
 import { Separator } from "@/components/ui/separator"
 
+const centerWrapStyle = { maxWidth: "1320px", marginInline: "auto" } as const;
+
 export default function PortfolioHome() {
   return (
-    <div className="w-full max-w-7xl mx-auto px-6 py-12">
+    <div className="w-full px-6 py-12" style={centerWrapStyle}>
       {/* Hero replaced by existing hero in Home if needed */}
 
       <div className="space-y-24">

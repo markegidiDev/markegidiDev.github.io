@@ -45,9 +45,9 @@ export function AthleteStatsKPI({ stats }: { stats: AthleteStats | null }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
       {cards.map((c) => (
-        <div key={c.label} className="rounded-xl bg-black/20 border border-white/5 p-3.5 hover:bg-white/5 transition-colors">
+        <div key={c.label} className="rounded-xl border border-border/70 bg-card/70 p-3.5 transition-colors hover:bg-card">
           <div className="text-xs text-muted-foreground font-medium uppercase tracking-wide">{c.label}</div>
-          <div className="text-xl font-bold text-white mt-1">{c.value}</div>
+          <div className="text-xl font-bold text-foreground mt-1">{c.value}</div>
           {c.sub ? <div className="text-xs text-muted-foreground mt-0.5">{c.sub}</div> : null}
         </div>
       ))}

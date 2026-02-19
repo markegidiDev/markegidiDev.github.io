@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+﻿import React, { useMemo, useState } from 'react';
 import {
   AreaChart,
   Area,
@@ -20,7 +20,7 @@ import { formatSecondsToTime, parseTimeToSeconds, type Course, type Sex, type Ev
 import masterTimesData from '@/data/masterTimes.json';
 import { BarChart3, Users, Globe } from 'lucide-react';
 
-// ── Types ──────────────────────────────────────────────────
+// â”€â”€ Types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 interface MasterTimesStructure {
   [course: string]: {
     [sex: string]: {
@@ -34,16 +34,17 @@ interface MasterTimesStructure {
 const masterTimes = masterTimesData as MasterTimesStructure;
 
 const AGE_GROUPS = ['20', '25', '30', '35', '40', '45', '50', '55', '60', '65', '70', '75', '80', '85', '90'];
+const cardInsetStyle = { paddingInline: '1.75rem', paddingBlock: '1.5rem' } as const;
 
-// ── World Records ──────────────────────────────────────────
+// â”€â”€ World Records â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // Structure: WORLD_RECORDS[course][sex][eventKey] = seconds
 const WORLD_RECORDS: Record<string, Record<string, Record<string, { time: number; holder: string }>>> = {
   LCM: {
     M: {
-      '50_FREE':   { time: parseTimeToSeconds('20.91'),   holder: 'César Cielo' },
+      '50_FREE':   { time: parseTimeToSeconds('20.91'),   holder: 'CÃ©sar Cielo' },
       '100_FREE':  { time: parseTimeToSeconds('46.40'),   holder: 'Pan Zhanle' },
       '200_FREE':  { time: parseTimeToSeconds('1:42.00'), holder: 'Paul Biedermann' },
-      '400_FREE':  { time: parseTimeToSeconds('3:39.96'), holder: 'Lukas Märtens' },
+      '400_FREE':  { time: parseTimeToSeconds('3:39.96'), holder: 'Lukas MÃ¤rtens' },
       '800_FREE':  { time: parseTimeToSeconds('7:32.12'), holder: 'Zhang Lin' },
       '1500_FREE': { time: parseTimeToSeconds('14:30.67'),holder: 'Bobby Finke' },
       '50_BACK':   { time: parseTimeToSeconds('23.55'),   holder: 'Kliment Kolesnikov' },
@@ -54,13 +55,13 @@ const WORLD_RECORDS: Record<string, Record<string, Record<string, { time: number
       '200_BREAST':{ time: parseTimeToSeconds('2:05.48'), holder: 'Qin Haiyang' },
       '50_FLY':    { time: parseTimeToSeconds('22.27'),   holder: 'Andriy Govorov' },
       '100_FLY':   { time: parseTimeToSeconds('49.45'),   holder: 'Caeleb Dressel' },
-      '200_FLY':   { time: parseTimeToSeconds('1:50.34'), holder: 'Kristóf Milák' },
-      '200_IM':    { time: parseTimeToSeconds('1:52.69'), holder: 'Léon Marchand' },
-      '400_IM':    { time: parseTimeToSeconds('4:02.50'), holder: 'Léon Marchand' },
+      '200_FLY':   { time: parseTimeToSeconds('1:50.34'), holder: 'KristÃ³f MilÃ¡k' },
+      '200_IM':    { time: parseTimeToSeconds('1:52.69'), holder: 'LÃ©on Marchand' },
+      '400_IM':    { time: parseTimeToSeconds('4:02.50'), holder: 'LÃ©on Marchand' },
     },
     F: {
-      '50_FREE':   { time: parseTimeToSeconds('23.61'),   holder: 'Sarah Sjöström' },
-      '100_FREE':  { time: parseTimeToSeconds('51.71'),   holder: 'Sarah Sjöström' },
+      '50_FREE':   { time: parseTimeToSeconds('23.61'),   holder: 'Sarah SjÃ¶strÃ¶m' },
+      '100_FREE':  { time: parseTimeToSeconds('51.71'),   holder: 'Sarah SjÃ¶strÃ¶m' },
       '200_FREE':  { time: parseTimeToSeconds('1:52.23'), holder: 'Ariarne Titmus' },
       '400_FREE':  { time: parseTimeToSeconds('3:54.18'), holder: 'Summer McIntosh' },
       '800_FREE':  { time: parseTimeToSeconds('8:04.12'), holder: 'Katie Ledecky' },
@@ -68,10 +69,10 @@ const WORLD_RECORDS: Record<string, Record<string, Record<string, { time: number
       '50_BACK':   { time: parseTimeToSeconds('26.86'),   holder: 'Kaylee McKeown' },
       '100_BACK':  { time: parseTimeToSeconds('57.13'),   holder: 'Regan Smith' },
       '200_BACK':  { time: parseTimeToSeconds('2:03.14'), holder: 'Kaylee McKeown' },
-      '50_BREAST': { time: parseTimeToSeconds('29.16'),   holder: 'Rūta Meilutytė' },
+      '50_BREAST': { time: parseTimeToSeconds('29.16'),   holder: 'RÅ«ta MeilutytÄ—' },
       '100_BREAST':{ time: parseTimeToSeconds('1:04.13'), holder: 'Lilly King' },
       '200_BREAST':{ time: parseTimeToSeconds('2:17.55'), holder: 'Evgeniia Chikunova' },
-      '50_FLY':    { time: parseTimeToSeconds('24.43'),   holder: 'Sarah Sjöström' },
+      '50_FLY':    { time: parseTimeToSeconds('24.43'),   holder: 'Sarah SjÃ¶strÃ¶m' },
       '100_FLY':   { time: parseTimeToSeconds('54.60'),   holder: 'Gretchen Walsh' },
       '200_FLY':   { time: parseTimeToSeconds('2:01.81'), holder: 'Liu Zige' },
       '200_IM':    { time: parseTimeToSeconds('2:05.70'), holder: 'Summer McIntosh' },
@@ -87,16 +88,16 @@ const WORLD_RECORDS: Record<string, Record<string, Record<string, { time: number
       '800_FREE':  { time: parseTimeToSeconds('7:20.46'), holder: 'Daniel Wiffen' },
       '1500_FREE': { time: parseTimeToSeconds('14:06.88'),holder: 'Florian Wellbrock' },
       '50_BACK':   { time: parseTimeToSeconds('22.11'),   holder: 'Kliment Kolesnikov' },
-      '100_BACK':  { time: parseTimeToSeconds('48.16'),   holder: 'Hubert Kós' },
-      '200_BACK':  { time: parseTimeToSeconds('1:45.12'), holder: 'Hubert Kós' },
-      '50_BREAST': { time: parseTimeToSeconds('24.95'),   holder: 'Emre Sakçı' },
+      '100_BACK':  { time: parseTimeToSeconds('48.16'),   holder: 'Hubert KÃ³s' },
+      '200_BACK':  { time: parseTimeToSeconds('1:45.12'), holder: 'Hubert KÃ³s' },
+      '50_BREAST': { time: parseTimeToSeconds('24.95'),   holder: 'Emre SakÃ§Ä±' },
       '100_BREAST':{ time: parseTimeToSeconds('55.28'),   holder: 'Ilya Shymanovich' },
       '200_BREAST':{ time: parseTimeToSeconds('1:59.52'), holder: 'Caspar Corbeau' },
-      '50_FLY':    { time: parseTimeToSeconds('21.32'),   holder: 'Noè Ponti' },
+      '50_FLY':    { time: parseTimeToSeconds('21.32'),   holder: 'NoÃ¨ Ponti' },
       '100_FLY':   { time: parseTimeToSeconds('47.68'),   holder: 'Joshua Liendo' },
       '200_FLY':   { time: parseTimeToSeconds('1:46.85'), holder: 'Tomoru Honda' },
       '100_IM':    { time: parseTimeToSeconds('49.28'),   holder: 'Caeleb Dressel' },
-      '200_IM':    { time: parseTimeToSeconds('1:48.88'), holder: 'Léon Marchand' },
+      '200_IM':    { time: parseTimeToSeconds('1:48.88'), holder: 'LÃ©on Marchand' },
       '400_IM':    { time: parseTimeToSeconds('3:54.81'), holder: 'Daiya Seto' },
     },
     F: {
@@ -109,8 +110,8 @@ const WORLD_RECORDS: Record<string, Record<string, Record<string, { time: number
       '50_BACK':   { time: parseTimeToSeconds('25.23'),   holder: 'Regan Smith' },
       '100_BACK':  { time: parseTimeToSeconds('54.02'),   holder: 'Regan Smith' },
       '200_BACK':  { time: parseTimeToSeconds('1:57.33'), holder: 'Kaylee McKeown' },
-      '50_BREAST': { time: parseTimeToSeconds('28.37'),   holder: 'Rūta Meilutytė' },
-      '100_BREAST':{ time: parseTimeToSeconds('1:02.36'), holder: 'Rūta Meilutytė / Alia Atkinson' },
+      '50_BREAST': { time: parseTimeToSeconds('28.37'),   holder: 'RÅ«ta MeilutytÄ—' },
+      '100_BREAST':{ time: parseTimeToSeconds('1:02.36'), holder: 'RÅ«ta MeilutytÄ— / Alia Atkinson' },
       '200_BREAST':{ time: parseTimeToSeconds('2:12.50'), holder: 'Kate Douglass' },
       '50_FLY':    { time: parseTimeToSeconds('23.72'),   holder: 'Gretchen Walsh' },
       '100_FLY':   { time: parseTimeToSeconds('52.71'),   holder: 'Gretchen Walsh' },
@@ -134,7 +135,7 @@ interface GaussianChartProps {
   predictionTime?: number | null;
 }
 
-// ── Gaussian math ──────────────────────────────────────────
+// â”€â”€ Gaussian math â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function computeStats(times: number[]): { mean: number; std: number } {
   const n = times.length;
   const mean = times.reduce((a, b) => a + b, 0) / n;
@@ -155,7 +156,7 @@ function computePercentile(value: number, times: number[]): number {
   return Math.round((count / sorted.length) * 100);
 }
 
-// ── Component ──────────────────────────────────────────────
+// â”€â”€ Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
   event,
   course,
@@ -251,13 +252,13 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
   if (availableCategories.length === 0) {
     return (
       <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden">
-        <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
+        <div className="px-6 sm:px-10 pt-7 sm:pt-10 pb-5 border-b border-border/40" style={cardInsetStyle}>
           <h2 className="text-xl font-semibold flex items-center gap-2">
             <BarChart3 className="h-5 w-5 text-primary" />
             Distribuzione Tempi Master
           </h2>
         </div>
-        <div className="px-4 sm:px-8 py-10 text-center text-muted-foreground">
+        <div className="px-6 sm:px-10 py-10 text-center text-muted-foreground" style={cardInsetStyle}>
           Nessun dato Master disponibile per {event.replace('_', ' ')} {course} {sex === 'M' ? 'Maschi' : 'Femmine'}
         </div>
       </div>
@@ -272,7 +273,7 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
   return (
     <div className="rounded-2xl border border-border/60 bg-card shadow-sm overflow-hidden">
       {/* Header */}
-      <div className="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 border-b border-border/40">
+      <div className="px-6 sm:px-10 pt-7 sm:pt-10 pb-5 border-b border-border/40" style={cardInsetStyle}>
         <h2 className="text-xl font-semibold flex items-center gap-2">
           <BarChart3 className="h-5 w-5 text-primary" />
           Distribuzione Tempi Master
@@ -282,7 +283,7 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
         </p>
       </div>
 
-      <div className="px-4 sm:px-8 py-6 sm:py-8 space-y-6">
+      <div className="px-6 sm:px-10 py-8 sm:py-10 space-y-6" style={cardInsetStyle}>
         {/* Category selector + World Record toggle */}
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
           <div className="space-y-1.5 flex-1 max-w-xs">
@@ -322,7 +323,7 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
               </button>
               {showWorldRecord && (
                 <span className="text-xs text-muted-foreground">
-                  {formatSecondsToTime(worldRecord.time)} — {worldRecord.holder}
+                  {formatSecondsToTime(worldRecord.time)} â€” {worldRecord.holder}
                 </span>
               )}
             </div>
@@ -378,7 +379,7 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
                   axisLine={false}
                   tickLine={false}
                   label={{
-                    value: 'Densità',
+                    value: 'DensitÃ ',
                     angle: -90,
                     position: 'insideLeft',
                     offset: 10,
@@ -474,7 +475,7 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
         {(userPercentile !== null || predictionPercentile !== null) && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {userPercentile !== null && userTime && (
-              <div className="p-4 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20">
+              <div className="p-4 rounded-xl border border-border/70 bg-card/70">
                 <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
                   La tua posizione
                 </div>
@@ -487,7 +488,7 @@ const GaussianDistributionChart: React.FC<GaussianChartProps> = ({
               </div>
             )}
             {predictionPercentile !== null && predictionTime && (
-              <div className="p-4 rounded-xl bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border border-emerald-500/20">
+              <div className="p-4 rounded-xl border border-primary/30 bg-primary/12">
                 <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
                   Target position
                 </div>

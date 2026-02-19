@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom/client'
 import App from './App'
 
 import './index.css'
-import './App.css'
 
 /**
  * Pre-paint theme guard:
@@ -11,18 +10,20 @@ import './App.css'
  */
 (function () {
   try {
-    const saved = localStorage.getItem('theme') as 'dark'|'light'|'nord'|'system'|null
+    const saved = localStorage.getItem('theme') as 'dark'|'light'|'system'|'nord'|null
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
     const root = document.documentElement
-    const removeAll = () => root.classList.remove('dark','nord')
+    const removeAll = () => root.classList.remove('dark')
     if (saved === 'dark') { removeAll(); root.classList.add('dark') }
-    else if (saved === 'nord') { removeAll(); root.classList.add('nord') }
+    else if (saved === 'nord') { removeAll(); root.classList.add('dark') }
     else if (saved === 'light') { removeAll() }
     else { // system
       removeAll()
       if (prefersDark) root.classList.add('dark')
     }
-  } catch {}
+  } catch {
+    // ignore pre-paint errors (e.g. storage unavailable)
+  }
 })()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
