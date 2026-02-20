@@ -382,5 +382,29 @@
     "dist_km": 0.4,
     "time_s": 108,
     "pace_s_per_km": 270
+  },
+  {
+    "date": "2025-11-23",
+    "type": "run",
+    "label": "1k",
+    "dist_km": 1.0128,
+    "time_s": 147,
+    "pace_s_per_km": 145.14218009478674
+  },
+  {
+    "date": "2025-11-23",
+    "type": "run",
+    "label": "5k",
+    "dist_km": 5.0015,
+    "time_s": 1428,
+    "pace_s_per_km": 285.5143456962911
+  },
+  {
+    "date": "2025-11-23",
+    "type": "run",
+    "label": "10k",
+    "dist_km": 10.002000000000002,
+    "time_s": 3016,
+    "pace_s_per_km": 301.53969206158763
   }
 ]
