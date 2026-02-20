@@ -55,6 +55,7 @@ jobs:
           git add public/strava-data.json public/strava-aggregates.json public/athlete-stats.json public/best-efforts.json public/zones-summary.json public/swim-paces.json || true
           if ! git diff --staged --quiet; then
             git commit -m "Automated: Update Strava data"
+            git pull --rebase origin main
             git push
             echo "changed=true" >> $GITHUB_OUTPUT
           else
