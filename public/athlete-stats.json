@@ -17,11 +17,11 @@
     "elevation_gain": 1232.4
   },
   "recent_run_totals": {
-    "count": 2,
-    "distance": 16188.099999999999,
-    "moving_time": 5874,
-    "elapsed_time": 6379,
-    "elevation_gain": 284.1,
+    "count": 1,
+    "distance": 9700.8,
+    "moving_time": 3606,
+    "elapsed_time": 3907,
+    "elevation_gain": 252.9,
     "achievement_count": 0
   },
   "all_run_totals": {
@@ -32,10 +32,10 @@
     "elevation_gain": 4622.000000000001
   },
   "recent_swim_totals": {
-    "count": 14,
-    "distance": 18800,
-    "moving_time": 44982,
-    "elapsed_time": 44982,
+    "count": 15,
+    "distance": 19375,
+    "moving_time": 45879,
+    "elapsed_time": 45879,
     "elevation_gain": 0,
     "achievement_count": 0
   },
