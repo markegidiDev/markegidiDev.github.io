@@ -1,12 +1,5 @@
 [
   {
-    "date": "2025-03-27",
-    "corsa": 0,
-    "nuoto": 1.52,
-    "ciclismo": 0,
-    "camminata": 0
-  },
-  {
     "date": "2025-03-28",
     "corsa": 0,
     "nuoto": 2,
@@ -1781,6 +1774,13 @@
     "date": "2026-03-26",
     "corsa": 0,
     "nuoto": 1.15,
+    "ciclismo": 0,
+    "camminata": 0
+  },
+  {
+    "date": "2026-03-27",
+    "corsa": 0,
+    "nuoto": 1,
     "ciclismo": 0,
     "camminata": 0
   }
