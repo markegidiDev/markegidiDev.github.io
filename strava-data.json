@@ -1783,5 +1783,12 @@
     "nuoto": 1,
     "ciclismo": 0,
     "camminata": 0
+  },
+  {
+    "date": "2026-03-28",
+    "corsa": 0,
+    "nuoto": 0,
+    "ciclismo": 34.63,
+    "camminata": 0
   }
 ]

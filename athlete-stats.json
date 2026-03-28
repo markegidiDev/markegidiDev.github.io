@@ -10,11 +10,11 @@
     "achievement_count": 0
   },
   "all_ride_totals": {
-    "count": 8,
-    "distance": 214913.2,
-    "moving_time": 40845,
-    "elapsed_time": 51668,
-    "elevation_gain": 1232.4
+    "count": 9,
+    "distance": 249541.39999999997,
+    "moving_time": 47702,
+    "elapsed_time": 59077,
+    "elevation_gain": 1445.3000000000002
   },
   "recent_run_totals": {
     "count": 1,
@@ -47,11 +47,11 @@
     "elevation_gain": 0
   },
   "ytd_ride_totals": {
-    "count": 0,
-    "distance": 0,
-    "moving_time": 0,
-    "elapsed_time": 0,
-    "elevation_gain": 0
+    "count": 1,
+    "distance": 34628,
+    "moving_time": 6857,
+    "elapsed_time": 7409,
+    "elevation_gain": 212.9
   },
   "ytd_run_totals": {
     "count": 3,
