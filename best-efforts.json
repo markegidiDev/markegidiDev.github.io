@@ -430,5 +430,13 @@
     "dist_km": 0.4,
     "time_s": 113,
     "pace_s_per_km": 282.5
+  },
+  {
+    "date": "2026-04-01",
+    "type": "run",
+    "label": "400m",
+    "dist_km": 0.4,
+    "time_s": 100,
+    "pace_s_per_km": 250
   }
 ]
