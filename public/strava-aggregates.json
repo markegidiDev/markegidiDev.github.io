@@ -362,5 +362,12 @@
     "ciclismo": 0,
     "nuoto": 3.05,
     "camminata": 7.84
+  },
+  {
+    "week": "2026-W16",
+    "corsa": 0,
+    "ciclismo": 0,
+    "nuoto": 1.02,
+    "camminata": 0
   }
 ]
