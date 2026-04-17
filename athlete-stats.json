@@ -2,11 +2,11 @@
   "biggest_ride_distance": 42266.1,
   "biggest_climb_elevation_gain": 25.30000000000001,
   "recent_ride_totals": {
-    "count": 1,
-    "distance": 34628.2,
-    "moving_time": 6857,
-    "elapsed_time": 7409,
-    "elevation_gain": 212.9,
+    "count": 2,
+    "distance": 76894.29999999999,
+    "moving_time": 14799,
+    "elapsed_time": 18034,
+    "elevation_gain": 443.20000000000005,
     "achievement_count": 0
   },
   "all_ride_totals": {
@@ -32,10 +32,10 @@
     "elevation_gain": 4742.900000000001
   },
   "recent_swim_totals": {
-    "count": 16,
-    "distance": 14550,
-    "moving_time": 38943,
-    "elapsed_time": 38948,
+    "count": 17,
+    "distance": 16275,
+    "moving_time": 41737,
+    "elapsed_time": 41743,
     "elevation_gain": 0,
     "achievement_count": 0
   },
