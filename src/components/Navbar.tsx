@@ -5,11 +5,11 @@ import { Menu, X } from 'lucide-react';
 import ThemeMenu from '@/features/theme/ThemeMenu';
 import { Tab, TabGroup, TabList } from '@headlessui/react';
 
-// Slimmed to only the three requested tabs
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/#projects", label: "Progetti" },
   { to: "/dashboard", label: "Dashboard" },
+  { to: "/aurastats", label: "AuraStats" },
   { to: "/swim-analyzer", label: "Swim Analyzer" },
   { to: "/#contact", label: "Contatti" },
 ];
