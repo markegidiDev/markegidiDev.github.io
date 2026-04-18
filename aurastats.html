@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AuraStats</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #f3f6fb;
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-strong: #ffffff;
+  --line: rgba(15, 23, 42, 0.08);
+  --text: #132238;
+  --muted: #55657d;
+  --primary: #0c7a6f;
+  --primary-2: #005f8f;
+  --accent: #f15b41;
+  --shadow: 0 24px 60px rgba(18, 32, 56, 0.12);
+  --radius-xl: 28px;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(12, 122, 111, 0.18), transparent 32%),
+    radial-gradient(circle at top right, rgba(0, 95, 143, 0.15), transparent 30%),
+    linear-gradient(180deg, #f8fbff 0%, #eef3fb 100%);
+}
+
+.shell {
+  width: min(1180px, calc(100% - 32px));
+  margin: 24px auto 48px;
+}
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding: 36px 36px 92px;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.22), transparent 24%),
+    radial-gradient(circle at 80% 15%, rgba(255, 255, 255, 0.18), transparent 20%),
+    linear-gradient(135deg, #0e3858 0%, #0c7a6f 50%, #1aa08f 100%);
+  box-shadow: var(--shadow);
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: auto -5% -80px auto;
+  width: 280px;
+  height: 280px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  filter: blur(10px);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero h1 {
+  margin: 18px 0 12px;
+  max-width: 760px;
+  color: #ffffff;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(38px, 6vw, 68px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+}
+
+.hero p {
+  max-width: 760px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.layout {
+  margin-top: -60px;
+  display: grid;
+  gap: 18px;
+}
+
+.panel {
+  backdrop-filter: blur(18px);
+  background: var(--surface);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+}
+
+.search-panel {
+  padding: 28px;
+}
+
+.search-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 0.6fr auto auto;
+  gap: 14px;
+  align-items: end;
+}
+
+.field {
+  display: grid;
+  gap: 8px;
+}
+
+.field label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.field input {
+  width: 100%;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--text);
+  font: inherit;
+  font-size: 16px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.field input:focus {
+  outline: none;
+  border-color: rgba(12, 122, 111, 0.55);
+  box-shadow: 0 0 0 4px rgba(12, 122, 111, 0.13);
+  transform: translateY(-1px);
+}
+
+.button {
+  height: 56px;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0 22px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button:disabled {
+  opacity: 0.65;
+  cursor: wait;
+  transform: none;
+}
+
+.button-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-2) 100%);
+  color: #ffffff;
+  box-shadow: 0 18px 30px rgba(0, 95, 143, 0.22);
+}
+
+.button-secondary {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+.status {
+  margin-top: 18px;
+  display: none;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.status.show {
+  display: block;
+}
+
+.status.info {
+  background: rgba(0, 95, 143, 0.08);
+  border-color: rgba(0, 95, 143, 0.16);
+  color: #124768;
+}
+
+.status.error {
+  background: rgba(241, 91, 65, 0.1);
+  border-color: rgba(241, 91, 65, 0.18);
+  color: #8a2b19;
+}
+
+.results {
+  display: none;
+  gap: 18px;
+}
+
+.results.show {
+  display: grid;
+}
+
+.paste-panel {
+  display: none;
+  padding: 24px 28px 28px;
+}
+
+.paste-panel.show {
+  display: block;
+}
+
+.paste-panel h2,
+.section-title,
+.results h2 {
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-family: "Space Grotesk", sans-serif;
+  letter-spacing: -0.03em;
+}
+
+.summary-panel {
+  padding: 26px 28px;
+}
+
+.summary-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.athlete-block h2 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 40px);
+  font-family: "Space Grotesk", sans-serif;
+  letter-spacing: -0.04em;
+}
+
+.athlete-meta {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.stats-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.stat-card {
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 248, 255, 0.88));
+  border: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.stat-card strong {
+  display: block;
+  font-size: 30px;
+  font-family: "Space Grotesk", sans-serif;
+  letter-spacing: -0.04em;
+}
+
+.stat-card span {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.filters-panel,
+.chart-panel,
+.table-panel,
+.pb-panel {
+  padding: 24px 28px 28px;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 10px 14px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chip.active {
+  background: linear-gradient(135deg, rgba(12, 122, 111, 0.18), rgba(0, 95, 143, 0.18));
+  border-color: rgba(12, 122, 111, 0.28);
+  color: #0f504a;
+}
+
+.chart-wrap {
+  height: 360px;
+}
+
+.pb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.pb-card {
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(15, 23, 42, 0.05);
+}
+
+.pb-card strong {
+  display: block;
+  font-size: 16px;
+  font-family: "Space Grotesk", sans-serif;
+}
+
+.pb-card span {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.table-wrap {
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+thead th {
+  text-align: left;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 0 14px;
+}
+
+tbody td {
+  padding: 14px 0;
+  border-top: 1px solid rgba(15, 23, 42, 0.07);
+  vertical-align: top;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.empty {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+@media (max-width: 980px) {
+  .search-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .shell {
+    width: min(100% - 20px, 1180px);
+    margin-top: 10px;
+  }
+
+  .hero,
+  .search-panel,
+  .summary-panel,
+  .filters-panel,
+  .chart-panel,
+  .table-panel,
+  .pb-panel {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .search-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="hero">
+    <div class="eyebrow">AuraStats</div>
+    <h1>Dashboard moderna per la tua scheda atleta NuotoMaster</h1>
+    <p>Recupera risultati, progressione tempi e record personali partendo dal codice atleta e dalla stagione.</p>
+  </header>
+
+  <main class="layout">
+    <section class="panel search-panel">
+      <div class="search-grid">
+        <div class="field">
+          <label for="athleteCode">Codice atleta</label>
+          <input id="athleteCode" type="text" inputmode="numeric" value="923530" placeholder="923530">
+        </div>
+        <div class="field">
+          <label for="seasonYear">Anno stagione</label>
+          <input id="seasonYear" type="number" inputmode="numeric" value="2026" placeholder="2026">
+        </div>
+        <button id="searchButton" class="button button-primary" type="button">Cerca risultati</button>
+        <button id="openSourceButton" class="button button-secondary" type="button">Apri NuotoMaster</button>
+      </div>
+
+      <div id="statusBox" class="status"></div>
+    </section>
+
+    <section id="results" class="results">
+      <section class="panel summary-panel">
+        <div class="summary-top">
+          <div class="athlete-block">
+            <h2 id="athleteName">Atleta</h2>
+            <div id="athleteMeta" class="athlete-meta"></div>
+          </div>
+        </div>
+        <div id="statsGrid" class="stats-grid"></div>
+      </section>
+
+      <section class="panel filters-panel">
+        <div class="section-title">Filtro stagione</div>
+        <div id="yearFilters" class="chip-row"></div>
+      </section>
+
+      <section class="panel chart-panel">
+        <div class="section-title">Progressione tempi per gara</div>
+        <div id="eventFilters" class="chip-row" style="margin-bottom: 18px;"></div>
+        <div class="chart-wrap">
+          <canvas id="progressChart"></canvas>
+        </div>
+      </section>
+
+      <section class="panel pb-panel">
+        <div class="section-title">Record personali</div>
+        <div id="pbGrid" class="pb-grid"></div>
+      </section>
+
+      <section class="panel table-panel">
+        <div class="section-title">Tutte le gare</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Manifestazione</th>
+                <th>Gara</th>
+                <th>Tempo</th>
+                <th>Pos</th>
+                <th>Vasca</th>
+              </tr>
+            </thead>
+            <tbody id="raceTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+</div>
+
+<script>
+const state = {
+  data: null,
+  year: "all",
+  event: "all",
+  chart: null,
+};
+
+const STYLE_NAMES = {
+  SL: "Stile libero",
+  FA: "Farfalla",
+  DO: "Dorso",
+  RA: "Rana",
+  MI: "Misto",
+};
+
+const STYLE_COLORS = {
+  SL: "#0c7a6f",
+  FA: "#8a46ff",
+  DO: "#0f78c9",
+  RA: "#db622e",
+  MI: "#d9487d",
+};
+
+const SUPABASE_FUNCTION_URL = "https://dnogpgbuimetyqknqdsr.supabase.co/functions/v1/nuotomaster-proxy";
+const SUPABASE_ANON_KEY = "";
+
+const $ = (id) => document.getElementById(id);
+
+function setStatus(message, type = "info") {
+  const box = $("statusBox");
+  if (!message) {
+    box.className = "status";
+    box.textContent = "";
+    return;
+  }
+
+  box.className = `status show ${type}`;
+  box.textContent = message;
+}
+
+function setBusy(isBusy, label) {
+  const button = $("searchButton");
+  button.disabled = isBusy;
+  button.textContent = isBusy ? (label || "Caricamento...") : "Cerca risultati";
+}
+
+function sanitizeLine(value) {
+  return String(value || "")
+    .replace(/\u00a0/g, " ")
+    .replace(/\r/g, "")
+    .replace(/[ \t]+/g, " ")
+    .trim();
+}
+
+function cleanMultiline(value) {
+  return String(value || "")
+    .replace(/\u00a0/g, " ")
+    .replace(/\r/g, "")
+    .split("\n")
+    .map((line) => sanitizeLine(line))
+    .filter(Boolean)
+    .join("\n");
+}
+
+function stripAccents(value) {
+  return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function extractYear(text) {
+  const match = String(text || "").match(/\b((?:19|20)\d{2})\b/);
+  return match ? Number(match[1]) : null;
+}
+
+function extractCategory(text) {
+  const match = stripAccents(text).toUpperCase().match(/\b([MU]\d{2})\b/);
+  return match ? match[1] : null;
+}
+
+function dateSortValue(date) {
+  if (!date) return 0;
+  const [day, month, year] = date.split("/");
+  return new Date(`${year}-${month}-${day}`).getTime() || 0;
+}
+
+function decodeHtmlText(html) {
+  const node = document.createElement("div");
+  node.innerHTML = String(html || "");
+  return node.textContent || "";
+}
+
+function normalizeTime(raw) {
+  const value = String(raw || "").trim().replace(",", ".");
+  let match = value.match(/^(\d{1,2})[':](\d{2})\.(\d{2})$/);
+  if (match) {
+    const minutes = Number(match[1]);
+    const seconds = Number(match[2]);
+    return minutes > 0
+      ? `${minutes}:${String(seconds).padStart(2, "0")}.${match[3]}`
+      : `${seconds}.${match[3]}`;
+  }
+
+  match = value.match(/^(\d{1,2})\.(\d{2})\.(\d{2})$/);
+  if (match) {
+    const minutes = Number(match[1]);
+    const seconds = Number(match[2]);
+    return minutes > 0
+      ? `${minutes}:${String(seconds).padStart(2, "0")}.${match[3]}`
+      : `${seconds}.${match[3]}`;
+  }
+
+  match = value.match(/^(\d{1,3})\.(\d{2})$/);
+  return match ? `${Number(match[1])}.${match[2]}` : null;
+}
+
+function timeToSeconds(raw) {
+  const normalized = normalizeTime(raw);
+  if (!normalized) return null;
+
+  if (normalized.includes(":")) {
+    const [minutes, seconds] = normalized.split(":");
+    return Number(minutes) * 60 + Number(seconds);
+  }
+
+  return Number(normalized);
+}
+
+function parseCompactEventCode(code) {
+  const match = String(code || "").trim().match(/^(\d{2,4})([A-Z]{2})$/i);
+  if (!match) return null;
+
+  return {
+    distance: Number(match[1]),
+    style: match[2].toUpperCase(),
+  };
+}
+
+function formatSeasonDate(dayMonth, seasonYear) {
+  const match = String(dayMonth || "").match(/^(\d{2})\/(\d{2})$/);
+  if (!match) return null;
+
+  const month = Number(match[2]);
+  const calendarYear = month >= 10 ? seasonYear - 1 : seasonYear;
+  return `${match[1]}/${match[2]}/${calendarYear}`;
+}
+
+function preToLines(pre) {
+  const text = decodeHtmlText(pre.innerHTML.replace(/<br\s*\/?>/gi, "\n"));
+  return text
+    .split("\n")
+    .map((line) => sanitizeLine(line))
+    .filter(Boolean);
+}
+
+function parseResultLine(line, seasonYear, category) {
+  const source = sanitizeLine(String(line || "").replace(/\uFFFD/g, "?"));
+  const match = source.match(
+    /^(\d{2,4}[A-Z]{2})\s+(\d{2}\.\d{2}\.\d{2}|\d{1,3}\.\d{2})\s+(?:\*\s+)?(\d{1,3})(?:[^\d\s])?\s+(\d{1,4}(?:[.,]\d{2})?)\s+(\d{2}\/\d{2})\s+(.+)$/i
+  );
+  if (!match) return null;
+
+  const eventInfo = parseCompactEventCode(match[1]);
+  const time = normalizeTime(match[2]);
+  const timeSeconds = timeToSeconds(time);
+  if (!eventInfo || !time || !Number.isFinite(timeSeconds)) return null;
+
+  return {
+    date: formatSeasonDate(match[5], seasonYear),
+    year: seasonYear,
+    event: `${eventInfo.distance}m ${STYLE_NAMES[eventInfo.style] || eventInfo.style}`,
+    location: sanitizeLine(match[6]),
+    distance: eventInfo.distance,
+    style: eventInfo.style,
+    time,
+    timeSeconds,
+    position: Number(match[3]),
+    category: category || null,
+    vasca: null,
+  };
+}
+
+function parseResultBlock(pre, seasonYear, category) {
+  return preToLines(pre)
+    .map((line) => parseResultLine(line, seasonYear, category))
+    .filter(Boolean);
+}
+
+function dedupeRaces(races) {
+  const map = new Map();
+  for (const race of races) {
+    const key = [
+      race.date || "",
+      race.year || "",
+      race.distance || "",
+      race.style || "",
+      race.time || "",
+      race.location || "",
+    ].join("|");
+
+    if (!map.has(key)) map.set(key, race);
+  }
+
+  return [...map.values()];
+}
+
+function extractAthleteMeta(doc) {
+  const headerCell = [...doc.querySelectorAll("td")]
+    .find((td) => /Risultati\s+\d{4}/i.test(td.textContent || ""));
+
+  const text = cleanMultiline(
+    headerCell
+      ? decodeHtmlText(headerCell.innerHTML.replace(/<br\s*\/?>/gi, "\n"))
+      : ""
+  );
+  const lines = text.split("\n").filter(Boolean);
+  const seasonYear = extractYear(text);
+  const name = lines.find((line) => /^[A-Z'\s]+$/i.test(line) && !/Risultati/i.test(line) && line.trim().split(/\s+/).length >= 2) || null;
+  const birthCategory = lines.find((line) => /\b(19|20)\d{2}\s*-\s*[MU]\d{2}\b/i.test(line)) || "";
+  const yearBirthMatch = birthCategory.match(/\b(19\d{2}|20\d{2})\b/);
+
+  return {
+    name: name ? name.replace(/\s+/g, " ").trim() : null,
+    club: null,
+    category: extractCategory(birthCategory),
+    year_birth: yearBirthMatch ? Number(yearBirthMatch[1]) : null,
+    seasonYear,
+  };
+}
+
+function parseHistoricalSeasonBlocks(doc, category) {
+  const races = [];
+
+  for (const container of [...doc.querySelectorAll(".anno_p")]) {
+    const heading = container.querySelector("h1");
+    const pre = container.querySelector("pre");
+    const seasonYear = extractYear(heading ? heading.textContent : "");
+    if (!pre || !seasonYear) continue;
+
+    races.push(...parseResultBlock(pre, seasonYear, category));
+  }
+
+  return races;
+}
+
+function parseCurrentSeasonBlock(doc, seasonYear, category) {
+  const heading = [...doc.querySelectorAll("h1")]
+    .find((item) => /Risultati\s+in\s+ordine\s+di\s+gara/i.test(item.textContent || ""));
+  const pre = heading?.nextElementSibling?.tagName === "PRE" ? heading.nextElementSibling : null;
+
+  if (!pre || !seasonYear) return [];
+  return parseResultBlock(pre, seasonYear, category);
+}
+
+function inferSeasonYearForPre(pre, fallbackYear) {
+  let node = pre.previousElementSibling;
+  while (node) {
+    const year = extractYear(node.textContent || "");
+    if (year) return year;
+    node = node.previousElementSibling;
+  }
+
+  let parent = pre.parentElement;
+  while (parent) {
+    const year = extractYear(parent.textContent || "");
+    if (year) return year;
+    parent = parent.parentElement;
+  }
+
+  return fallbackYear || null;
+}
+
+function parseFallbackResultBlocks(doc, category, seasonYear) {
+  const races = [];
+
+  for (const pre of [...doc.querySelectorAll("pre")]) {
+    const inferredYear = inferSeasonYearForPre(pre, seasonYear);
+    if (!inferredYear) continue;
+
+    const parsed = parseResultBlock(pre, inferredYear, category);
+    if (parsed.length) races.push(...parsed);
+  }
+
+  return races;
+}
+
+function parseNuotomasterHtml(html) {
+  const doc = new DOMParser().parseFromString(String(html || ""), "text/html");
+  const athlete = extractAthleteMeta(doc);
+  const structuredRaces = [
+    ...parseCurrentSeasonBlock(doc, athlete.seasonYear, athlete.category),
+    ...parseHistoricalSeasonBlocks(doc, athlete.category),
+  ];
+  const fallbackRaces = structuredRaces.length
+    ? []
+    : parseFallbackResultBlocks(doc, athlete.category, athlete.seasonYear);
+  const races = dedupeRaces([...structuredRaces, ...fallbackRaces])
+    .sort((a, b) => dateSortValue(b.date) - dateSortValue(a.date));
+
+  if (!races.length) {
+    throw new Error("Nessuna gara riconosciuta nella scheda atleta.");
+  }
+
+  return {
+    athlete: {
+      name: athlete.name || "Atleta",
+      club: athlete.club,
+      category: athlete.category || races.map((race) => race.category).find(Boolean) || null,
+      year_birth: athlete.year_birth,
+    },
+    races,
+  };
+}
+
+function getVisibleRaces() {
+  if (!state.data) return [];
+  let races = [...state.data.races];
+  if (state.year !== "all") races = races.filter((race) => String(race.year) === String(state.year));
+  if (state.event !== "all") races = races.filter((race) => `${race.distance}-${race.style}` === state.event);
+  return races;
+}
+
+function getYearFilteredRaces() {
+  if (!state.data) return [];
+  let races = [...state.data.races];
+  if (state.year !== "all") races = races.filter((race) => String(race.year) === String(state.year));
+  return races;
+}
+
+function renderYearFilters() {
+  const years = [...new Set(state.data.races.map((race) => race.year).filter(Boolean))].sort((a, b) => b - a);
+  const container = $("yearFilters");
+  const buttons = [{ label: "Tutte", value: "all" }, ...years.map((year) => ({ label: String(year), value: String(year) }))];
+  container.innerHTML = buttons.map((item) => `
+    <button class="chip ${String(state.year) === item.value ? "active" : ""}" data-year="${item.value}">${item.label}</button>
+  `).join("");
+  container.querySelectorAll("[data-year]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.year = button.dataset.year;
+      renderAll();
+    });
+  });
+}
+
+function renderEventFilters() {
+  const races = getYearFilteredRaces();
+  const eventKeys = [...new Set(races.map((race) => `${race.distance}-${race.style}`))].sort((a, b) => {
+    const [distanceA] = a.split("-");
+    const [distanceB] = b.split("-");
+    return Number(distanceA) - Number(distanceB);
+  });
+  const container = $("eventFilters");
+  const buttons = [{ label: "Tutte le gare", value: "all" }, ...eventKeys.map((key) => {
+    const [distance, style] = key.split("-");
+    return { label: `${distance} ${style}`, value: key };
+  })];
+
+  if (state.event !== "all" && !eventKeys.includes(state.event)) state.event = "all";
+
+  container.innerHTML = buttons.map((item) => `
+    <button class="chip ${state.event === item.value ? "active" : ""}" data-event="${item.value}">${item.label}</button>
+  `).join("");
+  container.querySelectorAll("[data-event]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.event = button.dataset.event;
+      renderAll();
+    });
+  });
+}
+
+function renderSummary() {
+  const athlete = state.data.athlete;
+  $("athleteName").textContent = athlete.name || "Atleta";
+  $("athleteMeta").textContent = [athlete.club, athlete.category, athlete.year_birth ? `n. ${athlete.year_birth}` : null].filter(Boolean).join(" | ");
+
+  const races = getVisibleRaces();
+  const bestPosition = races.map((race) => race.position).filter(Number.isFinite).sort((a, b) => a - b)[0];
+  const pbCount = new Set(races.map((race) => `${race.distance}-${race.style}`)).size;
+  const yearCount = new Set(state.data.races.map((race) => race.year).filter(Boolean)).size;
+
+  $("statsGrid").innerHTML = [
+    { value: races.length, label: "gare nel filtro" },
+    { value: yearCount, label: "stagioni trovate" },
+    { value: pbCount, label: "gare distinte" },
+    { value: bestPosition || "-", label: "miglior piazzamento" },
+  ].map((item) => `
+    <div class="stat-card">
+      <strong>${item.value}</strong>
+      <span>${item.label}</span>
+    </div>
+  `).join("");
+}
+
+function renderPBs() {
+  const races = getVisibleRaces();
+  const byEvent = new Map();
+  for (const race of races) {
+    const key = `${race.distance}-${race.style}`;
+    const previous = byEvent.get(key);
+    if (!previous || race.timeSeconds < previous.timeSeconds) byEvent.set(key, race);
+  }
+
+  const cards = [...byEvent.values()].sort((a, b) => a.distance - b.distance);
+  $("pbGrid").innerHTML = cards.length
+    ? cards.map((race) => `
+        <div class="pb-card">
+          <strong>${race.distance}m ${STYLE_NAMES[race.style] || race.style}</strong>
+          <span>PB: ${race.time}</span>
+          <span>${race.date || "data non trovata"}${race.vasca ? ` | vasca ${race.vasca}` : ""}</span>
+        </div>
+      `).join("")
+    : '<div class="empty">Nessun record personale disponibile nel filtro corrente.</div>';
+}
+
+function renderTable() {
+  const rows = getVisibleRaces();
+  $("raceTableBody").innerHTML = rows.length
+    ? rows.map((race) => `
+        <tr>
+          <td>${race.date || "-"}</td>
+          <td>
+            <div>${race.event || "-"}</div>
+            ${race.location ? `<div class="muted">${race.location}</div>` : ""}
+          </td>
+          <td>${race.distance}m ${STYLE_NAMES[race.style] || race.style}</td>
+          <td>${race.time}</td>
+          <td>${race.position || "-"}</td>
+          <td>${race.vasca ? `${race.vasca}m` : "-"}</td>
+        </tr>
+      `).join("")
+    : '<tr><td colspan="6" class="empty">Nessun risultato nel filtro selezionato.</td></tr>';
+}
+
+function renderChart() {
+  const races = getVisibleRaces().filter((race) => race.date && Number.isFinite(race.timeSeconds));
+  const groups = new Map();
+
+  for (const race of races) {
+    const key = `${race.distance}-${race.style}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(race);
+  }
+
+  const datasets = [...groups.entries()].map(([key, items]) => {
+    items.sort((a, b) => dateSortValue(a.date) - dateSortValue(b.date));
+    const [, style] = key.split("-");
+    return {
+      label: key.replace("-", " "),
+      data: items.map((item) => ({ x: item.date, y: item.timeSeconds, raw: item })),
+      borderColor: STYLE_COLORS[style] || "#0c7a6f",
+      backgroundColor: `${STYLE_COLORS[style] || "#0c7a6f"}22`,
+      borderWidth: 3,
+      tension: 0.28,
+      pointRadius: 5,
+      pointHoverRadius: 7,
+      fill: false,
+    };
+  });
+
+  if (state.chart) state.chart.destroy();
+
+  state.chart = new Chart($("progressChart"), {
+    type: "line",
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: "nearest", intersect: false },
+      plugins: {
+        legend: {
+          display: true,
+          labels: { usePointStyle: true, boxWidth: 10, font: { family: "Plus Jakarta Sans", weight: "700" } },
+        },
+        tooltip: {
+          callbacks: {
+            title(items) {
+              return items[0]?.raw?.raw?.event || items[0]?.label || "";
+            },
+            label(item) {
+              const race = item.raw.raw;
+              return [`Tempo: ${race.time}`, race.position ? `Pos: ${race.position}` : null, race.date].filter(Boolean);
+            },
+          },
+        },
+      },
+      scales: {
+        x: {
+          grid: { color: "rgba(15, 23, 42, 0.06)" },
+          ticks: { color: "#55657d" },
+        },
+        y: {
+          reverse: false,
+          grid: { color: "rgba(15, 23, 42, 0.06)" },
+          ticks: {
+            color: "#55657d",
+            callback(value) {
+              const seconds = Number(value);
+              if (seconds >= 60) {
+                const minutes = Math.floor(seconds / 60);
+                const remainder = (seconds - minutes * 60).toFixed(2).padStart(5, "0");
+                return `${minutes}:${remainder}`;
+              }
+              return seconds.toFixed(2);
+            },
+          },
+        },
+      },
+    },
+  });
+}
+
+function renderAll() {
+  renderSummary();
+  renderYearFilters();
+  renderEventFilters();
+  renderPBs();
+  renderTable();
+  renderChart();
+  $("results").classList.add("show");
+}
+
+function isFunctionConfigured() {
+  return SUPABASE_FUNCTION_URL &&
+    /^https?:\/\//i.test(SUPABASE_FUNCTION_URL) &&
+    !SUPABASE_FUNCTION_URL.includes("YOUR_PROJECT_REF");
+}
+
+async function startSearch() {
+  const code = $("athleteCode").value.trim();
+  const year = $("seasonYear").value.trim() || String(new Date().getFullYear());
+
+  if (!code) {
+    setStatus("Inserisci il codice atleta.", "error");
+    return;
+  }
+
+  if (!isFunctionConfigured()) {
+    setStatus("Prima imposta `SUPABASE_FUNCTION_URL` con la URL reale della tua Edge Function Supabase.", "error");
+    return;
+  }
+
+  setBusy(true, "Recupero...");
+  setStatus("Invio POST a Scheda_indi.asp tramite Supabase Edge Function...");
+
+  try {
+    const headers = SUPABASE_ANON_KEY
+      ? {
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          apikey: SUPABASE_ANON_KEY,
+        }
+      : {};
+
+    const response = await fetch(
+      `${SUPABASE_FUNCTION_URL}?code=${encodeURIComponent(code)}&year=${encodeURIComponent(year)}`,
+      { headers }
+    );
+    const payload = await response.json();
+
+    if (!response.ok) {
+      throw new Error(payload.error || `HTTP ${response.status}`);
+    }
+
+    state.data = parseNuotomasterHtml(payload.html);
+    state.year = "all";
+    state.event = "all";
+    setStatus("Risultati recuperati e analizzati correttamente.");
+    renderAll();
+  } catch (error) {
+    setStatus(`Fetch automatica fallita: ${error.message}`, "error");
+  } finally {
+    setBusy(false);
+  }
+}
+
+$("searchButton").addEventListener("click", startSearch);
+$("openSourceButton").addEventListener("click", () => {
+  window.open("https://www.nuotomaster.it/NUOTO/master.asp", "_blank", "noopener,noreferrer");
+});
+</script>
+</body>
+</html>
