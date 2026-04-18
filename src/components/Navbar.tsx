@@ -5,14 +5,20 @@ import { Menu, X } from 'lucide-react';
 import ThemeMenu from '@/features/theme/ThemeMenu';
 import { Tab, TabGroup, TabList } from '@headlessui/react';
 
+interface NavItem {
+  to: string;
+  label: string;
+  kind?: 'document';
+}
+
 const navLinks = [
   { to: "/", label: "Home" },
   { to: "/#projects", label: "Progetti" },
   { to: "/dashboard", label: "Dashboard" },
-  { to: "/aurastats", label: "AuraStats" },
+  { to: "/aurastats.html", label: "AuraStats", kind: 'document' },
   { to: "/swim-analyzer", label: "Swim Analyzer" },
   { to: "/#contact", label: "Contatti" },
-];
+] satisfies NavItem[];
 
 interface NavbarProps {
   className?: string;
@@ -32,6 +38,9 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
     window.history.pushState({}, '', to);
     const navEvent = new PopStateEvent('popstate');
     window.dispatchEvent(navEvent);
+  };
+  const navigateDocument = (to: string) => {
+    window.location.assign(to);
   };
 
   // Update current path when route changes
@@ -148,6 +157,10 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
     if (!target) return;
     setSelectedIndex(index);
     localStorage.setItem('nav:lastTab', String(index));
+    if (target.kind === 'document') {
+      navigateDocument(target.to);
+      return;
+    }
     if (target.to.startsWith('/#')) {
       handleHashLinkClick(target.to);
     } else {
@@ -254,22 +267,34 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
         <div className={`mobile-menu-container md:hidden fixed inset-0 z-40 bg-background backdrop-blur-xl border-t border-border shadow-2xl transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full pointer-events-none'}`} style={{ top: shrink ? '64px' : '96px' }}>
             <div className="flex flex-col items-center justify-center h-[calc(100vh-100px)] gap-8 p-6">
               {navLinks.map((link, i) => (
-                <NavLink
-                  key={link.label}
-                  to={link.to}
-                  onClick={() => link.to.includes("#") ? handleHashLinkClick(link.to) : handleHashLinkClick("")}
-                  className={() => {
-                    const isActive = isLinkActive(link.to);
-                    return `text-3xl font-bold transition-all duration-300 hover:scale-110 ${
-                      isActive
-                        ? 'text-primary'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`
-                  }}
-                  style={{ transitionDelay: `${i * 50}ms` }}
-                >
-                  {link.label}
-                </NavLink>
+                link.kind === 'document' ? (
+                  <a
+                    key={link.label}
+                    href={link.to}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-3xl font-bold text-muted-foreground transition-all duration-300 hover:scale-110 hover:text-foreground"
+                    style={{ transitionDelay: `${i * 50}ms` }}
+                  >
+                    {link.label}
+                  </a>
+                ) : (
+                  <NavLink
+                    key={link.label}
+                    to={link.to}
+                    onClick={() => link.to.includes("#") ? handleHashLinkClick(link.to) : handleHashLinkClick("")}
+                    className={() => {
+                      const isActive = isLinkActive(link.to);
+                      return `text-3xl font-bold transition-all duration-300 hover:scale-110 ${
+                        isActive
+                          ? 'text-primary'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`
+                    }}
+                    style={{ transitionDelay: `${i * 50}ms` }}
+                  >
+                    {link.label}
+                  </NavLink>
+                )
               ))}
             </div>
         </div>

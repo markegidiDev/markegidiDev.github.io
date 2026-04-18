@@ -4,7 +4,6 @@ import HomePage from '@/pages/HomePage';
 import DashboardPage from '@/pages/DashboardPage';
 import ContactPage from '@/pages/ContactPage';
 import SwimAnalyzerPage from '@/pages/SwimAnalyzerPage';
-import AuraStatsPage from '@/pages/AuraStatsPage';
 import { ThemeProvider } from '@/features/theme/theme-provider';
 import { ToastProvider } from '@/components/ui/toast-provider';
 
@@ -19,7 +18,6 @@ function App() {
               <Routes>
                 <Route path="/" element={<HomePage />} />
                 <Route path="/dashboard" element={<DashboardPage />} />
-                <Route path="/aurastats" element={<AuraStatsPage />} />
                 <Route path="/swim-analyzer" element={<SwimAnalyzerPage />} />
                 <Route path="/contact" element={<ContactPage />} />
               </Routes>
