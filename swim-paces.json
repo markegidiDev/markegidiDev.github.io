@@ -6,21 +6,5 @@
     "movingSeconds": 3727,
     "pace100m": 310.58333333333337,
     "paceFormatted": "5:11"
-  },
-  {
-    "id": 18654217457,
-    "date": "2026-05-25",
-    "totalMeters": 1200,
-    "movingSeconds": 4256,
-    "pace100m": 354.6666666666667,
-    "paceFormatted": "5:55"
-  },
-  {
-    "id": 18618835202,
-    "date": "2026-05-22",
-    "totalMeters": 1025,
-    "movingSeconds": 2416,
-    "pace100m": 235.7073170731707,
-    "paceFormatted": "3:56"
   }
 ]
