@@ -13,20 +13,43 @@ const CLIENT_ID = process.env.STRAVA_CLIENT_ID;
 const CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET; 
 const REFRESH_TOKEN = process.env.STRAVA_REFRESH_TOKEN; 
 
+function describeStravaError(error) {
+  const status = error?.response?.status;
+  const data = error?.response?.data;
+  const body = typeof data === 'string' ? data : JSON.stringify(data, null, 2);
+
+  if (status === 403 && /cloudfront|request blocked/i.test(body || '')) {
+    return [
+      'HTTP 403 from Strava CloudFront: the request was blocked before OAuth validation.',
+      'Retry the workflow. If it persists, check https://www.strava.com/settings/api and test from a direct network.',
+    ].join(' ');
+  }
+
+  return body || error?.message || 'Unknown Strava error';
+}
+
 // Function to get a new access token
 async function getAccessToken() {
   try {
     console.log('Requesting new access token from Strava...');
-    const response = await axios.post('https://www.strava.com/api/v3/oauth/token', {
+    const body = new URLSearchParams({
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
       refresh_token: REFRESH_TOKEN,
-      grant_type: 'refresh_token'
+      grant_type: 'refresh_token',
+    });
+    const response = await axios.post('https://www.strava.com/oauth/token', body, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'AuraStats-Strava-Sync/1.0',
+      },
+      timeout: 15000,
     });
     console.log('Access token received.');
     return response.data.access_token;
   } catch (error) {
-    console.error('Error getting access token:', error.response ? JSON.stringify(error.response.data, null, 2) : error.message);
+    console.error('Error getting access token:', describeStravaError(error));
     throw error; // Re-throw to be caught by the main execution block
   }
 }
@@ -573,7 +596,7 @@ function formatPace(paceSeconds) {
       process.exit(0);
     }
     // Ensure the CI step fails and doesn't deploy stale data for other errors
-    const details = error?.response?.data ? JSON.stringify(error.response.data) : (error?.message || 'Unknown error');
+    const details = describeStravaError(error);
     console.error('Failed to fetch and process Strava data. See error messages above. Details:', details);
     // Non-zero exit code to signal failure in CI
     process.exit(1);

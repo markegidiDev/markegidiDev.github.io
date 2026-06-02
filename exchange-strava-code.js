@@ -45,12 +45,20 @@ async function main() {
 
   console.log('Exchanging authorization code for tokens...');
   try {
-    const resp = await axios.post('https://www.strava.com/oauth/token', {
+    const body = new URLSearchParams({
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
       code,
       grant_type: 'authorization_code',
       redirect_uri: REDIRECT_URI,
+    });
+    const resp = await axios.post('https://www.strava.com/oauth/token', body, {
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent': 'AuraStats-Strava-Token-Exchange/1.0',
+      },
+      timeout: 15000,
     });
 
     const { access_token, refresh_token, expires_at, athlete, token_type } = resp.data || {};
