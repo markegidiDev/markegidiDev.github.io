@@ -155,7 +155,7 @@ body {
 
 .search-grid {
   display: grid;
-  grid-template-columns: 1.2fr 0.6fr auto auto;
+  grid-template-columns: 1.2fr 0.6fr 0.7fr auto auto;
   gap: 14px;
   align-items: end;
 }
@@ -362,6 +362,74 @@ body {
   color: #0f504a;
 }
 
+.filter-groups {
+  display: grid;
+  gap: 20px;
+}
+
+.filter-group {
+  display: grid;
+  gap: 10px;
+}
+
+.filter-title {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.source-status-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.source-badge,
+.source-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.source-badge {
+  background: rgba(0, 95, 143, 0.1);
+  color: #124768;
+}
+
+.source-badge.finveneto {
+  background: rgba(12, 122, 111, 0.12);
+  color: #0f504a;
+}
+
+.source-badge.natatoria {
+  background: rgba(138, 70, 255, 0.1);
+  color: #6331b9;
+}
+
+.source-badge.nuotomaster {
+  background: rgba(241, 91, 65, 0.1);
+  color: #8a2b19;
+}
+
+.source-status.ok {
+  background: rgba(12, 122, 111, 0.1);
+  color: #0f504a;
+}
+
+.source-status.error {
+  background: rgba(241, 91, 65, 0.1);
+  color: #8a2b19;
+}
+
 .chart-wrap {
   height: 360px;
 }
@@ -485,6 +553,10 @@ tbody td {
           <label for="seasonYear">Anno stagione</label>
           <input id="seasonYear" type="number" inputmode="numeric" value="2026" placeholder="2026">
         </div>
+        <div class="field">
+          <label for="natatoriaId">Natatoria ID opzionale</label>
+          <input id="natatoriaId" type="text" inputmode="numeric" placeholder="es. 431039">
+        </div>
         <button id="searchButton" class="button button-primary" type="button">Cerca risultati</button>
         <button id="openSourceButton" class="button button-secondary" type="button">Apri NuotoMaster</button>
       </div>
@@ -498,14 +570,28 @@ tbody td {
           <div class="athlete-block">
             <h2 id="athleteName">Atleta</h2>
             <div id="athleteMeta" class="athlete-meta"></div>
+            <div id="sourceStatuses" class="source-status-grid"></div>
           </div>
         </div>
         <div id="statsGrid" class="stats-grid"></div>
       </section>
 
       <section class="panel filters-panel">
-        <div class="section-title">Filtro stagione</div>
-        <div id="yearFilters" class="chip-row"></div>
+        <div class="section-title">Filtri risultati</div>
+        <div class="filter-groups">
+          <div class="filter-group">
+            <div class="filter-title">Stagione</div>
+            <div id="yearFilters" class="chip-row"></div>
+          </div>
+          <div class="filter-group">
+            <div class="filter-title">Fonte</div>
+            <div id="sourceFilters" class="chip-row"></div>
+          </div>
+          <div class="filter-group">
+            <div class="filter-title">Vasca</div>
+            <div id="poolFilters" class="chip-row"></div>
+          </div>
+        </div>
       </section>
 
       <section class="panel chart-panel">
@@ -533,6 +619,7 @@ tbody td {
                 <th>Tempo</th>
                 <th>Pos</th>
                 <th>Vasca</th>
+                <th>Fonte</th>
               </tr>
             </thead>
             <tbody id="raceTableBody"></tbody>
@@ -547,6 +634,8 @@ tbody td {
 const state = {
   data: null,
   year: "all",
+  source: "all",
+  pool: "all",
   event: "all",
   chart: null,
 };
@@ -567,7 +656,7 @@ const STYLE_COLORS = {
   MI: "#d9487d",
 };
 
-const SUPABASE_FUNCTION_URL = "https://dnogpgbuimetyqknqdsr.supabase.co/functions/v1/nuotomaster-proxy";
+const SUPABASE_FUNCTION_URL = "https://dnogpgbuimetyqknqdsr.supabase.co/functions/v1/swim-results-aggregator";
 const SUPABASE_ANON_KEY = "";
 
 const $ = (id) => document.getElementById(id);
@@ -590,289 +679,106 @@ function setBusy(isBusy, label) {
   button.textContent = isBusy ? (label || "Caricamento...") : "Cerca risultati";
 }
 
-function sanitizeLine(value) {
-  return String(value || "")
-    .replace(/\u00a0/g, " ")
-    .replace(/\r/g, "")
-    .replace(/[ \t]+/g, " ")
-    .trim();
-}
-
-function cleanMultiline(value) {
-  return String(value || "")
-    .replace(/\u00a0/g, " ")
-    .replace(/\r/g, "")
-    .split("\n")
-    .map((line) => sanitizeLine(line))
-    .filter(Boolean)
-    .join("\n");
-}
-
-function stripAccents(value) {
-  return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-
-function extractYear(text) {
-  const match = String(text || "").match(/\b((?:19|20)\d{2})\b/);
-  return match ? Number(match[1]) : null;
-}
-
-function extractCategory(text) {
-  const match = stripAccents(text).toUpperCase().match(/\b([MU]\d{2})\b/);
-  return match ? match[1] : null;
-}
-
 function dateSortValue(date) {
   if (!date) return 0;
-  const [day, month, year] = date.split("/");
-  return new Date(`${year}-${month}-${day}`).getTime() || 0;
+  return Date.parse(date) || 0;
 }
 
-function decodeHtmlText(html) {
-  const node = document.createElement("div");
-  node.innerHTML = String(html || "");
-  return node.textContent || "";
+function displayDate(date) {
+  const match = String(date || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : (date || "-");
 }
 
-function normalizeTime(raw) {
-  const value = String(raw || "").trim().replace(",", ".");
-  let match = value.match(/^(\d{1,2})[':](\d{2})\.(\d{2})$/);
-  if (match) {
-    const minutes = Number(match[1]);
-    const seconds = Number(match[2]);
-    return minutes > 0
-      ? `${minutes}:${String(seconds).padStart(2, "0")}.${match[3]}`
-      : `${seconds}.${match[3]}`;
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
+  })[character]);
+}
+
+function nullableNumber(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
+function raceSeason(race) {
+  return nullableNumber(race.season ?? race.year);
+}
+
+function racePool(race) {
+  return nullableNumber(race.pool ?? race.vasca);
+}
+
+function sourceLabel(source) {
+  return {
+    finveneto: "FIN Veneto",
+    natatoria: "Natatoria",
+    nuotomaster: "NuotoMaster",
+  }[source] || source || "Fonte sconosciuta";
+}
+
+function sourceBadge(source) {
+  const safeSource = ["finveneto", "natatoria", "nuotomaster"].includes(source) ? source : "";
+  return `<span class="source-badge ${safeSource}">${escapeHtml(sourceLabel(source))}</span>`;
+}
+
+function normalizePayload(payload) {
+  if (!payload || typeof payload !== "object" || !Array.isArray(payload.races)) {
+    throw new Error("La Edge Function non ha restituito un payload gare valido.");
   }
 
-  match = value.match(/^(\d{1,2})\.(\d{2})\.(\d{2})$/);
-  if (match) {
-    const minutes = Number(match[1]);
-    const seconds = Number(match[2]);
-    return minutes > 0
-      ? `${minutes}:${String(seconds).padStart(2, "0")}.${match[3]}`
-      : `${seconds}.${match[3]}`;
-  }
-
-  match = value.match(/^(\d{1,3})\.(\d{2})$/);
-  return match ? `${Number(match[1])}.${match[2]}` : null;
-}
-
-function timeToSeconds(raw) {
-  const normalized = normalizeTime(raw);
-  if (!normalized) return null;
-
-  if (normalized.includes(":")) {
-    const [minutes, seconds] = normalized.split(":");
-    return Number(minutes) * 60 + Number(seconds);
-  }
-
-  return Number(normalized);
-}
-
-function parseCompactEventCode(code) {
-  const match = String(code || "").trim().match(/^(\d{2,4})([A-Z]{2})$/i);
-  if (!match) return null;
+  const races = payload.races
+    .filter((race) => race && typeof race === "object")
+    .map((race) => ({
+      ...race,
+      season: raceSeason(race),
+      pool: racePool(race),
+      distance: nullableNumber(race.distance),
+      timeSeconds: nullableNumber(race.timeSeconds),
+      position: nullableNumber(race.position),
+      points: nullableNumber(race.points),
+    }))
+    .filter((race) => race.distance && race.style && race.time && Number.isFinite(race.timeSeconds));
 
   return {
-    distance: Number(match[1]),
-    style: match[2].toUpperCase(),
-  };
-}
-
-function formatSeasonDate(dayMonth, seasonYear) {
-  const match = String(dayMonth || "").match(/^(\d{2})\/(\d{2})$/);
-  if (!match) return null;
-
-  const month = Number(match[2]);
-  const calendarYear = month >= 10 ? seasonYear - 1 : seasonYear;
-  return `${match[1]}/${match[2]}/${calendarYear}`;
-}
-
-function preToLines(pre) {
-  const text = decodeHtmlText(pre.innerHTML.replace(/<br\s*\/?>/gi, "\n"));
-  return text
-    .split("\n")
-    .map((line) => sanitizeLine(line))
-    .filter(Boolean);
-}
-
-function parseResultLine(line, seasonYear, category) {
-  const source = sanitizeLine(String(line || "").replace(/\uFFFD/g, "?"));
-  const match = source.match(
-    /^(\d{2,4}[A-Z]{2})\s+(\d{2}\.\d{2}\.\d{2}|\d{1,3}\.\d{2})\s+(?:\*\s+)?(\d{1,3})(?:[^\d\s])?\s+(\d{1,4}(?:[.,]\d{2})?)\s+(\d{2}\/\d{2})\s+(.+)$/i
-  );
-  if (!match) return null;
-
-  const eventInfo = parseCompactEventCode(match[1]);
-  const time = normalizeTime(match[2]);
-  const timeSeconds = timeToSeconds(time);
-  if (!eventInfo || !time || !Number.isFinite(timeSeconds)) return null;
-
-  return {
-    date: formatSeasonDate(match[5], seasonYear),
-    year: seasonYear,
-    event: `${eventInfo.distance}m ${STYLE_NAMES[eventInfo.style] || eventInfo.style}`,
-    location: sanitizeLine(match[6]),
-    distance: eventInfo.distance,
-    style: eventInfo.style,
-    time,
-    timeSeconds,
-    position: Number(match[3]),
-    category: category || null,
-    vasca: null,
-  };
-}
-
-function parseResultBlock(pre, seasonYear, category) {
-  return preToLines(pre)
-    .map((line) => parseResultLine(line, seasonYear, category))
-    .filter(Boolean);
-}
-
-function dedupeRaces(races) {
-  const map = new Map();
-  for (const race of races) {
-    const key = [
-      race.date || "",
-      race.year || "",
-      race.distance || "",
-      race.style || "",
-      race.time || "",
-      race.location || "",
-    ].join("|");
-
-    if (!map.has(key)) map.set(key, race);
-  }
-
-  return [...map.values()];
-}
-
-function extractAthleteMeta(doc) {
-  const headerCell = [...doc.querySelectorAll("td")]
-    .find((td) => /Risultati\s+\d{4}/i.test(td.textContent || ""));
-
-  const text = cleanMultiline(
-    headerCell
-      ? decodeHtmlText(headerCell.innerHTML.replace(/<br\s*\/?>/gi, "\n"))
-      : ""
-  );
-  const lines = text.split("\n").filter(Boolean);
-  const seasonYear = extractYear(text);
-  const name = lines.find((line) => /^[A-Z'\s]+$/i.test(line) && !/Risultati/i.test(line) && line.trim().split(/\s+/).length >= 2) || null;
-  const birthCategory = lines.find((line) => /\b(19|20)\d{2}\s*-\s*[MU]\d{2}\b/i.test(line)) || "";
-  const yearBirthMatch = birthCategory.match(/\b(19\d{2}|20\d{2})\b/);
-
-  return {
-    name: name ? name.replace(/\s+/g, " ").trim() : null,
-    club: null,
-    category: extractCategory(birthCategory),
-    year_birth: yearBirthMatch ? Number(yearBirthMatch[1]) : null,
-    seasonYear,
-  };
-}
-
-function parseHistoricalSeasonBlocks(doc, category) {
-  const races = [];
-
-  for (const container of [...doc.querySelectorAll(".anno_p")]) {
-    const heading = container.querySelector("h1");
-    const pre = container.querySelector("pre");
-    const seasonYear = extractYear(heading ? heading.textContent : "");
-    if (!pre || !seasonYear) continue;
-
-    races.push(...parseResultBlock(pre, seasonYear, category));
-  }
-
-  return races;
-}
-
-function parseCurrentSeasonBlock(doc, seasonYear, category) {
-  const heading = [...doc.querySelectorAll("h1")]
-    .find((item) => /Risultati\s+in\s+ordine\s+di\s+gara/i.test(item.textContent || ""));
-  const pre = heading?.nextElementSibling?.tagName === "PRE" ? heading.nextElementSibling : null;
-
-  if (!pre || !seasonYear) return [];
-  return parseResultBlock(pre, seasonYear, category);
-}
-
-function inferSeasonYearForPre(pre, fallbackYear) {
-  let node = pre.previousElementSibling;
-  while (node) {
-    const year = extractYear(node.textContent || "");
-    if (year) return year;
-    node = node.previousElementSibling;
-  }
-
-  let parent = pre.parentElement;
-  while (parent) {
-    const year = extractYear(parent.textContent || "");
-    if (year) return year;
-    parent = parent.parentElement;
-  }
-
-  return fallbackYear || null;
-}
-
-function parseFallbackResultBlocks(doc, category, seasonYear) {
-  const races = [];
-
-  for (const pre of [...doc.querySelectorAll("pre")]) {
-    const inferredYear = inferSeasonYearForPre(pre, seasonYear);
-    if (!inferredYear) continue;
-
-    const parsed = parseResultBlock(pre, inferredYear, category);
-    if (parsed.length) races.push(...parsed);
-  }
-
-  return races;
-}
-
-function parseNuotomasterHtml(html) {
-  const doc = new DOMParser().parseFromString(String(html || ""), "text/html");
-  const athlete = extractAthleteMeta(doc);
-  const structuredRaces = [
-    ...parseCurrentSeasonBlock(doc, athlete.seasonYear, athlete.category),
-    ...parseHistoricalSeasonBlocks(doc, athlete.category),
-  ];
-  const fallbackRaces = structuredRaces.length
-    ? []
-    : parseFallbackResultBlocks(doc, athlete.category, athlete.seasonYear);
-  const races = dedupeRaces([...structuredRaces, ...fallbackRaces])
-    .sort((a, b) => dateSortValue(b.date) - dateSortValue(a.date));
-
-  if (!races.length) {
-    throw new Error("Nessuna gara riconosciuta nella scheda atleta.");
-  }
-
-  return {
-    athlete: {
-      name: athlete.name || "Atleta",
-      club: athlete.club,
-      category: athlete.category || races.map((race) => race.category).find(Boolean) || null,
-      year_birth: athlete.year_birth,
-    },
+    ...payload,
+    athlete: payload.athlete || {},
     races,
+    sources: payload.sources || {},
   };
+}
+
+function matchesSourceFilter(race) {
+  if (state.source === "all") return true;
+  if (state.source === "official") return race.source === "finveneto" || race.sourceType === "official";
+  return race.source === state.source;
+}
+
+function getBaseFilteredRaces() {
+  if (!state.data) return [];
+  let races = [...state.data.races];
+  if (state.year !== "all") races = races.filter((race) => String(raceSeason(race)) === String(state.year));
+  if (state.source !== "all") races = races.filter(matchesSourceFilter);
+  if (state.pool !== "all") races = races.filter((race) => String(racePool(race)) === String(state.pool));
+  return races;
 }
 
 function getVisibleRaces() {
-  if (!state.data) return [];
-  let races = [...state.data.races];
-  if (state.year !== "all") races = races.filter((race) => String(race.year) === String(state.year));
+  let races = getBaseFilteredRaces();
   if (state.event !== "all") races = races.filter((race) => `${race.distance}-${race.style}` === state.event);
   return races;
 }
 
 function getYearFilteredRaces() {
-  if (!state.data) return [];
-  let races = [...state.data.races];
-  if (state.year !== "all") races = races.filter((race) => String(race.year) === String(state.year));
-  return races;
+  return getBaseFilteredRaces();
 }
 
 function renderYearFilters() {
-  const years = [...new Set(state.data.races.map((race) => race.year).filter(Boolean))].sort((a, b) => b - a);
+  const years = [...new Set(state.data.races.map(raceSeason).filter(Boolean))].sort((a, b) => b - a);
   const container = $("yearFilters");
   const buttons = [{ label: "Tutte", value: "all" }, ...years.map((year) => ({ label: String(year), value: String(year) }))];
   container.innerHTML = buttons.map((item) => `
@@ -881,6 +787,45 @@ function renderYearFilters() {
   container.querySelectorAll("[data-year]").forEach((button) => {
     button.addEventListener("click", () => {
       state.year = button.dataset.year;
+      renderAll();
+    });
+  });
+}
+
+function renderSourceFilters() {
+  const container = $("sourceFilters");
+  const buttons = [
+    { label: "Tutte", value: "all" },
+    { label: "Ufficiali FIN", value: "official" },
+    { label: "Acquasport / Natatoria", value: "natatoria" },
+    { label: "NuotoMaster", value: "nuotomaster" },
+  ];
+
+  container.innerHTML = buttons.map((item) => `
+    <button class="chip ${state.source === item.value ? "active" : ""}" data-source="${item.value}">${item.label}</button>
+  `).join("");
+  container.querySelectorAll("[data-source]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.source = button.dataset.source;
+      renderAll();
+    });
+  });
+}
+
+function renderPoolFilters() {
+  const container = $("poolFilters");
+  const buttons = [
+    { label: "Tutte", value: "all" },
+    { label: "25m", value: "25" },
+    { label: "50m", value: "50" },
+  ];
+
+  container.innerHTML = buttons.map((item) => `
+    <button class="chip ${state.pool === item.value ? "active" : ""}" data-pool="${item.value}">${item.label}</button>
+  `).join("");
+  container.querySelectorAll("[data-pool]").forEach((button) => {
+    button.addEventListener("click", () => {
+      state.pool = button.dataset.pool;
       renderAll();
     });
   });
@@ -912,15 +857,27 @@ function renderEventFilters() {
   });
 }
 
+function renderSourceStatuses() {
+  const entries = Object.entries(state.data.sources || {});
+  $("sourceStatuses").innerHTML = entries.map(([source, status]) => {
+    const sourceStatus = status || {};
+    const count = Number.isFinite(Number(sourceStatus.count)) ? ` (${Number(sourceStatus.count)})` : "";
+    const cache = sourceStatus.fromCache ? " cache" : "";
+    const title = sourceStatus.error ? ` title="${escapeHtml(sourceStatus.error)}"` : "";
+    return `<span class="source-status ${sourceStatus.ok ? "ok" : "error"}"${title}>${escapeHtml(sourceLabel(source))}${count}${cache}</span>`;
+  }).join("");
+}
+
 function renderSummary() {
   const athlete = state.data.athlete;
   $("athleteName").textContent = athlete.name || "Atleta";
-  $("athleteMeta").textContent = [athlete.club, athlete.category, athlete.year_birth ? `n. ${athlete.year_birth}` : null].filter(Boolean).join(" | ");
+  $("athleteMeta").textContent = [athlete.club, athlete.category, athlete.birthYear ? `n. ${athlete.birthYear}` : null].filter(Boolean).join(" | ");
+  renderSourceStatuses();
 
   const races = getVisibleRaces();
   const bestPosition = races.map((race) => race.position).filter(Number.isFinite).sort((a, b) => a - b)[0];
   const pbCount = new Set(races.map((race) => `${race.distance}-${race.style}`)).size;
-  const yearCount = new Set(state.data.races.map((race) => race.year).filter(Boolean)).size;
+  const yearCount = new Set(state.data.races.map(raceSeason).filter(Boolean)).size;
 
   $("statsGrid").innerHTML = [
     { value: races.length, label: "gare nel filtro" },
@@ -948,9 +905,10 @@ function renderPBs() {
   $("pbGrid").innerHTML = cards.length
     ? cards.map((race) => `
         <div class="pb-card">
-          <strong>${race.distance}m ${STYLE_NAMES[race.style] || race.style}</strong>
-          <span>PB: ${race.time}</span>
-          <span>${race.date || "data non trovata"}${race.vasca ? ` | vasca ${race.vasca}` : ""}</span>
+          <strong>${escapeHtml(race.distance)}m ${escapeHtml(STYLE_NAMES[race.style] || race.style)}</strong>
+          <span>PB: ${escapeHtml(race.time)}</span>
+          <span>${escapeHtml(displayDate(race.date))}${racePool(race) ? ` | vasca ${escapeHtml(racePool(race))}m` : ""}</span>
+          <span>${sourceBadge(race.source)}</span>
         </div>
       `).join("")
     : '<div class="empty">Nessun record personale disponibile nel filtro corrente.</div>';
@@ -961,18 +919,19 @@ function renderTable() {
   $("raceTableBody").innerHTML = rows.length
     ? rows.map((race) => `
         <tr>
-          <td>${race.date || "-"}</td>
+          <td>${escapeHtml(displayDate(race.date))}</td>
           <td>
-            <div>${race.event || "-"}</div>
-            ${race.location ? `<div class="muted">${race.location}</div>` : ""}
+            <div>${escapeHtml(race.meet || "-")}</div>
+            ${race.location ? `<div class="muted">${escapeHtml(race.location)}</div>` : ""}
           </td>
-          <td>${race.distance}m ${STYLE_NAMES[race.style] || race.style}</td>
-          <td>${race.time}</td>
-          <td>${race.position || "-"}</td>
-          <td>${race.vasca ? `${race.vasca}m` : "-"}</td>
+          <td>${escapeHtml(race.event || `${race.distance}m ${STYLE_NAMES[race.style] || race.style}`)}</td>
+          <td>${escapeHtml(race.time)}</td>
+          <td>${escapeHtml(race.position || "-")}</td>
+          <td>${racePool(race) ? `${escapeHtml(racePool(race))}m` : "-"}</td>
+          <td>${sourceBadge(race.source)}</td>
         </tr>
       `).join("")
-    : '<tr><td colspan="6" class="empty">Nessun risultato nel filtro selezionato.</td></tr>';
+    : '<tr><td colspan="7" class="empty">Nessun risultato nel filtro selezionato.</td></tr>';
 }
 
 function renderChart() {
@@ -1022,7 +981,7 @@ function renderChart() {
             },
             label(item) {
               const race = item.raw.raw;
-              return [`Tempo: ${race.time}`, race.position ? `Pos: ${race.position}` : null, race.date].filter(Boolean);
+              return [`Tempo: ${race.time}`, race.position ? `Pos: ${race.position}` : null, displayDate(race.date), sourceLabel(race.source)].filter(Boolean);
             },
           },
         },
@@ -1056,6 +1015,8 @@ function renderChart() {
 function renderAll() {
   renderSummary();
   renderYearFilters();
+  renderSourceFilters();
+  renderPoolFilters();
   renderEventFilters();
   renderPBs();
   renderTable();
@@ -1069,12 +1030,31 @@ function isFunctionConfigured() {
     !SUPABASE_FUNCTION_URL.includes("YOUR_PROJECT_REF");
 }
 
+function sourceResultMessage(sources) {
+  const entries = Object.entries(sources || {});
+  const failed = entries.filter(([, status]) => !status?.ok).map(([source]) => sourceLabel(source));
+  return failed.length
+    ? `Risultati parziali disponibili. Fonti non raggiunte: ${failed.join(", ")}.`
+    : "Risultati aggregati recuperati correttamente.";
+}
+
 async function startSearch() {
   const code = $("athleteCode").value.trim();
   const year = $("seasonYear").value.trim() || String(new Date().getFullYear());
+  const natatoriaId = $("natatoriaId").value.trim();
 
-  if (!code) {
-    setStatus("Inserisci il codice atleta.", "error");
+  if (!/^\d+$/.test(code)) {
+    setStatus("Inserisci un codice atleta numerico.", "error");
+    return;
+  }
+
+  if (!/^\d{4}$/.test(year)) {
+    setStatus("Inserisci un anno stagione valido di quattro cifre.", "error");
+    return;
+  }
+
+  if (natatoriaId && !/^\d+$/.test(natatoriaId)) {
+    setStatus("Inserisci un Natatoria ID numerico oppure lascia il campo vuoto.", "error");
     return;
   }
 
@@ -1084,7 +1064,7 @@ async function startSearch() {
   }
 
   setBusy(true, "Recupero...");
-  setStatus("Invio POST a Scheda_indi.asp tramite Supabase Edge Function...");
+  setStatus("Recupero e aggregazione dei risultati dalle fonti disponibili...");
 
   try {
     const headers = SUPABASE_ANON_KEY
@@ -1094,20 +1074,25 @@ async function startSearch() {
         }
       : {};
 
-    const response = await fetch(
-      `${SUPABASE_FUNCTION_URL}?code=${encodeURIComponent(code)}&year=${encodeURIComponent(year)}`,
-      { headers }
-    );
+    const query = new URLSearchParams({ code, year });
+    if (natatoriaId) {
+      query.set("sources", "nuotomaster,natatoria");
+      query.set("natatoriaId", natatoriaId);
+    }
+
+    const response = await fetch(`${SUPABASE_FUNCTION_URL}?${query}`, { headers });
     const payload = await response.json();
 
     if (!response.ok) {
       throw new Error(payload.error || `HTTP ${response.status}`);
     }
 
-    state.data = parseNuotomasterHtml(payload.html);
+    state.data = normalizePayload(payload);
     state.year = "all";
+    state.source = "all";
+    state.pool = "all";
     state.event = "all";
-    setStatus("Risultati recuperati e analizzati correttamente.");
+    setStatus(sourceResultMessage(state.data.sources));
     renderAll();
   } catch (error) {
     setStatus(`Fetch automatica fallita: ${error.message}`, "error");
