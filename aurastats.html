@@ -155,7 +155,7 @@ body {
 
 .search-grid {
   display: grid;
-  grid-template-columns: 1.2fr 0.6fr 0.7fr auto auto;
+  grid-template-columns: 1fr 1fr 0.8fr 1.2fr auto;
   gap: 14px;
   align-items: end;
 }
@@ -414,6 +414,11 @@ body {
   color: #0f504a;
 }
 
+.source-badge.federnuoto {
+  background: rgba(0, 95, 143, 0.14);
+  color: #124768;
+}
+
 .source-badge.natatoria {
   background: rgba(138, 70, 255, 0.1);
   color: #6331b9;
@@ -540,7 +545,7 @@ tbody td {
   <header class="hero">
     <div class="eyebrow">AuraStats</div>
     <h1>Dashboard per la tua scheda atleta</h1>
-    <p>Recupera risultati, progressione tempi e record personali partendo dal codice atleta e dalla stagione.</p>
+    <p>Recupera risultati, progressione tempi e record personali partendo dal nome dell'atleta.</p>
     <div class="hero-actions">
       <a class="hero-link" href="./">Torna al sito</a>
     </div>
@@ -550,8 +555,16 @@ tbody td {
     <section class="panel search-panel">
       <div class="search-grid">
         <div class="field">
-          <label for="athleteCode">Codice atleta</label>
-          <input id="athleteCode" type="text" inputmode="numeric" placeholder="Inserisci il codice atleta">
+          <label for="athleteFirstName">Nome</label>
+          <input id="athleteFirstName" type="text" autocomplete="given-name" placeholder="es. Marco">
+        </div>
+        <div class="field">
+          <label for="athleteLastName">Cognome</label>
+          <input id="athleteLastName" type="text" autocomplete="family-name" placeholder="es. Egidi">
+        </div>
+        <div class="field">
+          <label for="athleteCode">Codice FIN opzionale</label>
+          <input id="athleteCode" type="text" inputmode="numeric" placeholder="Richiesto solo per omonimi">
         </div>
         <div class="field">
           <label>Stagioni da recuperare</label>
@@ -561,12 +574,7 @@ tbody td {
           </div>
           <input id="seasonYear" class="hidden" type="number" inputmode="numeric" value="2026" placeholder="2026">
         </div>
-        <div class="field">
-          <label for="natatoriaId">Natatoria ID opzionale</label>
-          <input id="natatoriaId" type="text" inputmode="numeric" placeholder="es. 431039">
-        </div>
         <button id="searchButton" class="button button-primary" type="button">Cerca risultati</button>
-        <button id="openSourceButton" class="button button-secondary" type="button">Apri NuotoMaster</button>
       </div>
 
       <div id="statusBox" class="status"></div>
@@ -725,13 +733,14 @@ function racePool(race) {
 function sourceLabel(source) {
   return {
     finveneto: "FIN Veneto",
+    federnuoto: "FIN nazionale",
     natatoria: "Natatoria",
     nuotomaster: "NuotoMaster",
   }[source] || source || "Fonte sconosciuta";
 }
 
 function sourceBadge(source) {
-  const safeSource = ["finveneto", "natatoria", "nuotomaster"].includes(source) ? source : "";
+  const safeSource = ["finveneto", "federnuoto", "natatoria", "nuotomaster"].includes(source) ? source : "";
   return `<span class="source-badge ${safeSource}">${escapeHtml(sourceLabel(source))}</span>`;
 }
 
@@ -806,6 +815,7 @@ function renderSourceFilters() {
   const buttons = [
     { label: "Tutte", value: "all" },
     { label: "Ufficiali FIN", value: "official" },
+    { label: "FIN nazionale", value: "federnuoto" },
     { label: "Acquasport / Natatoria", value: "natatoria" },
     { label: "NuotoMaster", value: "nuotomaster" },
   ];
@@ -1056,22 +1066,24 @@ function renderSearchYearMode() {
 }
 
 async function startSearch() {
+  const firstName = $("athleteFirstName").value.trim();
+  const lastName = $("athleteLastName").value.trim();
+  const name = `${firstName} ${lastName}`.trim();
   const code = $("athleteCode").value.trim();
   const year = state.requestYearMode === "specific" ? $("seasonYear").value.trim() : "";
-  const natatoriaId = $("natatoriaId").value.trim();
 
-  if (!/^\d+$/.test(code)) {
-    setStatus("Inserisci un codice atleta numerico.", "error");
+  if (!firstName || !lastName) {
+    setStatus("Inserisci nome e cognome dell'atleta.", "error");
+    return;
+  }
+
+  if (code && !/^\d+$/.test(code)) {
+    setStatus("Inserisci un codice FIN numerico oppure lascia il campo vuoto.", "error");
     return;
   }
 
   if (state.requestYearMode === "specific" && !/^\d{4}$/.test(year)) {
     setStatus("Inserisci un anno stagione valido di quattro cifre.", "error");
-    return;
-  }
-
-  if (natatoriaId && !/^\d+$/.test(natatoriaId)) {
-    setStatus("Inserisci un Natatoria ID numerico oppure lascia il campo vuoto.", "error");
     return;
   }
 
@@ -1091,12 +1103,9 @@ async function startSearch() {
         }
       : {};
 
-    const query = new URLSearchParams({ code });
+    const query = new URLSearchParams({ name });
+    if (code) query.set("code", code);
     if (year) query.set("year", year);
-    if (natatoriaId) {
-      query.set("sources", "nuotomaster,natatoria");
-      query.set("natatoriaId", natatoriaId);
-    }
 
     const response = await fetch(`${SUPABASE_FUNCTION_URL}?${query}`, { headers });
     const payload = await response.json();
@@ -1125,9 +1134,6 @@ $("searchYearMode").addEventListener("click", (event) => {
   if (!button) return;
   state.requestYearMode = button.dataset.searchYearMode;
   renderSearchYearMode();
-});
-$("openSourceButton").addEventListener("click", () => {
-  window.open("https://www.nuotomaster.it/NUOTO/master.asp", "_blank", "noopener,noreferrer");
 });
 renderSearchYearMode();
 </script>
