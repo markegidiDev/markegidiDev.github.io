@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Menu, X } from 'lucide-react';
 import ThemeMenu from '@/features/theme/ThemeMenu';
-import { Tab, TabGroup, TabList } from '@headlessui/react';
+import {
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  DialogTitle,
+  Tab,
+  TabGroup,
+  TabList,
+} from '@headlessui/react';
 
 interface NavItem {
   to: string;
@@ -86,55 +94,83 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
     setIsMenuOpen(false);
   }, [currentPath]);
 
-  // Chiudi il menu quando si clicca fuori
+  // Il drawer mobile non deve restare aperto passando al layout desktop.
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (isMenuOpen && !(event.target as Element).closest('.mobile-menu-container')) {
-        setIsMenuOpen(false);
-      }
+    const desktopQuery = window.matchMedia('(min-width: 768px)');
+    const closeOnDesktop = (event: MediaQueryListEvent) => {
+      if (event.matches) setIsMenuOpen(false);
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isMenuOpen]);
+    if (desktopQuery.matches) setIsMenuOpen(false);
+    desktopQuery.addEventListener('change', closeOnDesktop);
+    return () => desktopQuery.removeEventListener('change', closeOnDesktop);
+  }, []);
+
   const handleHashLinkClick = (path: string) => {
-    if (window.location.pathname !== '/' && path.startsWith('/#')) {
-      // Navigate to root then scroll after short delay
-      navigate('/');
-      setTimeout(() => {
-        const id = path.substring(2);
-        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-      }, 50);
-    } else if (path.startsWith('/#')) {
-      const id = path.substring(2);
-      document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-      history.replaceState({}, '', path); // update hash without reload
-      setCurrentHash(path);
+    if (!path.startsWith('/#')) return;
+
+    const hash = path.slice(1);
+    const id = hash.slice(1);
+    const scrollToSection = () => {
+      const section = document.getElementById(id);
+      if (!section) return;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      section.scrollIntoView({
+        behavior: reduceMotion ? 'auto' : 'smooth',
+        block: 'start',
+      });
+    };
+
+    setIsMenuOpen(false);
+
+    if (window.location.pathname !== '/') {
+      navigate(path);
+    } else if (window.location.hash !== hash) {
+      history.replaceState({}, '', path);
+      setCurrentHash(hash);
     }
+
+    // Due frame permettono alla home e al dialog di aggiornarsi prima dello scroll.
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(scrollToSection);
+    });
+  };
+
+  const handleMobileLinkClick = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    link: NavItem,
+  ) => {
+    if (link.kind === 'document') {
+      setIsMenuOpen(false);
+      return;
+    }
+
+    if (link.to.startsWith('/#')) {
+      event.preventDefault();
+      handleHashLinkClick(link.to);
+      return;
+    }
+
     setIsMenuOpen(false);
   };
 
   // Custom function to determine if a link should be active
   const isLinkActive = (linkPath: string) => {
     if (linkPath.startsWith('/#')) {
-      return currentPath === '/' && currentHash === linkPath;
+      return currentPath === '/' && `${currentPath}${currentHash}` === linkPath;
     }
-    if (linkPath === '/' && currentPath === '/') return true;
+    if (linkPath === '/' && currentPath === '/' && !currentHash) return true;
     if (linkPath !== '/' && currentPath === linkPath) return true;
     return false;
   };
   const deriveIndexFromLocation = (path: string, hash: string): number | null => {
-    const direct = navLinks.findIndex(l => !l.to.startsWith('/#') && l.to === path);
-    if (direct >= 0) return direct;
     if (hash) {
-      const combined = `/${hash}`; // hash includes '#'
-      const hashIdx = navLinks.findIndex(l => l.to === combined);
+      const hashIdx = navLinks.findIndex(l => l.to === `${path}${hash}`);
       if (hashIdx >= 0) return hashIdx;
     }
-    if (path === '/' && hash === '#contact') {
-      const c = navLinks.findIndex(l => l.to === '/#contact');
-      if (c >= 0) return c;
-    }
+    const direct = navLinks.findIndex(l => !l.to.startsWith('/#') && l.to === path);
+    if (direct >= 0) return direct;
     return null;
   };
 
@@ -198,9 +234,10 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
   return (
-  <nav className={`sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border transition-all duration-300 ${className}`}>        
-      <div className="w-full px-6 md:px-12">
-  <div className={`relative flex items-center justify-between transition-all duration-300 ${shrink ? 'h-16' : 'h-24'}`}>
+    <>
+      <nav aria-label="Navigazione principale" className={`sticky top-0 z-50 bg-background/80 backdrop-blur-md border-b border-border transition-all duration-300 ${className}`}>
+        <div className="w-full px-6 md:px-12">
+          <div className={`relative flex items-center justify-between transition-all duration-300 ${shrink ? 'h-16' : 'h-24'}`}>
           {/* Logo and Brand */}
           <Link to="/" className="text-2xl font-bold flex items-center group">
             <div className={`rounded-full flex items-center justify-center mr-3 bg-primary text-primary-foreground transition-all duration-300 group-hover:scale-110 shadow-lg ${shrink ? 'w-10 h-10 text-base' : 'w-12 h-12 text-lg'}`}>
@@ -248,58 +285,111 @@ const Navbar: React.FC<NavbarProps> = ({ className }) => {
           </div>
 
           {/* Mobile Menu Button */}
-          <div className="mobile-menu-container md:hidden flex items-center gap-4">
+          <div className="md:hidden flex items-center gap-4">
             <ThemeMenu />
             
             <Button
+              type="button"
               variant="ghost"
               size="icon"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="rounded-full hover:bg-accent text-foreground w-12 h-12 flex items-center justify-center"
-              aria-label="Toggle menu"
+              aria-label={isMenuOpen ? 'Chiudi menu di navigazione' : 'Apri menu di navigazione'}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-navigation-drawer"
             >
-              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              {isMenuOpen ? <X className="h-6 w-6" aria-hidden="true" /> : <Menu className="h-6 w-6" aria-hidden="true" />}
             </Button>
           </div>
+          </div>
         </div>
+      </nav>
 
-        {/* Mobile Menu - Full Screen Overlay */}
-        <div className={`mobile-menu-container md:hidden fixed inset-0 z-40 bg-background backdrop-blur-xl border-t border-border shadow-2xl transition-all duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-full pointer-events-none'}`} style={{ top: shrink ? '64px' : '96px' }}>
-            <div className="flex flex-col items-center justify-center h-[calc(100vh-100px)] gap-8 p-6">
-              {navLinks.map((link, i) => (
-                link.kind === 'document' ? (
-                  <a
-                    key={link.label}
-                    href={link.to}
-                    onClick={() => setIsMenuOpen(false)}
-                    className="text-3xl font-bold text-muted-foreground transition-all duration-300 hover:scale-110 hover:text-foreground"
-                    style={{ transitionDelay: `${i * 50}ms` }}
-                  >
-                    {link.label}
-                  </a>
-                ) : (
-                  <NavLink
-                    key={link.label}
-                    to={link.to}
-                    onClick={() => link.to.includes("#") ? handleHashLinkClick(link.to) : handleHashLinkClick("")}
-                    className={() => {
-                      const isActive = isLinkActive(link.to);
-                      return `text-3xl font-bold transition-all duration-300 hover:scale-110 ${
-                        isActive
-                          ? 'text-primary'
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`
-                    }}
-                    style={{ transitionDelay: `${i * 50}ms` }}
-                  >
-                    {link.label}
-                  </NavLink>
-                )
-              ))}
+      {/* Headless UI porta il dialog fuori dalla navbar e rende inert il resto della pagina. */}
+      <Dialog
+        open={isMenuOpen}
+        onClose={setIsMenuOpen}
+        className="relative z-[60] md:hidden"
+      >
+        <DialogBackdrop
+          transition
+          className="fixed inset-0 z-[60] bg-slate-950/60 backdrop-blur-sm transition-opacity duration-200 ease-out data-closed:opacity-0 motion-reduce:transition-none"
+        />
+
+        <div className="fixed inset-0 z-[61] flex justify-end overflow-hidden">
+          <DialogPanel
+            id="mobile-navigation-drawer"
+            transition
+            className="flex h-dvh w-[88vw] max-w-[22rem] flex-col border-l border-border bg-background text-foreground shadow-2xl transition-transform duration-300 ease-out data-closed:translate-x-full motion-reduce:transition-none"
+            style={{
+              paddingTop: 'max(1.25rem, env(safe-area-inset-top))',
+              paddingRight: 'max(1.25rem, env(safe-area-inset-right))',
+              paddingBottom: 'max(1.25rem, env(safe-area-inset-bottom))',
+              paddingLeft: '1.25rem',
+            }}
+          >
+            <div className="flex items-center justify-between gap-4 border-b border-border pb-5">
+              <div>
+                <DialogTitle className="text-xl font-bold tracking-tight">
+                  Navigazione
+                </DialogTitle>
+                <p className="mt-1 text-sm text-muted-foreground">Marco Egidi</p>
+              </div>
+              <Button
+                autoFocus
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => setIsMenuOpen(false)}
+                className="h-11 w-11 shrink-0 rounded-full"
+                aria-label="Chiudi menu di navigazione"
+              >
+                <X className="h-6 w-6" aria-hidden="true" />
+              </Button>
             </div>
+
+            <nav
+              aria-label="Navigazione mobile"
+              className="min-h-0 flex-1 overflow-y-auto overscroll-contain py-6"
+            >
+              <ul className="flex flex-col gap-2">
+                {navLinks.map((link) => {
+                  const isActive = isLinkActive(link.to);
+                  const linkClassName = `flex min-h-12 items-center rounded-2xl px-4 py-3 text-xl font-semibold transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background motion-reduce:transition-none ${
+                    isActive
+                      ? 'bg-primary/12 text-primary'
+                      : 'text-muted-foreground hover:bg-muted/70 hover:text-foreground'
+                  }`;
+
+                  return (
+                    <li key={link.label}>
+                      {link.kind === 'document' ? (
+                        <a
+                          href={link.to}
+                          onClick={(event) => handleMobileLinkClick(event, link)}
+                          className={linkClassName}
+                        >
+                          {link.label}
+                        </a>
+                      ) : (
+                        <Link
+                          to={link.to}
+                          onClick={(event) => handleMobileLinkClick(event, link)}
+                          aria-current={isActive ? (link.to.startsWith('/#') ? 'location' : 'page') : undefined}
+                          className={linkClassName}
+                        >
+                          {link.label}
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </nav>
+          </DialogPanel>
         </div>
-      </div>
-    </nav>
+      </Dialog>
+    </>
   );
 };
 

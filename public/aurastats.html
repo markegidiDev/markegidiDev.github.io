@@ -255,6 +255,137 @@ body {
   color: #8a2b19;
 }
 
+.search-loader[hidden] {
+  display: none;
+}
+
+.search-loader {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid rgba(12, 122, 111, 0.14);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(12, 122, 111, 0.08), rgba(0, 95, 143, 0.07));
+}
+
+.loader-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.loader-heading strong,
+.loader-heading span {
+  display: block;
+}
+
+.loader-heading strong {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 16px;
+}
+
+.loader-detail {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.loader-spinner {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border: 3px solid rgba(12, 122, 111, 0.16);
+  border-top-color: var(--primary);
+  border-radius: 999px;
+  animation: loader-spin 0.85s linear infinite;
+}
+
+.loader-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.loader-step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.loader-step-marker {
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  border: 2px solid rgba(85, 101, 125, 0.35);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.loader-step.active {
+  color: #0f504a;
+}
+
+.loader-step.active .loader-step-marker {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 5px rgba(12, 122, 111, 0.1);
+}
+
+.loader-step.done .loader-step-marker {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.loader-skeleton {
+  display: grid;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.skeleton-line {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.skeleton-line:nth-child(2) {
+  width: 82%;
+}
+
+.skeleton-line:nth-child(3) {
+  width: 62%;
+}
+
+.skeleton-line::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(12, 122, 111, 0.16), transparent);
+  animation: loader-shimmer 1.35s ease-in-out infinite;
+}
+
+@keyframes loader-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes loader-shimmer {
+  to {
+    transform: translateX(100%);
+  }
+}
+
 .results {
   display: none;
   gap: 18px;
@@ -434,6 +565,11 @@ body {
   color: #0f504a;
 }
 
+.source-status.warning {
+  background: rgba(217, 119, 6, 0.12);
+  color: #854d0e;
+}
+
 .source-status.error {
   background: rgba(241, 91, 65, 0.1);
   color: #8a2b19;
@@ -503,6 +639,17 @@ tbody td {
   font-size: 14px;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .loader-spinner,
+  .skeleton-line::after {
+    animation: none;
+  }
+
+  .skeleton-line::after {
+    display: none;
+  }
+}
+
 @media (max-width: 980px) {
   .search-grid {
     grid-template-columns: 1fr 1fr;
@@ -536,6 +683,10 @@ tbody td {
 
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .loader-steps {
+    grid-template-columns: 1fr 1fr;
   }
 }
 </style>
@@ -578,6 +729,38 @@ tbody td {
       </div>
 
       <div id="statusBox" class="status"></div>
+      <div id="searchLoader" class="search-loader" role="status" aria-live="polite" aria-atomic="true" hidden>
+        <div class="loader-heading">
+          <span class="loader-spinner" aria-hidden="true"></span>
+          <div>
+            <strong id="loaderTitle">Ricerca atleta</strong>
+            <span id="loaderDetail" class="loader-detail">Individuo la scheda e il codice FIN associato.</span>
+          </div>
+        </div>
+        <ol class="loader-steps" aria-label="Fasi della ricerca">
+          <li class="loader-step active" data-loader-step>
+            <span class="loader-step-marker" aria-hidden="true"></span>
+            <span>Ricerca atleta</span>
+          </li>
+          <li class="loader-step" data-loader-step>
+            <span class="loader-step-marker" aria-hidden="true"></span>
+            <span>Fonti regionali e nazionali</span>
+          </li>
+          <li class="loader-step" data-loader-step>
+            <span class="loader-step-marker" aria-hidden="true"></span>
+            <span>Campionati FIN</span>
+          </li>
+          <li class="loader-step" data-loader-step>
+            <span class="loader-step-marker" aria-hidden="true"></span>
+            <span>Unione risultati</span>
+          </li>
+        </ol>
+        <div class="loader-skeleton" aria-hidden="true">
+          <span class="skeleton-line"></span>
+          <span class="skeleton-line"></span>
+          <span class="skeleton-line"></span>
+        </div>
+      </div>
     </section>
 
     <section id="results" class="results">
@@ -676,6 +859,27 @@ const STYLE_COLORS = {
 const SUPABASE_FUNCTION_URL = "https://dnogpgbuimetyqknqdsr.supabase.co/functions/v1/swim-results-aggregator";
 const SUPABASE_ANON_KEY = "";
 
+const LOADING_STAGES = [
+  {
+    title: "Ricerca atleta",
+    detail: "Individuo la scheda e il codice FIN associato.",
+  },
+  {
+    title: "Fonti regionali e nazionali",
+    detail: "Interrogo FIN Veneto, FIN nazionale e le altre fonti configurate.",
+  },
+  {
+    title: "Campionati FIN",
+    detail: "Controllo gli eventi ufficiali configurati, incluso Riccione 2026 quando pertinente.",
+  },
+  {
+    title: "Unione risultati",
+    detail: "Normalizzo gare, tempi e fonti in un'unica scheda.",
+  },
+];
+
+let loadingStageTimers = [];
+
 const $ = (id) => document.getElementById(id);
 
 function setStatus(message, type = "info") {
@@ -694,6 +898,45 @@ function setBusy(isBusy, label) {
   const button = $("searchButton");
   button.disabled = isBusy;
   button.textContent = isBusy ? (label || "Caricamento...") : "Cerca risultati";
+}
+
+function renderLoadingStage(index) {
+  const stage = LOADING_STAGES[index];
+  if (!stage) return;
+
+  $("loaderTitle").textContent = stage.title;
+  $("loaderDetail").textContent = stage.detail;
+  document.querySelectorAll("[data-loader-step]").forEach((step, stepIndex) => {
+    step.classList.toggle("active", stepIndex === index);
+    step.classList.toggle("done", stepIndex < index);
+    if (stepIndex === index) step.setAttribute("aria-current", "step");
+    else step.removeAttribute("aria-current");
+  });
+}
+
+function setSearchLoading(isLoading) {
+  const loader = $("searchLoader");
+  const searchPanel = document.querySelector(".search-panel");
+  const results = $("results");
+
+  loadingStageTimers.forEach((timer) => window.clearTimeout(timer));
+  loadingStageTimers = [];
+
+  if (!isLoading) {
+    loader.hidden = true;
+    searchPanel.removeAttribute("aria-busy");
+    results.removeAttribute("aria-busy");
+    return;
+  }
+
+  loader.hidden = false;
+  searchPanel.setAttribute("aria-busy", "true");
+  results.setAttribute("aria-busy", "true");
+  renderLoadingStage(0);
+
+  [1500, 3300, 5200].forEach((delay, offset) => {
+    loadingStageTimers.push(window.setTimeout(() => renderLoadingStage(offset + 1), delay));
+  });
 }
 
 function dateSortValue(date) {
@@ -880,10 +1123,16 @@ function renderSourceStatuses() {
   const entries = Object.entries(state.data.sources || {});
   $("sourceStatuses").innerHTML = entries.map(([source, status]) => {
     const sourceStatus = status || {};
+    const warnings = Array.isArray(sourceStatus.warnings) ? sourceStatus.warnings.filter(Boolean) : [];
+    const details = [sourceStatus.error, ...warnings].filter(Boolean);
     const count = Number.isFinite(Number(sourceStatus.count)) ? ` (${Number(sourceStatus.count)})` : "";
     const cache = sourceStatus.fromCache ? " cache" : "";
-    const title = sourceStatus.error ? ` title="${escapeHtml(sourceStatus.error)}"` : "";
-    return `<span class="source-status ${sourceStatus.ok ? "ok" : "error"}"${title}>${escapeHtml(sourceLabel(source))}${count}${cache}</span>`;
+    const visualStatus = !sourceStatus.ok ? "error" : warnings.length ? "warning" : "ok";
+    const warningLabel = warnings.length ? " avviso" : "";
+    const detailAttributes = details.length
+      ? ` title="${escapeHtml(details.join(" | "))}" aria-label="${escapeHtml(`${sourceLabel(source)}: ${details.join(" | ")}`)}"`
+      : "";
+    return `<span class="source-status ${visualStatus}"${detailAttributes}>${escapeHtml(sourceLabel(source))}${count}${cache}${warningLabel}</span>`;
   }).join("");
 }
 
@@ -1052,8 +1301,14 @@ function isFunctionConfigured() {
 function sourceResultMessage(sources) {
   const entries = Object.entries(sources || {});
   const failed = entries.filter(([, status]) => !status?.ok).map(([source]) => sourceLabel(source));
-  return failed.length
-    ? `Risultati parziali disponibili. Fonti non raggiunte: ${failed.join(", ")}.`
+  const warned = entries
+    .filter(([, status]) => status?.ok && Array.isArray(status.warnings) && status.warnings.length)
+    .map(([source]) => sourceLabel(source));
+  const notices = [];
+  if (failed.length) notices.push(`Fonti non raggiunte: ${failed.join(", ")}.`);
+  if (warned.length) notices.push(`Fonti con avvisi: ${warned.join(", ")}.`);
+  return notices.length
+    ? `Risultati parziali disponibili. ${notices.join(" ")}`
     : "Risultati aggregati recuperati correttamente.";
 }
 
@@ -1093,6 +1348,7 @@ async function startSearch() {
   }
 
   setBusy(true, "Recupero...");
+  setSearchLoading(true);
   setStatus("Recupero e aggregazione dei risultati dalle fonti disponibili...");
 
   try {
@@ -1124,6 +1380,7 @@ async function startSearch() {
   } catch (error) {
     setStatus(`Fetch automatica fallita: ${error.message}`, "error");
   } finally {
+    setSearchLoading(false);
     setBusy(false);
   }
 }
