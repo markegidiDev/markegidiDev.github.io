@@ -1,34 +1,34 @@
 [
   {
-    "id": 19132458641,
-    "date": "2026-06-30",
-    "totalMeters": 600,
-    "movingSeconds": 4278,
-    "pace100m": 713,
-    "paceFormatted": "11:53"
+    "id": 19220329258,
+    "date": "2026-07-07",
+    "totalMeters": 1200,
+    "movingSeconds": 2129,
+    "pace100m": 177.41666666666666,
+    "paceFormatted": "2:57"
   },
   {
-    "id": 19116231241,
-    "date": "2026-06-29",
+    "id": 19220329144,
+    "date": "2026-07-04",
+    "totalMeters": 250,
+    "movingSeconds": 2008,
+    "pace100m": 803.2,
+    "paceFormatted": "13:23"
+  },
+  {
+    "id": 19155317909,
+    "date": "2026-07-02",
     "totalMeters": 1250,
-    "movingSeconds": 4243,
-    "pace100m": 339.44,
-    "paceFormatted": "5:39"
+    "movingSeconds": 4081,
+    "pace100m": 326.48,
+    "paceFormatted": "5:26"
   },
   {
-    "id": 19097672690,
-    "date": "2026-06-27",
-    "totalMeters": 450,
-    "movingSeconds": 2083,
-    "pace100m": 462.88888888888886,
-    "paceFormatted": "7:43"
-  },
-  {
-    "id": 19077482618,
-    "date": "2026-06-26",
-    "totalMeters": 850,
-    "movingSeconds": 2534,
-    "pace100m": 298.11764705882354,
-    "paceFormatted": "4:58"
+    "id": 19155317789,
+    "date": "2026-07-01",
+    "totalMeters": 600,
+    "movingSeconds": 1923,
+    "pace100m": 320.5,
+    "paceFormatted": "5:21"
   }
 ]
