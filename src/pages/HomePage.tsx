@@ -295,12 +295,12 @@ const copy = {
       youtubeText:
         "A selection of cinematic travel and holiday videos edited by Marco, shaped through pacing, colour grading, and sound design.",
       channel: "View YouTube channel",
-      reelOneTitle: "32.05 LCM · Race reel",
+      reelOneTitle: "Cinematic Swim Meet (Treviso) · Race reel",
       reelOneText:
         "A fast-paced swimming reel edited by Marco, focused on race-day intensity and competing side by side.",
       reelTwoTitle: "City of Montebelluna Trophy",
       reelTwoText:
-        "An event reel edited by Marco to turn a master swimming meet into a dynamic, cinematic social story.",
+        "An event reel edited to turn a master swimming meet into a dynamic, cinematic social story.",
       viewReel: "View reel",
     },
     about: [
@@ -455,12 +455,12 @@ const copy = {
       youtubeText:
         "Una selezione di video cinematici di viaggi e vacanze montati da Marco, curati in post-produzione per atmosfera, ritmo, color grading e sound design.",
       channel: "Guarda il canale YouTube",
-      reelOneTitle: "32.05 LCM · Race reel",
+      reelOneTitle: "Cinematic Swim Meet (Treviso) · Race reel",
       reelOneText:
-        "Un reel di nuoto montato da Marco, dal ritmo serrato e focalizzato sull’intensità della gara e sul confronto in vasca.",
+        "Edit focalizzato sull’intensità della gara e sul confronto in vasca.",
       reelTwoTitle: "Trofeo Città di Montebelluna",
       reelTwoText:
-        "Reel montato da Marco per trasformare un evento master in un racconto social dinamico e cinematografico.",
+        "Reel montato per trasformare un evento master in un racconto social e cinematografico.",
       viewReel: "Guarda il reel",
     },
     about: [
