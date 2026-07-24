@@ -293,11 +293,11 @@ const copy = {
       selected: "Selected work",
       youtubeTitle: "Cinematic & travel videos",
       youtubeText:
-        "A selection of cinematic travel and holiday videos edited by Marco, shaped through pacing, colour grading, and sound design.",
+        "A selection of cinematic travel and holiday videos edited by me, shaped through pacing, colour grading, and sound design.",
       channel: "View YouTube channel",
       reelOneTitle: "Cinematic Swim Meet (Treviso) · Race reel",
       reelOneText:
-        "A fast-paced swimming reel edited by Marco, focused on race-day intensity and competing side by side.",
+        "A fast-paced swimming reel edited, focused on race-day intensity and competing side by side.",
       reelTwoTitle: "City of Montebelluna Trophy",
       reelTwoText:
         "An event reel edited to turn a master swimming meet into a dynamic, cinematic social story.",
@@ -777,7 +777,7 @@ export default function HomePage() {
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Code2 className="h-6 w-6 text-primary" />
-                  <span className="h-2 flex-1 rounded-full bg-primary/35" />
+                  <span className="h-2 flex-1 rounded-full bg-[hsl(var(--primary)/0.35)]" />
                 </div>
                 <div className="flex items-center gap-3">
                   <BrainCircuit className="h-6 w-6 text-sky-400" />
