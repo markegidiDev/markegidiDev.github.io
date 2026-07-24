@@ -37,12 +37,12 @@ export const Dock = React.forwardRef<HTMLDivElement, DockProps>(
 
     const renderChildren = () => {
       return React.Children.map(children, (child) => {
-        if (React.isValidElement(child)) {
+        if (React.isValidElement<DockIconProps>(child)) {
           return React.cloneElement(child, {
             mouseX,
             magnification,
             distance,
-          } as any);
+          });
         }
         return child;
       });
@@ -56,6 +56,11 @@ export const Dock = React.forwardRef<HTMLDivElement, DockProps>(
         {...props}
         className={cn(
           "supports-backdrop-blur:bg-white/10 supports-backdrop-blur:dark:bg-black/10 mx-auto flex h-[58px] w-max gap-2 rounded-2xl border p-2 backdrop-blur-md",
+          direction === "top"
+            ? "items-start"
+            : direction === "middle"
+              ? "items-center"
+              : "items-end",
           className,
         )}
       >
@@ -86,19 +91,20 @@ export const DockIcon = ({
   ...props
 }: DockIconProps) => {
   const ref = useRef<HTMLDivElement>(null);
+  const baseSize = size ?? 40;
 
   const distanceCalc = useTransform(mouseX!, (val: number) => {
     const bounds = ref.current?.getBoundingClientRect() ?? { x: 0, width: 0 };
     return val - bounds.x - bounds.width / 2;
   });
 
-  let widthSync = useTransform(
+  const widthSync = useTransform(
     distanceCalc,
     [-distance, 0, distance],
-    [40, magnification, 40],
+    [baseSize, magnification, baseSize],
   );
 
-  let width = useSpring(widthSync, {
+  const width = useSpring(widthSync, {
     mass: 0.1,
     stiffness: 150,
     damping: 12,

@@ -2,32 +2,177 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <title>Marco Egidi - Portfolio</title>
-    <!-- Removed inline styles and scripts for loading/visibility -->
+    <meta
+      name="description"
+      content="Marco Egidi’s software developer portfolio: Python, TypeScript, React, FastAPI, AI applications, Docker, cloud projects, experience, and contact details."
+    />
+    <meta
+      name="robots"
+      content="index,follow,max-image-preview:large"
+    />
+    <meta name="theme-color" content="#0f766e" />
+
+    <title>Marco Egidi | Software Developer — Full Stack, AI & Cloud</title>
+    <link rel="canonical" href="https://markegididev.github.io/" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Marco Egidi" />
+    <meta
+      property="og:title"
+      content="Marco Egidi | Software Developer — Full Stack, AI & Cloud"
+    />
+    <meta
+      property="og:description"
+      content="Full-stack, AI, and cloud software projects by Marco Egidi. Explore practical work with Python, TypeScript, React, FastAPI, Docker, and AI systems."
+    />
+    <meta property="og:url" content="https://markegididev.github.io/" />
+    <meta
+      property="og:image"
+      content="https://markegididev.github.io/og-marco-egidi.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Marco Egidi — Software Developer, Full Stack, AI & Cloud"
+    />
+    <meta property="og:locale" content="en_GB" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Marco Egidi | Software Developer — Full Stack, AI & Cloud"
+    />
+    <meta
+      name="twitter:description"
+      content="Full-stack, AI, and cloud software projects by Marco Egidi."
+    />
+    <meta
+      name="twitter:image"
+      content="https://markegididev.github.io/og-marco-egidi.png"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <script id="structured-data" type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://markegididev.github.io/#website",
+            "name": "Marco Egidi",
+            "url": "https://markegididev.github.io/",
+            "inLanguage": "en"
+          },
+          {
+            "@type": "Person",
+            "@id": "https://markegididev.github.io/#person",
+            "name": "Marco Egidi",
+            "url": "https://markegididev.github.io/",
+            "jobTitle": "Software Developer",
+            "description": "Software developer focused on full-stack development, AI applications, and cloud systems.",
+            "email": "mailto:marco.egidi.me@gmail.com",
+            "alumniOf": {
+              "@type": "CollegeOrUniversity",
+              "name": "Università degli Studi di Padova"
+            },
+            "knowsAbout": [
+              "Software Development",
+              "Full Stack Development",
+              "Python",
+              "TypeScript",
+              "JavaScript",
+              "React",
+              "FastAPI",
+              "Artificial Intelligence",
+              "Docker",
+              "Cloud Computing",
+              "Cybersecurity"
+            ],
+            "sameAs": [
+              "https://github.com/markegidiDev",
+              "https://www.linkedin.com/in/marcoegidi",
+              "https://www.youtube.com/@markegidi"
+            ]
+          },
+          {
+            "@type": "ProfilePage",
+            "@id": "https://markegididev.github.io/#webpage",
+            "url": "https://markegididev.github.io/",
+            "name": "Marco Egidi | Software Developer — Full Stack, AI & Cloud",
+            "description": "Marco Egidi’s software developer portfolio: full-stack, AI, and cloud projects, experience, skills, and contact details.",
+            "isPartOf": {
+              "@id": "https://markegididev.github.io/#website"
+            },
+            "mainEntity": {
+              "@id": "https://markegididev.github.io/#person"
+            },
+            "inLanguage": "en"
+          }
+        ]
+      }
+    </script>
+
     <script>
-      // Avoid FOUC: apply saved theme ASAP - FORCE DARK DEFAULT
-      (function() {
+      (function () {
         try {
-          var saved = localStorage.getItem('theme');
-          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          // FORCE dark when no saved theme (non-negotiable requirement)
-          var effective = !saved ? 'dark' : (saved === 'system' ? (prefersDark ? 'dark' : 'light') : saved);
-          var root = document.documentElement;
-          if (effective === 'dark') root.classList.add('dark');
-          if (effective === 'nord') root.classList.add('theme-nord');
-          root.setAttribute('data-theme', effective === 'nord' ? 'nord' : effective);
-        } catch (e) {}
+          var query = new URLSearchParams(window.location.search);
+          var redirectPath = query.get("p");
+          if (redirectPath) {
+            var redirectQuery = query.get("q");
+            window.history.replaceState(
+              null,
+              "",
+              redirectPath +
+                (redirectQuery ? "?" + redirectQuery : "") +
+                window.location.hash,
+            );
+          }
+
+          var savedTheme = localStorage.getItem("theme");
+          var prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+          var useDark =
+            savedTheme === "dark" ||
+            savedTheme === "nord" ||
+            ((!savedTheme || savedTheme === "system") && prefersDark);
+          if (useDark) document.documentElement.classList.add("dark");
+        } catch (error) {
+          // Keep the page usable when storage or history is unavailable.
+        }
       })();
     </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <main>
+        <h1>Marco Egidi — Software Developer</h1>
+        <p>
+          Full Stack, AI & Cloud developer working with Python, TypeScript,
+          React, FastAPI, SQL, Docker, and cloud platforms.
+        </p>
+        <p>
+          JavaScript is required to view the interactive portfolio. You can
+          contact Marco at
+          <a href="mailto:marco.egidi.me@gmail.com">
+            marco.egidi.me@gmail.com
+          </a>
+          .
+        </p>
+      </main>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Removed emergency visibility and diagnostics scripts -->
   </body>
 </html>

@@ -7,19 +7,15 @@ type Tech = string
 // Optional mapping from experience id to image and tech stack
 const showcase: Record<number, { image?: string; tech?: Tech[]; link?: string }> = {
   1: {
-    image: "/vite.svg", // placeholder
-    tech: ["Windows", "Networking", "Hardware", "Support"],
+    tech: ["Python", "Odoo 18", "Gemini", "OpenRouter"],
   },
   2: {
-    image: "/vite.svg",
     tech: ["PC Assembly", "Office", "Adobe", "Security Basics"],
   },
   3: {
-    image: "/vite.svg",
     tech: ["Customer Care", "Teamwork", "Service"],
   },
   4: {
-    image: "/vite.svg",
     tech: ["Safety", "Operations", "Access Mgmt"],
   },
 }

@@ -1,82 +1,87 @@
-import React, { Fragment, useMemo } from 'react';
-import { Menu, Transition } from '@headlessui/react';
-import { useTheme } from './use-theme';
-import { CheckIcon, ChevronDownIcon } from '@heroicons/react/20/solid';
-import { Moon, Sun, Monitor } from 'lucide-react';
-
-type Option = {
-  value: 'dark' | 'light' | 'system';
-  label: string;
-  icon: React.ReactNode;
-};
+import { Fragment } from "react";
+import { Menu, Transition } from "@headlessui/react";
+import { Check, Monitor, Moon, Sun } from "lucide-react";
+import { useTheme } from "@/features/theme/use-theme";
+import { useLanguage } from "@/i18n/use-language";
+import type { Theme } from "@/features/theme/theme-context";
 
 export default function ThemeMenu() {
-  const { theme, resolvedTheme, setTheme, toggleTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
+  const { language } = useLanguage();
+  const copy =
+    language === "en"
+      ? {
+          open: "Choose color theme",
+          system: "System",
+          dark: "Dark",
+          light: "Light",
+        }
+      : {
+          open: "Scegli il tema colore",
+          system: "Sistema",
+          dark: "Scuro",
+          light: "Chiaro",
+        };
 
-  const options: Option[] = useMemo(
-    () => [
-      { value: 'system', label: 'System', icon: <Monitor className="h-4 w-4" /> },
-      { value: 'dark', label: 'Dark', icon: <Moon className="h-4 w-4" /> },
-      { value: 'light', label: 'Light', icon: <Sun className="h-4 w-4" /> },
-    ],
-    []
-  );
-
-  // Keeping options memoized; current selection is reflected via checkmark in the menu
+  const options: Array<{
+    value: Theme;
+    label: string;
+    icon: typeof Sun;
+  }> = [
+    { value: "system", label: copy.system, icon: Monitor },
+    { value: "dark", label: copy.dark, icon: Moon },
+    { value: "light", label: copy.light, icon: Sun },
+  ];
 
   return (
-    <Menu as="div" className="relative inline-block text-left">
-      <div className="flex items-center">
-        {/* Primary button: one-click toggle (kept for convenience) */}
-        <button
-          type="button"
-          onClick={toggleTheme}
-          aria-label="Toggle theme"
-          className="inline-flex items-center justify-center rounded-md border border-border text-foreground px-2 py-2 hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        >
-          {resolvedTheme === 'light' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
-        </button>
-
-        {/* Dropdown caret to pick explicit theme */}
-        <Menu.Button
-          className="ml-1 inline-flex items-center justify-center rounded-md border border-border text-foreground px-2 py-2 hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label="Open theme menu"
-        >
-          <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
-        </Menu.Button>
-      </div>
+    <Menu as="div" className="relative">
+      <Menu.Button
+        className="flex h-11 w-11 items-center justify-center rounded-full border border-border bg-card text-foreground shadow-sm transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        aria-label={copy.open}
+      >
+        {resolvedTheme === "dark" ? (
+          <Moon className="h-4.5 w-4.5" aria-hidden="true" />
+        ) : (
+          <Sun className="h-4.5 w-4.5" aria-hidden="true" />
+        )}
+      </Menu.Button>
 
       <Transition
         as={Fragment}
-        enter="transition ease-out duration-100"
-        enterFrom="transform opacity-0 scale-95"
-        enterTo="transform opacity-100 scale-100"
-        leave="transition ease-in duration-75"
-        leaveFrom="transform opacity-100 scale-100"
-        leaveTo="transform opacity-0 scale-95"
+        enter="transition duration-100 ease-out"
+        enterFrom="scale-95 opacity-0"
+        enterTo="scale-100 opacity-100"
+        leave="transition duration-75 ease-in"
+        leaveFrom="scale-100 opacity-100"
+        leaveTo="scale-95 opacity-0"
       >
-        <Menu.Items className="absolute right-0 z-10 mt-2 w-44 origin-top-right rounded-md border border-border bg-popover shadow-lg focus:outline-none">
-          <div className="py-1">
-            {options.map((opt) => (
-              <Menu.Item key={opt.value}>
-                {({ active }) => (
+        <Menu.Items className="absolute right-0 z-50 mt-2 w-40 origin-top-right rounded-xl border border-border bg-popover p-1.5 text-popover-foreground shadow-xl focus:outline-none">
+          {options.map((option) => {
+            const Icon = option.icon;
+
+            return (
+              <Menu.Item key={option.value}>
+                {({ focus }) => (
                   <button
                     type="button"
-                    onClick={() => setTheme(opt.value)}
-                    className={`${
-                      active ? 'bg-accent text-accent-foreground' : 'text-foreground'
-                    } group flex w-full items-center gap-2 px-3 py-2 text-sm`}
+                    onClick={() => setTheme(option.value)}
+                    className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm ${
+                      focus ? "bg-muted" : ""
+                    }`}
                   >
-                    <span className="shrink-0">{opt.icon}</span>
-                    <span className="grow text-left">{opt.label}</span>
-                    {theme === opt.value && (
-                      <CheckIcon className="h-4 w-4 text-primary" aria-hidden="true" />
-                    )}
+                    <Icon className="h-4 w-4" aria-hidden="true" />
+                    <span className="flex-1 text-left">{option.label}</span>
+                    {theme === option.value ? (
+                      <Check
+                        className="h-4 w-4 text-primary"
+                        aria-hidden="true"
+                      />
+                    ) : null}
                   </button>
                 )}
               </Menu.Item>
-            ))}
-          </div>
+            );
+          })}
         </Menu.Items>
       </Transition>
     </Menu>

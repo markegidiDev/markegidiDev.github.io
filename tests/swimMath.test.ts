@@ -14,7 +14,7 @@ import {
   computeSegmentMetrics,
   generateDefaultSegments,
   calculateDifficulty,
-} from '../src/lib/swimMath';
+} from '../src/lib/swimMath.ts';
 
 // Test parseTimeToSeconds
 console.log('Testing parseTimeToSeconds...');

@@ -11,13 +11,13 @@ export interface Experience {
 export const experiences: Experience[] = [
   {
     id: 1,
-    title: "Software Developer (Stage)",
+    title: "Software Developer - Odoo e AI (Stage)",
     company: "Sync Lab S.r.l.",
     type: "Stage",
-    duration: "ott 2025 - Presente",
+    duration: "ott 2025 - dic 2025 · 3 mesi",
     location: "Padova, Veneto, Italia (Ibrida)",
     description:
-      "Sviluppo software con focus su database relazionali e SQL. Collaborazione in team per la realizzazione di soluzioni enterprise.",
+      "Progettazione e sviluppo di AI LiveBot, modulo Odoo 18 per gestire magazzino, ordini di vendita e consegne tramite linguaggio naturale. Integrazione di Gemini e OpenRouter con function calling, ricerca fuzzy, controlli stock e dettatura vocale via Web Speech API.",
   },
   {
     id: 2,

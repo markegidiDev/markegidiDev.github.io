@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://markegididev.github.io/sitemap.xml
