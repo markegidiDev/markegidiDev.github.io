@@ -3,7 +3,7 @@
     "week": "2025-W35",
     "corsa": 5.13,
     "ciclismo": 0,
-    "nuoto": 1.9,
+    "nuoto": 0,
     "camminata": 0
   },
   {
@@ -368,6 +368,6 @@
     "corsa": 0,
     "ciclismo": 0,
     "nuoto": 4.33,
-    "camminata": 0
+    "camminata": 4.18
   }
 ]
