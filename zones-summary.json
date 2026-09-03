@@ -1,5 +1,17 @@
 [
   {
+    "id": 20025255936,
+    "sport": "Swim",
+    "hr": [
+      3683,
+      0,
+      0,
+      0,
+      0
+    ],
+    "power": null
+  },
+  {
     "id": 19996462818,
     "sport": "Swim",
     "hr": null,
@@ -51,12 +63,6 @@
       0,
       0
     ],
-    "power": null
-  },
-  {
-    "id": 19849740580,
-    "sport": "Swim",
-    "hr": null,
     "power": null
   }
 ]
