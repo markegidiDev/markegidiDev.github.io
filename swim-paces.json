@@ -22,13 +22,5 @@
     "movingSeconds": 3370,
     "pace100m": 499.2592592592593,
     "paceFormatted": "8:19"
-  },
-  {
-    "id": 20191408742,
-    "date": "2026-09-15",
-    "totalMeters": 1025,
-    "movingSeconds": 3062,
-    "pace100m": 298.7317073170732,
-    "paceFormatted": "4:59"
   }
 ]
